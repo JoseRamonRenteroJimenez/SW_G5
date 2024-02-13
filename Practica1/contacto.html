@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Contacto</title>
+</head>
+<body>
+    <!-- Encabezado del formulario -->
+    <h1>Formulario de Contacto</h1>
+
+    <!-- Inicio del formulario, con acción para enviar email (email inventado) -->
+    <form action="mailto:puebloinnova@gmail.com" method="post" enctype="text/plain">
+        
+        <!-- Campo para el nombre del usuario -->
+        <div>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+        
+        <!-- Campo para el email del usuario -->
+        <div>
+            <label for="email">Dirección de email de contacto:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <!-- Grupo de radio buttons para seleccionar el motivo de la consulta -->
+        <fieldset>
+            <legend>Motivo de la consulta:</legend>
+            <div>
+                <input type="radio" id="evaluacion" name="motivo" value="Evaluación" required>
+                <label for="evaluacion">Evaluación</label>
+            </div>
+            <div>
+                <input type="radio" id="sugerencias" name="motivo" value="Sugerencias">
+                <label for="sugerencias">Sugerencias</label>
+            </div>
+            <div>
+                <input type="radio" id="criticas" name="motivo" value="Críticas">
+                <label for="criticas">Críticas</label>
+            </div>
+        </fieldset>
+        
+        <!-- Checkbox para aceptación de términos y condiciones -->
+        <div>
+            <input type="checkbox" id="terminos" name="terminos" required>
+            <label for="terminos">Marque esta casilla para verificar que ha leído nuestros términos y condiciones del servicio</label>
+        </div>
+        
+        <!-- Área de texto para que el usuario escriba su consulta -->
+        <div>
+            <label for="consulta">Consulta:</label>
+            <textarea id="consulta" name="consulta" rows="4" cols="50" required></textarea>
+        </div>
+        
+        <!-- Botón para enviar el formulario -->
+        <div>
+            <input type="submit" value="Enviar">
+        </div>
+    </form>
+</body>
+</html>
