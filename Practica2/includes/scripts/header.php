@@ -7,14 +7,8 @@ function mostrarSaludo() {
         echo '<a href = "registro.php"> Registrarse</a>';
 }
 
-?>
+echo '<header>';
+    echo '<h1>Pueblo Innova</h1>';
+    echo '<input type ="submit" value="Enviar">';
+echo '</header>';
 
-<?php
-
-    echo '<header>';
-        echo '<h1>Mi gran página web</h1>';
-        echo '<div class="saludo">'; // Se emplea el uso de div, pero podria utilizarse tambien <p> Da igual usar uno u otro.
-        mostrarSaludo();
-        echo '</div>';
-    echo '</header>';
-?>

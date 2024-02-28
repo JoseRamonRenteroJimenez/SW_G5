@@ -1,4 +1,4 @@
-session_start();
+<?php require_once __DIR__.'/includes/scripts/config.php';?>
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +12,7 @@ session_start();
     <body>
 
         <header id="header">
-            <?php require('../recursos/codigoComun/header.php');?> 
+            <?php require_once __DIR__.'/includes/scripts/header.php';?> 
         </header>
 
         <section id="body">
@@ -32,7 +32,7 @@ session_start();
         </section>
 
 	    <footer id="footer">
-            <?php require('../recursos/codigoComun/header.php'); ?>
+            <?php require_once __DIR__.'/includes/scripts/header.php';?>
         </footer>
     </body>
 </html>
