@@ -1,9 +1,11 @@
+<?php session_start() ?>
+
 <?php require_once __DIR__.'/includes/scripts/config.php';?>
 
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="estilo.css"/>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
 		<meta http-equiv="Content-Type" content="text/html" charset="utf-8">
 		<title>Pantalla_inicio</title>
 	</head>
@@ -11,9 +13,14 @@
 
     <body>
 
-        <header id="header">
-            <?php require_once __DIR__.'/includes/scripts/header.php';?> 
-        </header>
+    <div id="contenedor">
+
+    <!-- He planteado dividir la pagina inicial en 3 partes.
+    1a cabecera
+    2a cuerpo
+    3a pie de pagina -->
+        
+        <?php require_once __DIR__.'/includes/scripts/header.php';?> 
 
         <section id="body">
             <article>
@@ -31,8 +38,7 @@
          
         </section>
 
-	    <footer id="footer">
-            <?php require_once __DIR__.'/includes/scripts/header.php';?>
-        </footer>
+	    <?php require_once __DIR__.'/includes/scripts/footer.php';?>
+     </div>
     </body>
 </html>
