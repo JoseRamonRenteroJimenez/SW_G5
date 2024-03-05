@@ -6,6 +6,7 @@ session_start();
 // strip_tags -> Elimina cualquier HTML de la entrada para evitar ataques de inyección de código
 // trim -> Elimina espacios en blanco 
 // tmlspecialchars -> Convierte caracteres especiales en HTML
+
 $username = htmlspecialchars(trim(strip_tags($_REQUEST["username"])));
 $password = htmlspecialchars(trim(strip_tags($_REQUEST["password"])));
 

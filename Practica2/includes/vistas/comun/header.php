@@ -13,6 +13,7 @@ echo '<header>';
 echo '</header>';
 
 // SOY CONSCIENTE DE QUE ESTO AHORA MISMO NO FUNCIONA
+/*
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -37,4 +38,4 @@ echo '</header>';
             </div>
         </nav>
     </header>
-
+</html>*/
