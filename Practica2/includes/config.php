@@ -8,7 +8,7 @@ define('RUTA_APP', 'SW_G5/Practica2');
 define('RUTA_IMGS', RUTA_APP . '/img');
 define('RUTA_CSS', RUTA_APP . '/css');
 define('RUTA_JS', RUTA_APP . '/js');
-define('INSTALADA', false);
+define('INSTALADA', true);
 
 // Parámetros de configuración de la BD
 define('BD_HOST', 'localhost');
