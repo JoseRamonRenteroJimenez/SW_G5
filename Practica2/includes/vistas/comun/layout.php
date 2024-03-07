@@ -12,6 +12,7 @@
 <?php
 
 require('header.php');
+require('sidebarIzq.php');
 
 ?>
 <main>
@@ -21,6 +22,7 @@ require('header.php');
 </main>
 <?php
 
+require('sidebarDer.php');
 require('footer.php');
 
 ?>
