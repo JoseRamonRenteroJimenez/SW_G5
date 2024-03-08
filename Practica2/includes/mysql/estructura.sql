@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-03-2024 a las 10:58:33
+-- Tiempo de generación: 08-03-2024 a las 11:27:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `admin` (
   `ID` int(11) NOT NULL,
-  `permisos` int(11) NOT NULL
+  `permisos` int(11) NOT NULL,
+  `password` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -84,7 +85,8 @@ CREATE TABLE `empresa` (
   `nTrabajadores` int(11) NOT NULL,
   `ambito` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`ambito`)),
   `contratos` int(11) NOT NULL,
-  `cooperativas` int(11) NOT NULL
+  `cooperativas` int(11) NOT NULL,
+  `password` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -109,7 +111,8 @@ CREATE TABLE `pueblo` (
   `ID` int(11) NOT NULL,
   `c.a.` enum('Andalucía','Aragón','Principado de Asturias','Islas Baleares','Canarias','Cantabria','Castilla-La Mancha','Castilla y León','Cataluña','Comunidad Valenciana','Extremadura','Galicia','La Rioja','Comunidad de Madrid','Región de Murcia','Comunidad Foral de Navarra','País Vasco','Ceuta','Melilla') NOT NULL,
   `nombre` varchar(35) NOT NULL,
-  `servicios` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`servicios`))
+  `servicios` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`servicios`)),
+  `password` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
