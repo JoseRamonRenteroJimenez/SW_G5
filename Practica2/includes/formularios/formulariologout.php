@@ -1,12 +1,12 @@
 <?php
-
+/*
 // Se especifica el espacio de nombres correspondiente a la ubicación de este archivo dentro del proyecto.
 namespace CAMBIAR RUTA\aw\usuarios;
 
 // Se importan las clases necesarias de otros espacios de nombres.
 use CAMBIAR RUTA\Aplicacion;
 use es\CAMBIAR RUTA\aw\Formulario;
-
+*/
 // Clase FormularioLogout que extiende de Formulario, diseñada para manejar el cierre de sesión.
 class FormularioLogout extends Formulario
 {

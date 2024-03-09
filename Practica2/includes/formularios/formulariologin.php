@@ -1,11 +1,12 @@
 <?php
+/*
 // Definición del espacio de nombres que corresponde a la ubicación de este archivo dentro del proyecto.
 namespace es\CMABIAR RUTA\usuarios;
 
 // Uso de clases necesarias desde otros espacios de nombres.
 use CAMBIAR RUTA\Aplicacion;
 use CAMBIAR RUTA\Formulario;
-
+*/
 // Clase FormularioLogin que extiende de Formulario, específica para el login de usuarios.
 class FormularioLogin extends Formulario
 {

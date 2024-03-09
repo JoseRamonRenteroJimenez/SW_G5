@@ -4,7 +4,7 @@ require_once __DIR__.'/includes/config.php'; // Necesario para trabajar con las 
 $tituloPagina = 'Administrador';
 $contenidoPrincipal='';
 // ESTAS DOS PROXIMAS LINEAS HAY QUE MODIFICARLAS.
-if ($app->esAdmin(es\ucm\RUTA POR DEFINIR\Usuario::ADMIN_ROLE)) { // Necesario modificarlo 
+if ($app->esAdmin(RUTA_APP.'/includes/src/administradores/memoria/Administrador.php')) { // Necesario modificarlo 
   $contenidoPrincipal=<<<EOS
     <h1>Consola de administración</h1>
     <p>Mas adelante la funcionalidad del administrador será implementada</p>
