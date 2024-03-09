@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/includes/config.php';
 
-$ModificarPerfil = new \es\ MODIFICAR RUTA \modificarPerfil();
+$ModificarPerfil = new RUTA_APP.'/includes/src/pueblos/memoria/Pueblo.php';
 $ModificarPerfil = $ModificarSubastas->gestiona();
 
  
