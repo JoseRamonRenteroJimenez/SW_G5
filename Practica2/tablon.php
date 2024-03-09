@@ -1,9 +1,11 @@
 <?php
 require_once 'includes/config.php';
-require_once 'includes/vistas/helpers/anuncios.php';
+//require_once 'includes/vistas/helpers/anuncios.php';
 
 $tituloPagina = 'Tablón de Anuncios';
 
+
+/*
 // Suponiendo que la función obtenerAnuncios() devuelve un array de anuncios
 $anuncios = obtenerAnuncios();
 
@@ -23,5 +25,5 @@ $contenidoPrincipal = <<<EOS
 <h1>Tablón de Anuncios</h1>
 $htmlAnuncios
 EOS;
-
+*/
 require 'includes/vistas/comun/layout.php';

@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/config.php';
-require_once 'includes/funciones.php'; // Asumiendo que aquí tienes funciones para obtener los anuncios
+//require_once 'includes/funciones.php'; // Asumiendo que aquí tienes funciones para obtener los anuncios
 
 $tituloPagina = 'Tablón de Anuncios';
 $anuncios = obtenerAnuncios(); // Supongamos que esta función devuelve todos los anuncios en un array
