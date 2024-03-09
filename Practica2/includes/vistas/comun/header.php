@@ -9,5 +9,6 @@ function mostrarSaludo() {
 
 echo '<header>';
     echo '<h1>Pueblo Innova</h1>';
+    mostrarSaludo();
     echo '<input type ="submit" value="Enviar">';
 echo '</header>';
