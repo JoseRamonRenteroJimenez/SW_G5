@@ -2,7 +2,7 @@
 
 // Inclusión de archivos necesarios
 require_once __DIR__ . '/includes/config.php';
-require_once __DIR__ . '/includes/Formulario.php';
+// require_once RUTA_FORM . '/FormularioContacto.php';
 
 // Definición del título de la página y del contenido principal
 $tituloPagina = 'Contacto con Pueblo Innova';
