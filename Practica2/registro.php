@@ -9,10 +9,10 @@ $htmlFormRegistro = $formRegistro->gestiona();
 
 
 $tituloPagina = 'Registro';
-$contenidoPrincipal=<<<EOS;
+$contenidoPrincipal=<<<EOS
   	<h1>Registro en el sistema</h1>
-    $htmlFormRegistro
-    EOS;
+EOS;
+//$htmlFormRegistro;
 
 require __DIR__.'/includes/vistas/comun/layout.php';
 
