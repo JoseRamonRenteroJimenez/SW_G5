@@ -1,0 +1,7 @@
+// Cambiar
+1- Modificar clase usuario. Debe adecuarse a la base de datos.
+2 - Contenido debe cambiar su información según seas un pueblo o una empresa.
+
+//Mantener
+1- Aplicacion
+2- Formulario

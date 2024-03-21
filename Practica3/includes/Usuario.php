@@ -5,8 +5,9 @@ class Usuario
 {
 
     public const ADMIN_ROLE = 1;
+    public const EMPRESA_ROLE = 2;
+    public const PUEBLO_ROLE = 3;
 
-    public const USER_ROLE = 2;
 
     public static function login($nombreUsuario, $password)
     {
