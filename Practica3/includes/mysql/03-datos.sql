@@ -115,14 +115,14 @@ INSERT INTO `servicios` (`id`, `idPueblo`, `idAmbito`, `cantidad`) VALUES
 --
 
 INSERT INTO `usuarios` (`id`, `nombreUsuario`, `password`, `nombre`, `rol`) VALUES
-(1, 'admin', 'adminpass', 'admin', 1),
-(2, 'empresa1', 'empresapass', 'empresa1', 2),
-(3, 'pueblo1', 'pueblopass', 'pueblo1', 3),
-(4, 'empresa2', 'empresapass', 'Empresa 2', 2),
-(5, 'pueblo2', 'pueblopass', 'pueblo2', 3),
-(6, 'empresa3', 'empresapass', 'empresa3', 2),
-(7, 'pueblo3', 'pueblopass', 'pueblo3', 3),
-(8, 'empresa4', 'empresapass', 'empresa4', 2);
+(1, 'admin', '$2y$10$O3c1kBFa2yDK5F47IUqusOJmIANjHP6EiPyke5dD18ldJEow.e0eS', 'admin', 1),
+(2, 'empresa1', '$2y$10$SwKZqZEL/xjZWtroYRCnfeOuRksUPF3BBzAzSj.jkDheAFEo65rwy', 'empresa1', 2),
+(3, 'pueblo1', '$2y$10$JYMykSs9VnXQBmaGi/2cCO33ccIaBgkhMwvko.rZzuoDOaE2XP9y6', 'pueblo1', 3),
+(4, 'empresa2', '$2y$10$SwKZqZEL/xjZWtroYRCnfeOuRksUPF3BBzAzSj.jkDheAFEo65rwy', 'empresa2', 2),
+(5, 'pueblo2', '$2y$10$JYMykSs9VnXQBmaGi/2cCO33ccIaBgkhMwvko.rZzuoDOaE2XP9y6', 'pueblo2', 3),
+(6, 'empresa3', '$2y$10$SwKZqZEL/xjZWtroYRCnfeOuRksUPF3BBzAzSj.jkDheAFEo65rwy', 'empresa3', 2),
+(7, 'pueblo3', '$2y$10$JYMykSs9VnXQBmaGi/2cCO33ccIaBgkhMwvko.rZzuoDOaE2XP9y6', 'pueblo3', 3),
+(8, 'empresa4', '$2y$10$SwKZqZEL/xjZWtroYRCnfeOuRksUPF3BBzAzSj.jkDheAFEo65rwy', 'empresa4', 2);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
