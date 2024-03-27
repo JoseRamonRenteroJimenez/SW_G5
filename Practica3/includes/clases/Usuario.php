@@ -9,16 +9,12 @@ class Usuario
     public const PUEBLO_ROLE = 3;
 
     private $id;
-
     private $nombreUsuario;
-
     private $password;
-
     private $nombre;
-
     private $rol;
 
-    private function __construct($nombreUsuario, $password, $nombre, $id = null, $rol = null)
+    private function __construct($nombreUsuario, $password, $nombre, $rol, $id = null)
     {
         $this->id = $id;
         $this->nombreUsuario = $nombreUsuario;
@@ -38,7 +34,7 @@ class Usuario
     
     public static function crea($nombreUsuario, $password, $nombre, $rol)
     {
-        $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, null, $rol);
+        $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, $rol);
         return $user->guarda();
     }
 
@@ -51,7 +47,7 @@ class Usuario
         if ($rs) {
             $fila = $rs->fetch_assoc();
             if ($fila) {
-                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['id'], $fila['rol']);
+                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['id']);
             }
             $rs->free();
         } else {
@@ -69,7 +65,7 @@ class Usuario
         if ($rs) {
             $fila = $rs->fetch_assoc();
             if ($fila) {
-                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['id'], $fila['rol']);
+                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['id']);
             }
             $rs->free();
         } else {
@@ -85,48 +81,41 @@ class Usuario
    
     private static function inserta($usuario)
     {
-        HAY QUE HACER INSERTA PUEBLO E INSERTA EMPRESA. Pide datos diferentes para cada uno
-        /*
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("INSERT INTO Usuarios(nombreUsuario, nombre, password) VALUES ('%s', '%s', '%s')"
+        $query=sprintf("INSERT INTO Usuarios(nombreUsuario, nombre, password, rol) VALUES ('%s', '%s', '%s', %d)"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
+            , $usuario->rol
         );
         if ( $conn->query($query) ) {
             $usuario->id = $conn->insert_id;
-            $result = self::insertaRoles($usuario);
+            $result = true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
         return $result;
-        */
     }
     
     private static function actualiza($usuario)
     {
-        HAY QUE HACER INSERTA PUEBLO E INSERTA EMPRESA. Pide datos diferentes para cada uno
-        /*
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("UPDATE Usuarios U SET nombreUsuario = '%s', nombre='%s', password='%s' WHERE U.id=%d"
+        $query=sprintf("UPDATE Usuarios U SET nombreUsuario = '%s', nombre='%s', password='%s', rol=%d WHERE U.id=%d"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
+            , $usuario->rol
             , $usuario->id
         );
         if ( $conn->query($query) ) {
-            $result = self::borraRoles($usuario);
-            if ($result) {
-                $result = self::insertaRoles($usuario);
-            }
+            $result = true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
         
         return $result;
-        */
     }
     
     private static function borra($usuario)
@@ -139,9 +128,7 @@ class Usuario
         if (!$idUsuario) {
             return false;
         } 
-        /* Los roles se borran en cascada por la FK
-         * $result = self::borraRoles($usuario) !== false;
-         */
+        
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("DELETE FROM Usuarios U WHERE U.id = %d"
             , $idUsuario
@@ -199,3 +186,4 @@ class Usuario
         return false;
     }
 }
+?>

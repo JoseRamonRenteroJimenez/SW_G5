@@ -62,8 +62,24 @@ class FormularioLogin extends Formulario
             } else {
                 $_SESSION['login'] = true;
                 $_SESSION['nombre'] = $usuario->getNombre();
-                $_SESSION['esAdmin'] = $usuario->tieneRol(Usuario::ADMIN_ROLE);
+                
+                // Verificar el rol del usuario y asignar permisos según el rol
+                switch ($usuario->getRol()) {
+                    case Usuario::ADMIN_ROLE:
+                        $_SESSION['esAdmin'] = true;
+                        break;
+                    case Usuario::EMPRESA_ROLE:
+                        // Lógica para empresa
+                        break;
+                    case Usuario::PUEBLO_ROLE:
+                        // Lógica para pueblo
+                        break;
+                    default:
+                        // Manejar cualquier otro caso
+                        break;
+                }
             }
         }
     }
 }
+?>
