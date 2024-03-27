@@ -16,6 +16,8 @@ define('RUTA_APP', '/SW_G5/Practica3');
 define('RUTA_IMGS', RUTA_APP.'/img');
 define('RUTA_CSS', RUTA_APP.'/css');
 define('RUTA_JS', RUTA_APP.'/js');
+define('RUTA_CLASS', RUTA_APP.'/includes/clases');
+define('RUTA_FORM', RUTA_APP.'/includes/formularios');
 
 /**
  * Configuración del soporte de UTF-8, localización (idioma y país) y zona horaria
