@@ -1,6 +1,11 @@
 <?php
 namespace es\ucm\fdi\aw;
 
+
+require_once 'Formulario.php'; // Incluir la clase base Formulario si no se ha incluido ya
+require_once 'Usuario.php'; // Incluir la clase Usuario si no se ha incluido ya
+
+
 class FormularioLogin extends Formulario
 {
     public function __construct() {

@@ -1,12 +1,10 @@
 <?php
 namespace es\ucm\fdi\aw;
-
 /**
  * Clase base para la gestión de formularios.
  */
 abstract class Formulario
 {
-
     /**
      * Genera la lista de mensajes de errores globales (no asociada a un campo) a incluir en el formulario.
      *
