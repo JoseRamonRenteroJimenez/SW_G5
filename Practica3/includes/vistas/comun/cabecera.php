@@ -11,7 +11,7 @@ function mostrarSaludo() {
 }
 ?>
 <header>
-	<h1>Mi gran página web</h1>
+	<h1>PuebloInnova</h1>
 	<div class="saludo">
 	<?= mostrarSaludo() ?>
 	</div>
