@@ -3,23 +3,24 @@ namespace es\ucm\fdi\aw;
 
 class Pueblo extends Usuario
 {
+    private $id;
     private $cif;
     private $comunidad;
 
-    public function __construct($nombreUsuario, $password, $nombre, $rol, $cif, $comunidad, $id = null)
+    public function __construct($id, $cif, $comunidad)
     {
-        parent::__construct($nombreUsuario, $password, $nombre, $id, $rol);
+        $this->id = $id;
         $this->cif = $cif;
         $this->comunidad = $comunidad;
     }
 
-    // Inserta o actualiza un pueblo en la base de datos.
-    public function guarda()
+    public static function registrar(Pueblo $pueblo)
     {
-        if ($this->id === null) {
-            return $this->inserta(); // Si es un nuevo pueblo, inserta.
+        // Guardar el pueblo en la base de datos
+        if ($pueblo->guarda()) {
+            return true; // Registro exitoso
         } else {
-            return $this->actualiza(); // Si el pueblo ya existe, actualiza.
+            return false; // Error al registrar el pueblo
         }
     }
 

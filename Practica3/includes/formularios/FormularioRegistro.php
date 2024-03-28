@@ -1,10 +1,8 @@
 <?php
 namespace es\ucm\fdi\aw;
 
-require_once 'Formulario.php'; // Incluir la clase base Formulario si no se ha incluido ya
-require_once __DIR__.'/../../includes/clases/Usuario.php'; // Ruta correcta hacia Usuario.php
-
-
+require_once 'Formulario.php'; 
+require_once __DIR__.'/../../includes/clases/Usuario.php'; 
 
 class FormularioRegistro extends Formulario
 {
@@ -14,13 +12,14 @@ class FormularioRegistro extends Formulario
     
     protected function generaCamposFormulario(&$datos)
     {
+        // Se reutiliza el nombre de usuario introducido previamente o se deja en blanco
         $nombreUsuario = $datos['nombreUsuario'] ?? '';
-        $nombre = $datos['nombre'] ?? '';
 
         // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
         $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'password', 'password2'], $this->errores, 'span', array('class' => 'error'));
 
+        // Generar HTML para el formulario
         $html = <<<EOF
         $htmlErroresGlobales
         <fieldset>
@@ -32,7 +31,7 @@ class FormularioRegistro extends Formulario
             </div>
             <div>
                 <label for="nombre">Nombre:</label>
-                <input id="nombre" type="text" name="nombre" value="$nombre" />
+                <input id="nombre" type="text" name="nombre" value="{$datos['nombre'] ?? ''}" />
                 {$erroresCampos['nombre']}
             </div>
             <div>
@@ -46,52 +45,78 @@ class FormularioRegistro extends Formulario
                 {$erroresCampos['password2']}
             </div>
             <div>
+                <label for="rol">Rol:</label>
+                <select id="rol" name="rol">
+                    <option value="admin">Administrador</option>
+                    <option value="pueblo">Pueblo</option>
+                    <option value="empresa">Empresa</option>
+                </select>
+            </div>
+            <div>
                 <button type="submit" name="registro">Registrar</button>
             </div>
         </fieldset>
         EOF;
+
         return $html;
     }
     
-
     protected function procesaFormulario(&$datos)
     {
         $this->errores = [];
-
+        
         $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
-        $nombreUsuario = filter_var($nombreUsuario, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( ! $nombreUsuario || mb_strlen($nombreUsuario) < 5) {
-            $this->errores['nombreUsuario'] = 'El nombre de usuario tiene que tener una longitud de al menos 5 caracteres.';
-        }
-
-        $nombre = trim($datos['nombre'] ?? '');
-        $nombre = filter_var($nombre, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( ! $nombre || mb_strlen($nombre) < 5) {
-            $this->errores['nombre'] = 'El nombre tiene que tener una longitud de al menos 5 caracteres.';
-        }
-
         $password = trim($datos['password'] ?? '');
-        $password = filter_var($password, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( ! $password || mb_strlen($password) < 5 ) {
-            $this->errores['password'] = 'El password tiene que tener una longitud de al menos 5 caracteres.';
+        $nombre = trim($datos['nombre'] ?? '');
+        $rol = $datos['rol'] ?? '';
+
+        // Validar nombre de usuario
+        if (empty($nombreUsuario)) {
+            $this->errores['nombreUsuario'] = 'El nombre de usuario no puede estar vacío';
         }
 
+        // Validar nombre
+        if (empty($nombre)) {
+            $this->errores['nombre'] = 'El nombre no puede estar vacío';
+        }
+
+        // Validar password
+        if (empty($password)) {
+            $this->errores['password'] = 'El password no puede estar vacío';
+        }
+
+        // Validar que las contraseñas coincidan
         $password2 = trim($datos['password2'] ?? '');
-        $password2 = filter_var($password2, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( ! $password2 || $password != $password2 ) {
-            $this->errores['password2'] = 'Los passwords deben coincidir';
+        if ($password !== $password2) {
+            $this->errores['password2'] = 'Las contraseñas no coinciden';
         }
 
-        if (count($this->errores) === 0) {
-            $usuario = Usuario::buscaUsuario($nombreUsuario);
-	
-            if ($usuario) {
-                $this->errores[] = "El usuario ya existe";
-            } else {
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, Usuario::USER_ROLE);
-                $_SESSION['login'] = true;
-                $_SESSION['nombre'] = $usuario->getNombre();
-            }
+        // Si hay errores, termina la validación
+        if (count($this->errores) > 0) {
+            return;
+        }
+
+        // Crear el usuario con el rol seleccionado
+        $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
+
+        // Dependiendo del rol, redirigir al formulario correspondiente
+        switch ($rol) {
+            case 'admin':
+                // Redirigir al formulario de registro de administrador
+                // header('Location: formulario_registro_admin.php');
+                break;
+            case 'pueblo':
+                // Redirigir al formulario de registro de pueblo
+                // header('Location: formulario_registro_pueblo.php');
+                break;
+            case 'empresa':
+                // Redirigir al formulario de registro de empresa
+                // header('Location: formulario_registro_empresa.php');
+                break;
+            default:
+                // Manejar caso no válido
+                break;
         }
     }
 }
+?>
