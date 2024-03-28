@@ -135,7 +135,6 @@ class FormularioRegistro extends Formulario
                 // header('Location: formulario_registro_admin.php');
                 break;
             case 'pueblo':
-                case 'pueblo':
                     $cif = trim($datos['cif'] ?? '');
                     $comunidad = trim($datos['comunidad'] ?? '');
                 
@@ -153,19 +152,19 @@ class FormularioRegistro extends Formulario
                     }
                 
                     // Procesar registro de pueblo
-                    $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
-                    if ($usuario) {
-                        $newId = $datos->idUsuario;
-                        $pueblo = new Pueblo($newId, $cif, $comunidad);
-                        // Resto del código
-                    } else {
-                        // Manejar el error de creación de usuario
+                   // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
+                // Procesar registro de pueblo
+                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
+                if ($usuario != null) {
+                    $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad); // Asegúrate de que Usuario::crea devuelva el objeto Usuario correctamente, incluyendo el ID.
+                if (Pueblo::registrar($pueblo)) {
+                    // Registro exitoso, redirigir o realizar acciones necesarias
+                } else {
+                    // Manejar el error de registro
                     }
-                    if (Pueblo::registrar($pueblo)) {
-                        // Registro exitoso, redirigir o realizar acciones necesarias
-                    } else {
-                        // Manejar el error de registro
-                    }
+                } else {
+                    // Manejar el error de creación de usuario
+                }
                     break;                
             case 'empresa':
                 $nTrabajadores = trim($datos['nTrabajadores'] ?? '');

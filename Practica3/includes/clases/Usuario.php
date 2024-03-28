@@ -35,7 +35,12 @@ class Usuario
     public static function crea($nombreUsuario, $password, $nombre, $rol)
     {
         $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, $rol);
-        return $user->guarda();
+        if ($user->guarda()){
+            return $user->getId();
+        }
+        else{
+            return null;
+        }   
     }
 
     public static function buscaUsuario($nombreUsuario)
