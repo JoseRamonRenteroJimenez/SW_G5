@@ -31,7 +31,7 @@ class FormularioRegistro extends Formulario
             </div>
             <div>
                 <label for="nombre">Nombre:</label>
-                <input id="nombre" type="text" name="nombre" value="{$datos['nombre'] ?? ''}" />
+                <input id="nombre" type="text" name="nombre"/>
                 {$erroresCampos['nombre']}
             </div>
             <div>
@@ -106,8 +106,14 @@ class FormularioRegistro extends Formulario
                 // header('Location: formulario_registro_admin.php');
                 break;
             case 'pueblo':
-                // Redirigir al formulario de registro de pueblo
-                // header('Location: formulario_registro_pueblo.php');
+                if ($usuario !== false) {
+                    // Obtener el ID del usuario creado
+                    $idUsuario = $usuario->getId();
+                    
+                    // Redirigir a la página de formulario de registro de pueblo con el ID del usuario
+                    header('Location: FormularioRegistroPueblo.php?id='.$idUsuario);
+                    exit;
+                }
                 break;
             case 'empresa':
                 // Redirigir al formulario de registro de empresa
