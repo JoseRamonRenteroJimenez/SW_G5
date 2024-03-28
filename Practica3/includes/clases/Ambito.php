@@ -25,7 +25,7 @@ class Ambito
     public static function getAmbitos()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = "SELECT * FROM Ambitos";
+        $query = "SELECT * FROM ambitos";
         $rs = $conn->query($query);
         $ambitos = [];
         if ($rs) {
@@ -38,6 +38,19 @@ class Ambito
             error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
         return $ambitos;
+    }
+
+    public static function guardarAmbitoManualmente($nombre)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $nombre = $conn->real_escape_string($nombre);
+        $query = "INSERT INTO ambitos (nombre) VALUES ('$nombre')";
+        if ($conn->query($query)) {
+            return $conn->insert_id; // Devuelve el ID del ámbito insertado
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
     }
 }
 ?>

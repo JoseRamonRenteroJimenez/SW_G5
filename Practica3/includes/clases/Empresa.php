@@ -5,7 +5,7 @@ class Empresa extends Usuario
 {
     private $id;
     private $numTrabajadores;
-    private $ambito;
+    private $ambito; // Ahora almacena el ID del ámbito en lugar del nombre directamente
 
     public function __construct($id, $numTrabajadores, $ambito)
     {
@@ -17,31 +17,27 @@ class Empresa extends Usuario
     public static function registrar(Empresa $empresa)
     {
         // Guardar la empresa en la base de datos
-        if ($empresa->guarda()) {
-            return true; // Registro exitoso
+        if ($empresa->inserta()) {
+            return true; // Devolver true para indicar éxito
         } else {
-            return false; // Error al registrar la empresa
+            return false; // Error al registrar el pueblo
         }
     }
 
     protected function inserta()
     {
-        // Llamada al método guarda de la clase padre para manejar la inserción en la tabla usuarios.
-        if (parent::guarda()) {
-            $conn = Aplicacion::getInstance()->getConexionBd();
-            $query = sprintf("INSERT INTO empresas (id, num_trabajadores, ambito) VALUES (%d, %d, '%s')",
-                $this->getId(),
-                $this->numTrabajadores,
-                $conn->real_escape_string($this->ambito)
-            );
-            if ($conn->query($query)) {
-                return true;
-            } else {
-                error_log("Error BD ({$conn->errno}): {$conn->error}");
-                return false;
-            }
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("INSERT INTO empresas (id, nTrabajadores, ambito) VALUES (%d, %d, %d)",
+            $this->id,
+            $this->numTrabajadores,
+            $this->ambito
+        );
+        if ($conn->query($query)) {
+            return true;
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
         }
-        return false;
     }
 
     protected function actualiza()
@@ -49,10 +45,10 @@ class Empresa extends Usuario
         // Llamada al método guarda de la clase padre para manejar la actualización en la tabla usuarios.
         if (parent::guarda()) {
             $conn = Aplicacion::getInstance()->getConexionBd();
-            $query = sprintf("UPDATE empresas SET num_trabajadores=%d, ambito='%s' WHERE id=%d",
+            $query = sprintf("UPDATE empresas SET nTrabajadores=%d, ambito=%d WHERE id=%d",
                 $this->numTrabajadores,
-                $conn->real_escape_string($this->ambito),
-                $this->getId()
+                $this->ambito,
+                $this->id
             );
             if ($conn->query($query)) {
                 return true;

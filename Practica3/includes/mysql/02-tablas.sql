@@ -142,18 +142,6 @@ ALTER TABLE `contratos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `empresas`
---
-ALTER TABLE `empresas`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `pueblos`
---
-ALTER TABLE `pueblos`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`

@@ -16,10 +16,11 @@ class Pueblo extends Usuario
 
     public static function registrar(Pueblo $pueblo)
     {
-        // Verificar si ya existe un pueblo con el mismo cif antes de intentar registrar
-        // Aquí deberías añadir una función que busque pueblos por su CIF para asegurarte de que no haya duplicados
-        // Por simplicidad, asumiré que esa comprobación se realiza en otro lugar o se añade aquí más tarde
-        
+        // Verificar si ya existe un usuario con el mismo nombreUsuario
+        if (self::buscaCif($pueblo->cif) != false) {
+            error_log("Usuario ya existe");
+            return null; // Retorna null para indicar que el usuario ya existe
+        }
         // Guardar el pueblo en la base de datos
         if ($pueblo->inserta()) {
             return true; // Devolver true para indicar éxito
@@ -33,7 +34,7 @@ class Pueblo extends Usuario
         // Asumiendo que el ID ya está establecido correctamente desde Usuario::crea()
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("INSERT INTO pueblos (id, cif, comunidad) VALUES (%d, '%s', %d)",
-            $this->getId(),
+            $this->id,
             $conn->real_escape_string($this->cif),
             $this->comunidad
         );
@@ -45,7 +46,6 @@ class Pueblo extends Usuario
         }
     }
     
-
     protected function actualiza()
     {
         // Llamada al método guarda de la clase padre para manejar la actualización en la tabla usuarios.
@@ -65,6 +65,25 @@ class Pueblo extends Usuario
         }
         return false;
     }
+
+    public static function buscaCif($cif)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM pueblos WHERE cif='%s'", $conn->real_escape_string($cif));
+        $rs = $conn->query($query);
+        $result = false;
+        if ($rs) {
+            $fila = $rs->fetch_assoc();
+            if ($fila) {
+                $result = new Pueblo($fila['id'], $fila['cif'], $fila['comunidad']);
+            }
+            $rs->free();
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+        }
+        return $result;
+    }
+
 
     // Getters y setters para los nuevos atributos.
     public function getCif()

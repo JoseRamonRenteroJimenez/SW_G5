@@ -6,6 +6,7 @@ require_once __DIR__.'/../../includes/clases/Usuario.php';
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
+require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 
 class FormularioRegistro extends Formulario
 {
@@ -24,6 +25,9 @@ class FormularioRegistro extends Formulario
 
         // Obtener lista de comunidades autónomas desde la base de datos
         $comunidadesAutonomas = Comunidad::getComunidades();
+        
+        // Obtener lista de ámbitos desde la base de datos
+        $ambitos = Ambito::getAmbitos();
 
         // Generar HTML para el formulario
         $html = <<<EOF
@@ -81,7 +85,18 @@ class FormularioRegistro extends Formulario
                 <input id="nTrabajadores" type="text" name="nTrabajadores"/>
                 {$erroresCampos['nTrabajadores']}
                 <label for="ambito">Ámbito:</label>
-                <input id="ambito" type="text" name="ambito"/>
+                <select id="ambito" name="ambito">
+                    <option value="-">-</option>
+    EOF;
+
+        // Agregar opciones de ámbitos al menú desplegable
+        foreach ($ambitos as $ambito) {
+            $html .= "<option value=\"{$ambito->getId()}\">{$ambito->getNombre()}</option>";
+        }
+
+        $html .= <<<EOF
+                </select>
+                <input id="ambito_manual" type="text" name="ambito_manual" placeholder="Ingrese el ámbito">
                 {$erroresCampos['ambito']}
             </div>
             <div>
@@ -92,7 +107,6 @@ class FormularioRegistro extends Formulario
 
         return $html;
     }
-
     
     protected function procesaFormulario(&$datos)
     {
@@ -131,52 +145,65 @@ class FormularioRegistro extends Formulario
         // Procesar registro según el rol
         switch ($rol) {
             case 'admin':
-                // Redirigir al formulario de registro de administrador
-                // header('Location: formulario_registro_admin.php');
+                // Si hay errores, termina la validación
+                if (count($this->errores) > 0) {
+                    return;
+                }
+                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 1);
+                $_SESSION['login'] = true;
+                $_SESSION['nombre'] = $usuario->getNombre();
+                $_SESSION['esAdmin'] = true;
+                header('Location: index.php');
+                exit();
                 break;
             case 'pueblo':
-                    $cif = trim($datos['cif'] ?? '');
-                    $comunidad = trim($datos['comunidad'] ?? '');
+                $cif = trim($datos['cif'] ?? '');
+                $comunidad = trim($datos['comunidad'] ?? '');
                 
-                    // Validar información adicional para el registro de pueblo
-                    if (empty($cif)) {
-                        $this->errores['cif'] = 'El CIF no puede estar vacío';
-                    }
-                    if (empty($comunidad)) {
-                        $this->errores['comunidad'] = 'La comunidad no puede estar vacía';
-                    }
-                
-                    // Si hay errores, termina la validación
-                    if (count($this->errores) > 0) {
-                        return;
-                    }
-                
-                    // Procesar registro de pueblo
-                   // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
-                // Procesar registro de pueblo
-               // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
-                    if ($usuario != null) {
-                        $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
-                        if (Pueblo::registrar($pueblo)) {
-                            // Registro exitoso, redirigir o realizar acciones necesarias
-                        } else {
-                            // Manejar el error de registro
-                        }
-                    } else {
-                        // Manejar el error de creación de usuario
+                // Validar información adicional para el registro de pueblo
+                if (empty($cif)) {
+                    $this->errores['cif'] = 'El CIF no puede estar vacío';
                 }
-                    break;                
+                if (empty($comunidad)) {
+                    $this->errores['comunidad'] = 'La comunidad no puede estar vacía';
+                }
+                
+                // Si hay errores, termina la validación
+                if (count($this->errores) > 0) {
+                    return;
+                }
+                
+                // Procesar registro de pueblo
+                // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
+                // Procesar registro de pueblo
+                // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
+                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 3);
+                if ($usuario != null) {
+                    $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
+                    if (Pueblo::registrar($pueblo)) {
+                        // Registro exitoso, redirigir o realizar acciones necesarias
+                    } else {
+                        // Manejar el error de registro
+                    }
+                    } else {
+                    // Manejar el error de creación de usuario
+                }
+                $_SESSION['login'] = true;
+                $_SESSION['nombre'] = $usuario->getNombre();
+                header('Location: index.php');
+                exit();
+                break;                
             case 'empresa':
                 $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
                 $ambito = trim($datos['ambito'] ?? '');
+                $ambito_manual = trim($datos['ambito_manual'] ?? '');
 
                 // Validar información adicional para el registro de empresa
                 if (empty($nTrabajadores) || !is_numeric($nTrabajadores)) {
                     $this->errores['nTrabajadores'] = 'Introduce un número válido de trabajadores';
                 }
-                if (empty($ambito)) {
-                    $this->errores['ambito'] = 'El ámbito no puede estar vacío';
+                if ($ambito == '-' && empty($ambito_manual)) {
+                    $this->errores['ambito'] = 'Selecciona un ámbito o ingresa uno nuevo';
                 }
 
                 // Si hay errores, termina la validación
@@ -184,9 +211,25 @@ class FormularioRegistro extends Formulario
                     return;
                 }
 
+                // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
+                if ($ambito == '-') {
+                    $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
+                } else {
+                    $idAmbito = $ambito;
+                }
+
                 // Procesar registro de empresa
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
-                $empresa = Empresa::crea($usuario->getId(), $nTrabajadores, $ambito);
+                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 2);
+                $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
+                if (Empresa::registrar($empresa)) {
+                    // Registro exitoso, redirigir o realizar acciones necesarias
+                } else {
+                    // Manejar el error de registro
+                }
+                $_SESSION['login'] = true;
+                $_SESSION['nombre'] = $usuario->getNombre();
+                header('Location: index.php');
+                exit();
                 break;
             default:
                 // Manejar caso no válido

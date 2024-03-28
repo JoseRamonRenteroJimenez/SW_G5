@@ -33,17 +33,17 @@ class Usuario
     }
     
     public static function crea($nombreUsuario, $password, $nombre, $rol)
-{
+    {
     // Verificar si ya existe un usuario con el mismo nombreUsuario
     if (self::buscaUsuario($nombreUsuario) != false) {
         error_log("Usuario ya existe");
         return null; // Retorna null para indicar que el usuario ya existe
     }
-    
+    //Creamos e introducimos el usuario a la base de datos
     $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, $rol);
-        return $user; // Retorna el objeto Usuario, no solo el ID
-   
-}
+    self::inserta($user);
+    return $user; // Retorna el objeto Usuario, no solo el ID
+    }
 
     public static function buscaUsuario($nombreUsuario)
     {
