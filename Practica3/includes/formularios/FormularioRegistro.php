@@ -154,16 +154,17 @@ class FormularioRegistro extends Formulario
                     // Procesar registro de pueblo
                    // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
                 // Procesar registro de pueblo
+               // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rol);
-                if ($usuario != null) {
-                    $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad); // Asegúrate de que Usuario::crea devuelva el objeto Usuario correctamente, incluyendo el ID.
-                if (Pueblo::registrar($pueblo)) {
-                    // Registro exitoso, redirigir o realizar acciones necesarias
-                } else {
-                    // Manejar el error de registro
-                    }
-                } else {
-                    // Manejar el error de creación de usuario
+                    if ($usuario != null) {
+                        $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
+                        if (Pueblo::registrar($pueblo)) {
+                            // Registro exitoso, redirigir o realizar acciones necesarias
+                        } else {
+                            // Manejar el error de registro
+                        }
+                    } else {
+                        // Manejar el error de creación de usuario
                 }
                     break;                
             case 'empresa':
