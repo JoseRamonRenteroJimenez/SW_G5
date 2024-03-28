@@ -17,12 +17,12 @@ class Pueblo extends Usuario
     public static function registrar(Pueblo $pueblo)
     {
         // Guardar el pueblo en la base de datos
-        if ($pueblo->guarda()) {
-            return true; // Registro exitoso
+        if ($pueblo->inserta()) {
+            return $pueblo; // Devolver el objeto Pueblo
         } else {
             return false; // Error al registrar el pueblo
         }
-    }
+    }    
 
     protected function inserta()
     {
