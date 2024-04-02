@@ -5,5 +5,7 @@
 		<li><a href="<?= RUTA_APP ?>/tablon.php">Tablón</a></li>
 		<li><a href="<?= RUTA_APP ?>/admin.php">Administrar</a></li>
 		<li><a href="<?= RUTA_APP ?>/chat.php">Chat</a></li>
+		<li><a href="<?= RUTA_APP ?>/contratacion.php">Contratacion</a></li>
+	</ul>
 	</ul>
 </nav>

@@ -14,6 +14,26 @@ class Pueblo extends Usuario
         $this->comunidad = $comunidad;
     }
 
+    public static function getPueblos()
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT * FROM pueblos";
+        $resultado = $conn->query($query);
+
+        $pueblos = []; // Array para almacenar los objetos Pueblo
+
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $pueblos[] = new Pueblo($fila['id'], $fila['cif'], $fila['comunidad']);
+            }
+            $resultado->free();
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+        }
+
+        return $pueblos;
+    }
+
     public static function registrar(Pueblo $pueblo)
     {
         // Verificar si ya existe un usuario con el mismo nombreUsuario
