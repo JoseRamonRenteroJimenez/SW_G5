@@ -87,6 +87,7 @@ class FormularioRegistro extends Formulario
                 <label for="ambito">Ámbito:</label>
                 <select id="ambito" name="ambito">
                     <option value="-">-</option>
+            </div>
     EOF;
 
         // Agregar opciones de ámbitos al menú desplegable
