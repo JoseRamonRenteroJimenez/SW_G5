@@ -1,8 +1,8 @@
 <?php
 namespace es\ucm\fdi\aw;
 
-require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
-require_once __DIR__.'/../../includes/clases/Empresa.php';
+//require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
+//require_once __DIR__.'/../../includes/clases/Empresa.php';
 
 class Contrato
 {
