@@ -1,12 +1,11 @@
 <?php
-
 namespace SW_G5\includes\formularios;
 
 /**
  * Clase base abstracta para la gestión de formularios.
  * Define la estructura y lógica base para crear, procesar y validar formularios.
  */
-abstract class Formulario
+abstract class formulario
 {
     protected $formId;
     protected $method;
@@ -94,7 +93,8 @@ abstract class Formulario
      * @return string HTML del formulario.
      */
 
-    protected function generaFormulario(array &$datos = []): string
+     
+    protected function generaFormulario(array &$datos =  []): string
     {
         $camposFormulario = $this->generaCamposFormulario($datos);
         $classAtt = $this->classAtt ? "class=\"{$this->classAtt}\"" : '';

@@ -16,7 +16,3 @@ EOF;
 $params = ['tituloPagina' => $tituloPagina, 'contenidoPrincipal' => $contenidoPrincipal];
 $app->generaVista('/plantillas/plantillaPerfil.php', $params);
 
-// Cambiar las rutas igual que en el resto de archivos que he ido añadidiendo.
-
-// NOSE SI SERÁ NECESARIO DISTINGUIR ENTRE SI ES UN PERFIL DE EMPRESA O PUEBLO
-// AUNQUE CREO QUE ESTE PHP PUEDE SERVIR PARA LOS DOS 

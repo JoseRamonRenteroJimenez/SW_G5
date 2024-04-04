@@ -4,7 +4,7 @@ namespace SW_G5\includes\formularios;
 require_once RUTA_FORM . '/formulario.php';
 require_once __DIR__.'/usuario.php'; 
 
-use SW_G5/includes/Usuario; 
+//use SW_G5/includes/Usuario; 
 
 class FormularioRegistroPueblo extends Formulario {
     public function __construct() {

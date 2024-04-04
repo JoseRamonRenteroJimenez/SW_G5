@@ -15,9 +15,6 @@ if ($app->esAdmin(RUTA_APP.'/includes/src/administradores/memoria/Administrador.
   <p>No tienes permisos suficientes para administrar la web.</p>
   EOS;
 }
-// TODO ESTO HAY QUE REVISARLO
+
 $params = ['tituloPagina' => $tituloPagina, 'contenidoPrincipal' => $contenidoPrincipal];
 $app->generaVista('/plantillas/plantilla.php', $params);
-
-// ES NECESARIO CAMBIAR LAS RUTAS Y ADAPTARLAS A LA NUESTRA, PERO UNA VEZ QUE ESTÉ FUNCIONANDO
-// TAMBIEN HAY QUE PASARLE BIEN LA PLANTILLA PARA QUE PILLE UNA VISTA ADECUADA Y SE VEA BIEN  

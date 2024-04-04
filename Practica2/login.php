@@ -1,8 +1,7 @@
 <?php
 require_once 'includes/config.php';
-//require_once 'includes/vistas/helpers/login.php';
-require_once 'includes/formularios/formulariologin.php';
-
+require_once 'includes/formularios/formulario.php';
+require_once 'includes/formularios/formularioLogin.php';
 
 $tituloPagina = 'Login';
 

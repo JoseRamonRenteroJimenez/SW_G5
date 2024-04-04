@@ -1,39 +1,32 @@
 <?php
-/*
-// Definición del espacio de nombres que corresponde a la ubicación de este archivo dentro del proyecto.
-namespace es\CMABIAR RUTA\usuarios;
+namespace SW_G5\includes\formularios;
+require_once 'formulario.php';
 
-// Uso de clases necesarias desde otros espacios de nombres.
-use CAMBIAR RUTA\Aplicacion;
-use CAMBIAR RUTA\Formulario;
-*/
-// Clase FormularioLogin que extiende de Formulario, específica para el login de usuarios.
-class FormularioLogin extends Formulario
+class formularioLogin extends formulario
 {
-    // Constructor de la clase que inicializa el formulario con un identificador y una URL de redirección.
-    public function __construct() {
-        parent::__construct('formLogin', ['urlRedireccion' => Aplicacion::getInstance()->resuelve('/index.php')]);
-    }
-    
-    // Método para generar los campos del formulario, incluidos los mensajes de error y los campos de usuario y contraseña.
-    protected function generaCamposFormulario(&$datos)
+    public function __construct()
     {
-        // Intenta reutilizar el nombre de usuario previamente ingresado, si no hay, usa cadena vacía.
-        $usuario = $datos['nombreUsuario'] ?? '';
+        parent::__construct('formLogin', ['urlRedireccion' => 'index.php']);
+    }
 
-        // Genera el HTML para los errores globales y específicos de cada campo, usando métodos de la clase padre.
+    protected function generaCamposFormulario(array &$datos): string
+    {
+        // Se reutiliza el nombre del pueblo introducido previamente o se deja en blanco
+        $nombrePueblo = $datos['nombrePueblo'] ?? '';
+
+        // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'password'], $this->errores, 'span', ['class' => 'error']);
+        $erroresCampos = self::generaErroresCampos(['nombrePueblo', 'password'], $this->errores, 'span', array('class' => 'error'));
 
-        // Crea el HTML del formulario, utilizando heredoc para facilitar la lectura y mantenimiento.
-        $html = <<<HTML
+        // Se genera el HTML asociado a los campos del formulario y los mensajes de error.
+        $html = <<<EOF
         $htmlErroresGlobales
         <fieldset>
-            <legend>Acceso al sistema</legend>
+            <legend>Nombre del pueblo y contraseña</legend>
             <div>
-                <label for="nombreUsuario">Usuario:</label>
-                <input id="nombreUsuario" type="text" name="nombreUsuario" value="$usuario" />
-                {$erroresCampos['nombreUsuario']}
+                <label for="nombrePueblo">Nombre del pueblo:</label>
+                <input id="nombrePueblo" type="text" name="nombrePueblo" value="$nombrePueblo" />
+                {$erroresCampos['nombrePueblo']}
             </div>
             <div>
                 <label for="password">Contraseña:</label>
@@ -41,46 +34,42 @@ class FormularioLogin extends Formulario
                 {$erroresCampos['password']}
             </div>
             <div>
-                <button type="submit" name="login">Ingresar</button>
+                <button type="submit" name="loginPueblo">Entrar como pueblo</button>
             </div>
         </fieldset>
-HTML;
+        EOF;
         return $html;
     }
 
-    // Método para procesar el formulario: valida los datos y autentica al usuario.
     protected function procesaFormulario(&$datos)
     {
-        // Limpieza inicial de la lista de errores.
         $this->errores = [];
-        // Sanitización y validación del nombre de usuario.
-        $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
-        $nombreUsuario = filter_var($nombreUsuario, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( !$nombreUsuario ) {
-            $this->errores['nombreUsuario'] = 'Es necesario un nombre de usuario';
+        $nombrePueblo = trim($datos['nombrePueblo'] ?? '');
+        $nombrePueblo = filter_var($nombrePueblo, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        if (!$nombrePueblo || empty($nombrePueblo)) {
+            $this->errores['nombrePueblo'] = 'El nombre del pueblo no puede estar vacío';
         }
-        
-        // Sanitización y validación de la contraseña.
+
         $password = trim($datos['password'] ?? '');
         $password = filter_var($password, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ( !$password ) {
-            $this->errores['password'] = 'La contraseña no debe estar vacía';
+
+        if (!$password || empty($password)) {
+            $this->errores['password'] = 'La contraseña no puede estar vacía';
         }
-        
-        // Si no hay errores, intenta el login.
+
         if (count($this->errores) === 0) {
-            $usuario = Usuario::login($nombreUsuario, $password);
-            if (!$usuario) {
-                $this->errores[] = "Datos de acceso incorrectos";
+            // Agrega aquí la lógica de autenticación específica para pueblos según tus requisitos.
+            // Puedes usar la clase User o cualquier otra que gestione la autenticación.
+            $pueblo = PUEBLO::loginPueblo($nombrePueblo, $password);
+
+            if (!$pueblo) {
+                $this->errores[] = "El nombre del pueblo o la contraseña no coinciden";
             } else {
-                // En caso de éxito, inicia sesión con el usuario.
-                $app = Aplicacion::getInstance();
-                $app->login($usuario);
+                $_SESSION['login'] = true;
+                $_SESSION['nombrePueblo'] = $pueblo->getNombrePueblo();
+                // Puedes agregar más información de sesión según sea necesario.
             }
         }
     }
 }
-
-
-// SERIA NECESARIO HACER LAS MODIFICACIONES PARA QUE NOS LLEVE AL PERFIL DE LA EMPRESA O DEL PUEBLO O DEL ADMIN
-// DEPENDIENDO DEL TIPO DE USUARIO QUE HAYA INICIADO EL SISTEMA

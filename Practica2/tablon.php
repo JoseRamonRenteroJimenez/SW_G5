@@ -4,7 +4,10 @@ require_once 'includes/config.php';
 
 $tituloPagina = 'Tablón de Anuncios';
 
-
+$contenidoPrincipal=<<<EOS
+<h1>Tablón de anuncios</h1>
+	<p> Anuncios. </p>
+EOS;
 /*
 // Suponiendo que la función obtenerAnuncios() devuelve un array de anuncios
 $anuncios = obtenerAnuncios();
