@@ -80,5 +80,22 @@ class Empresa extends Usuario
     {
         $this->ambito = $ambito;
     }
+
+    public function getAmbitoEmpresa($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT ambito FROM empresas WHERE id = ?";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $idEmpresa);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($fila = $result->fetch_assoc()) {
+                return $fila['ambito'];
+            }
+        }
+        return null;
+    }
+
 }
 ?>

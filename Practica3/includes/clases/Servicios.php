@@ -39,43 +39,53 @@ class Servicio
         return $this->cantidad;
     }
 
-    // Método para obtener todos los servicios
-    public static function getServicios()
+    public static function registrar(Servicio $servicio)
+    {
+        // Guardar el servicio en la base de datos
+        if ($servicio->inserta()) {
+            return true; // Devolver true para indicar éxito
+        } else {
+            return false; // Error al registrar el servicio
+        }
+    }
+
+    protected function inserta()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = "SELECT * FROM servicios";
-        $rs = $conn->query($query);
-        $servicios = [];
-        if ($rs) {
-            while ($fila = $rs->fetch_assoc()) {
-                $servicio = new Servicio($fila['idPueblo'], $fila['idAmbito'], $fila['cantidad'], $fila['id']);
-                $servicios[] = $servicio;
+        
+        // Verificar si ya existe una entrada con el mismo idPueblo e idAmbito
+        $query_check = "SELECT id, cantidad FROM servicios WHERE idPueblo = ? AND idAmbito = ?";
+        $stmt_check = $conn->prepare($query_check);
+        $stmt_check->bind_param('ii', $this->idPueblo, $this->idAmbito);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+
+        if ($result_check->num_rows > 0) {
+            // Ya existe una entrada, actualizar la cantidad
+            $row = $result_check->fetch_assoc();
+            $existing_id = $row['id'];
+            $existing_cantidad = $row['cantidad'];
+            $new_cantidad = $existing_cantidad + $this->cantidad;
+
+            // Invocar el método actualiza
+            return Servicio::actualiza($existing_id, $this->idPueblo, $this->idAmbito, $new_cantidad);
+        } else {
+            // No existe una entrada, insertar una nueva
+            $query_insert = "INSERT INTO servicios (idPueblo, idAmbito, cantidad) VALUES (?, ?, ?)";
+            $stmt_insert = $conn->prepare($query_insert);
+            $stmt_insert->bind_param('iii', $this->idPueblo, $this->idAmbito, $this->cantidad);
+            
+            if ($stmt_insert->execute()) {
+                $this->id = $conn->insert_id;
+                return true; // Se insertó la nueva entrada correctamente
+            } else {
+                error_log("Error BD ({$conn->errno}): {$conn->error}");
+                return false;
             }
-            $rs->free();
-        } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
-        }
-        return $servicios;
-    }
-
-    // Método para guardar un nuevo servicio
-    public static function guardarServicio($idPueblo, $idAmbito, $cantidad)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = "INSERT INTO servicios (idPueblo, idAmbito, cantidad) VALUES (?, ?, ?)";
-        
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('iii', $idPueblo, $idAmbito, $cantidad);
-        
-        if ($stmt->execute()) {
-            return $conn->insert_id;
-        } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
-            return false;
         }
     }
 
-    // Método para buscar un servicio por su ID
+
     public static function buscaServicioPorId($idServicio)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -92,7 +102,6 @@ class Servicio
         return null;
     }
 
-    // Método para actualizar un servicio
     public static function actualiza($id, $idPueblo, $idAmbito, $cantidad)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -109,7 +118,6 @@ class Servicio
         }
     }
 
-    // Método para eliminar un servicio por su ID
     public static function eliminaServicioPorId($idServicio)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();

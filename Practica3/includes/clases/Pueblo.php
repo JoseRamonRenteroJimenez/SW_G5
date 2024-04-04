@@ -1,6 +1,8 @@
 <?php
 namespace es\ucm\fdi\aw;
 
+use es\ucm\fdi\aw\Usuario;
+
 class Pueblo extends Usuario
 {
     private $id;
@@ -127,6 +129,27 @@ class Pueblo extends Usuario
 
 
     // Getters y setters para los nuevos atributos.
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getNombre()
+    {
+        // Buscar el usuario correspondiente al ID del pueblo
+        $usuario = Usuario::buscaPorId($this->id);
+        
+        // Verificar si se encontró el usuario
+        if ($usuario) {
+            // Devolver el nombre del usuario
+            return $usuario->getNombreUsuario();
+        } else {
+            // Si no se encuentra el usuario, devolver un valor por defecto o lanzar una excepción, dependiendo del caso de uso
+            return "Nombre no disponible";
+        }
+    }
+
     public function getCif()
     {
         return $this->cif;
