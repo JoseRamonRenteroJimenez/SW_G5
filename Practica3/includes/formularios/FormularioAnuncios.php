@@ -6,7 +6,7 @@ require_once __DIR__.'/../../includes/config.php';
 class FormularioAnuncio extends Formulario
 {
     public function __construct() {
-        parent::__construct('formAnuncio', ['urlRedireccion' => 'index.php']);
+        parent::__construct('formAnuncio', ['urlRedireccion' => '../index.php']);
     }
 
     protected function generaCamposFormulario(&$datos) {
