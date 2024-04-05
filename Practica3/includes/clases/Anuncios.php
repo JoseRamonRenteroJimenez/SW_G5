@@ -7,7 +7,7 @@ class Anuncio
     private $id;
     private $titulo;
     private $descripcion;
-    private $usuarioId; // Asume que cada anuncio está asociado con un usuario
+    private $usuarioId; // Asume que cada anuncio está asociado con un usuario.
 
     public function __construct($titulo, $descripcion, $usuarioId, $id = null)
     {
@@ -17,6 +17,7 @@ class Anuncio
         $this->usuarioId = $usuarioId;
     }
 
+    // Métodos getters para los atributos.
     public function getId()
     {
         return $this->id;
@@ -37,8 +38,7 @@ class Anuncio
         return $this->usuarioId;
     }
 
-    // Métodos para insertar, actualizar y eliminar anuncios
-
+    // Método estático para obtener los anuncios de un usuario específico.
     public static function obtenerPorUsuarioId($usuarioId)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -48,7 +48,7 @@ class Anuncio
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['usuario_id'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['usuario_id'], $fila['id']);
             }
             $result->free();
         } else {
@@ -58,6 +58,96 @@ class Anuncio
         return $anuncios;
     }
 
+    // Método estático para borrar un anuncio por su ID.
+    public static function borrarPorId($idAnuncio)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("DELETE FROM anuncios WHERE id = %d", $idAnuncio);
+
+        if ($conn->query($query)) {
+            if ($conn->affected_rows > 0) {
+                return true;
+            } else {
+                error_log("Se intentó borrar un anuncio que no existe o ya fue borrado.");
+                return false;
+            }
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+
+    public static function insertar($titulo, $descripcion, $usuarioId) {
+        // Validaciones básicas
+        if (empty($titulo) || empty($descripcion)) {
+            error_log("El título y la descripción no pueden estar vacíos.");
+            return false;
+        }
+    
+        // Validación de longitud mínima
+        if (strlen($titulo) < 5) {
+            error_log("El título debe tener al menos 5 caracteres.");
+            return false;
+        }
+    
+        if (strlen($descripcion) < 10) {
+            error_log("La descripción debe tener al menos 10 caracteres.");
+            return false;
+        }
+    
+        // Sanitización de entradas
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $tituloSanitizado = $conn->real_escape_string($titulo);
+        $descripcionSanitizada = $conn->real_escape_string($descripcion);
+    
+        // Inserción en la base de datos
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, usuario_id) VALUES ('%s', '%s', %d)",
+            $tituloSanitizado, $descripcionSanitizada, $usuarioId);
+        
+        if ($conn->query($query)) {
+            return $conn->insert_id; // Devuelve el ID del anuncio insertado.
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+    
+    public static function actualizar($idAnuncio, $titulo, $descripcion, $usuarioId) {
+        // Validaciones 
+        if (empty($titulo) || empty($descripcion)) {
+            error_log("El título y la descripción no pueden estar vacíos.");
+            return false;
+        }
+    
+        if (strlen($titulo) < 5) {
+            error_log("El título debe tener al menos 5 caracteres.");
+            return false;
+        }
+    
+        if (strlen($descripcion) < 10) {
+            error_log("La descripción debe tener al menos 10 caracteres.");
+            return false;
+        }
+    
+        // Continuar con la actualización despues de la validacion
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', usuario_id=%d WHERE id=%d",
+            $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $usuarioId, $idAnuncio);
+    
+        if ($conn->query($query)) {
+            if ($conn->affected_rows > 0) {
+                return true;
+            } else {
+                error_log("No se actualizó ningún anuncio. Es posible que el anuncio no exista o los datos sean iguales a los existentes.");
+                return false;
+            }
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+    
+    
 }
 
 ?>
