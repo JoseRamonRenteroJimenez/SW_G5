@@ -64,7 +64,7 @@ class Contrato
         return $contratos;
     }
     // Puede ser muy similar a inserta, hay que revisarlo porque puede estar duplicado
-    public static function guardarContrato($idEmpresa, $idPueblo, $duracion, $terminos)
+    public static function guarda($idEmpresa, $idPueblo, $duracion, $terminos)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $idEmpresa = $conn->real_escape_string($idEmpresa);
@@ -110,10 +110,10 @@ class Contrato
         return $contratos;
     }
 
-    public static function registrar(Empresa $empresa)
+    public static function registrar(Contrato $contrato)
     {
         // Guardar la empresa en la base de datos
-        if ($empresa->inserta()) {
+        if ($contrato->inserta()) {
             return true; // Devolver true para indicar éxito
         } else {
             return false; // Error al registrar el pueblo
