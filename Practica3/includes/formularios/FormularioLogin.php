@@ -65,6 +65,8 @@ class FormularioLogin extends Formulario
             } else {
                 $_SESSION['login'] = true;
                 $_SESSION['nombre'] = $usuario->getNombre();
+                $_SESSION['id'] = $usuario->getId();
+                $_SESSION['rol'] = $usuario->getRol();
                 
                 // Verificar el rol del usuario y asignar permisos según el rol
                 switch ($usuario->getRol()) {

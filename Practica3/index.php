@@ -10,3 +10,4 @@ $contenidoPrincipal = <<<EOS
 EOS;
 
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';
+?>

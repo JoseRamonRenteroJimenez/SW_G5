@@ -5,6 +5,8 @@ require_once __DIR__.'/includes/config.php';
 unset($_SESSION['login']);
 unset($_SESSION['esAdmin']);
 unset($_SESSION['nombre']);
+unset($_SESSION['id']);
+unset($_SESSION['rol']);
 
 
 session_destroy();

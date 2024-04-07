@@ -1,5 +1,5 @@
 <?php
-
+    
 /**
  * Parámetros de conexión a la BD
  */
