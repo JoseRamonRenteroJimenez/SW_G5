@@ -151,9 +151,11 @@ class FormularioRegistro extends Formulario
                     return;
                 }
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 1);
+                $_SESSION['esAdmin'] = true;
                 $_SESSION['login'] = true;
                 $_SESSION['nombre'] = $usuario->getNombre();
-                $_SESSION['esAdmin'] = true;
+                $_SESSION['id'] = $usuario->getId();
+                $_SESSION['rol'] = $usuario->getRol();
                 header('Location: index.php');
                 exit();
                 break;
@@ -188,10 +190,12 @@ class FormularioRegistro extends Formulario
                     }
                     } else {
                     // Manejar el error de creación de usuario
+                    $_SESSION['login'] = true;
+                    $_SESSION['nombre'] = $usuario->getNombre();
+                    $_SESSION['id'] = $usuario->getId();
+                    $_SESSION['rol'] = $usuario->getRol();
+                    header('Location: index.php');
                 }
-                $_SESSION['login'] = true;
-                $_SESSION['nombre'] = $usuario->getNombre();
-                header('Location: index.php');
                 exit();
                 break;                
             case 'empresa':
@@ -222,13 +226,18 @@ class FormularioRegistro extends Formulario
                 // Procesar registro de empresa
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 2);
                 $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
+
                 if (Empresa::registrar($empresa)) {
                     // Registro exitoso, redirigir o realizar acciones necesarias
                 } else {
                     // Manejar el error de registro
                 }
+                
                 $_SESSION['login'] = true;
                 $_SESSION['nombre'] = $usuario->getNombre();
+                $_SESSION['id'] = $usuario->getId();
+                $_SESSION['rol'] = $usuario->getRol();
+
                 header('Location: index.php');
                 exit();
                 break;
