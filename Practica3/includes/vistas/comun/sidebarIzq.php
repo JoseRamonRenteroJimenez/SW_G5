@@ -7,5 +7,4 @@
 		<li><a href="<?= RUTA_APP ?>/chat.php">Chat</a></li>
 		<li><a href="<?= RUTA_APP ?>/contratacion.php">Contratacion</a></li>
 	</ul>
-	</ul>
 </nav>
