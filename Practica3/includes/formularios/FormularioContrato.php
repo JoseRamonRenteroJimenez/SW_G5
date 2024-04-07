@@ -22,7 +22,7 @@ class FormularioContrato extends Formulario
     protected function generaCamposFormulario(&$datos)
     {
         // Verificar si el usuario tiene el rol adecuado
-        $rol = $_SESSION['rol'] ?? null;
+        $rol = isset($_SESSION['rol']) ? intval($_SESSION['rol']) : null;
         if ($rol !== Usuario::EMPRESA_ROLE) {
             return "Inicie sesión como empresa para continuar correctamente.";
         }
