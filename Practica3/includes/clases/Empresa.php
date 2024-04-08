@@ -81,6 +81,26 @@ class Empresa extends Usuario
         $this->ambito = $ambito;
     }
 
+    public static function buscaNombreEmpresa($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        
+        // Query para obtener el nombre de usuario asociado a la ID de empresa
+        $query = "SELECT nombreUsuario FROM Usuarios WHERE id = ?";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $idEmpresa);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($fila = $result->fetch_assoc()) {
+                // Una vez obtenido el nombre de usuario, buscamos la empresa por su nombre de usuario
+                $nombreUsuario = $fila['nombreUsuario'];
+                return $nombreUsuario;
+            }
+        }
+        return null;
+    }
+
     public function getAmbitoEmpresa($idEmpresa)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
