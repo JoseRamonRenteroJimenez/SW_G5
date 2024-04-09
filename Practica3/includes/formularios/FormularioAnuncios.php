@@ -46,48 +46,37 @@ class FormularioAnuncios extends Formulario
         return $html;
     }
 
-    protected function procesaFormulario(&$datos) {
-        $this->errores = [];
+    protected function procesaFormulario(&$datos)
+{
+    $this->errores = [];
 
-        $categoria = $_SESSION['rol'];
-        $idAutor = $_SESSION['id'];
-
-        $titulo = trim($datos['titulo'] ?? '');
-        $descripcion = trim($datos['descripcion'] ?? '');
-        $contacto = trim($datos['contacto'] ?? '');
-
-      // Validaciones
-        if (empty($titulo)) {
-            $this->errores['titulo'] = "El título no puede estar vacío.";
-        } elseif (strlen($titulo) < 5) {
-            $this->errores['titulo'] = "El título debe tener al menos 5 caracteres.";
-        }
-
-        if (empty($descripcion)) {
-            $this->errores['descripcion'] = "La descripción no puede estar vacía.";
-        } elseif (strlen($descripcion) < 10) {
-            $this->errores['descripcion'] = "La descripción debe tener al menos 10 caracteres.";
-        }
-            
-        if (count($this->errores) === 0) {
-            $app = Aplicacion::getInstance();
-            $conn = $app->getConexionBd();
-            $query = "INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($query);
-            if (!$stmt) {
-                $this->errores[] = "Error de preparación de la inserción en la base de datos.";
-                return;
-            }
-            $stmt->bind_param("sssss", $titulo, $descripcion, $categoria, $contacto, $idAutor);
-            if (!$stmt->execute()) {
-                $this->errores[] = "Error al insertar los datos en la base de datos: " . $stmt->error;
-            }
-            $stmt->close();
-
-            if (count($this->errores) === 0) {
-                header("Location: {$this->urlRedireccion}");
-                exit();
-            }
-        }
+    // Verificación de sesión y rol
+    if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+        $this->errores[] = "Usuario no autenticado.";
+        return;
     }
+
+    if (!in_array($_SESSION['rol'], [Usuario::ADMIN_ROLE, Usuario::EMPRESA_ROLE])) {
+        $this->errores[] = "El usuario no tiene permiso para publicar anuncios.";
+        return;
+    }
+
+    // Asignación y validación de datos
+    $titulo = trim($datos['titulo'] ?? '');
+    $descripcion = trim($datos['descripcion'] ?? '');
+    $usuarioId = $_SESSION['id']; // El ID del usuario se obtiene de la sesión.
+
+    
+    $idAnuncio = Anuncio::insertar($titulo, $descripcion, $usuarioId); // Intenta insertar el anuncio en la base de datos.
+
+    if ($idAnuncio === false) {
+        $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
+    } else {
+        // Si todo va bien, establece un mensaje de éxito y redirecciona.
+        $_SESSION['mensaje'] = "Anuncio publicado con éxito. ID del anuncio: $idAnuncio";
+        header("Location: {$this->urlRedireccion}");
+        exit();
+    }
+}
+
 }
