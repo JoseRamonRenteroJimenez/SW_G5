@@ -151,15 +151,20 @@ class FormularioRegistro extends Formulario
                     return;
                 }
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 1);
-                $_SESSION['esAdmin'] = true;
-                $_SESSION['login'] = true;
-                $_SESSION['nombre'] = $usuario->getNombre();
-                $_SESSION['id'] = $usuario->getId();
-                $_SESSION['rol'] = $usuario->getRol();
+                
+                if($usuario != null){
+                    $_SESSION['esAdmin'] = true;
+                    $_SESSION['login'] = true;
+                    $_SESSION['nombre'] = $usuario->getNombre();
+                    $_SESSION['id'] = $usuario->getId();
+                    $_SESSION['rol'] = $usuario->getRol();
+                }
+                
                 header('Location: index.php');
                 exit();
                 break;
-            case 'pueblo':
+
+                case 'pueblo':
                 $cif = trim($datos['cif'] ?? '');
                 $comunidad = trim($datos['comunidad'] ?? '');
                 
@@ -178,30 +183,35 @@ class FormularioRegistro extends Formulario
                 
                 // Procesar registro de pueblo
                 // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
-                // Procesar registro de pueblo
-                // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 3);
                 if ($usuario != null) {
                     $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
                     if (Pueblo::registrar($pueblo)) {
                         // Registro exitoso, redirigir o realizar acciones necesarias
+                        $_SESSION['login'] = true;
+                        $_SESSION['nombre'] = $usuario->getNombre();
+                        $_SESSION['id'] = $usuario->getId();
+                        $_SESSION['rol'] = $usuario->getRol();
                     } else {
                         // Manejar el error de registro
                     }
                     } else {
                     // Manejar el error de creación de usuario
-                    $_SESSION['login'] = true;
-                    $_SESSION['nombre'] = $usuario->getNombre();
-                    $_SESSION['id'] = $usuario->getId();
-                    $_SESSION['rol'] = $usuario->getRol();
-                    header('Location: index.php');
                 }
+                header('Location: index.php');
                 exit();
                 break;                
             case 'empresa':
                 $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
                 $ambito = trim($datos['ambito'] ?? '');
                 $ambito_manual = trim($datos['ambito_manual'] ?? '');
+
+                // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
+                if ($ambito == '-') {
+                    $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
+                } else {
+                    $idAmbito = $ambito;
+                }
 
                 // Validar información adicional para el registro de empresa
                 if (empty($nTrabajadores) || !is_numeric($nTrabajadores)) {
@@ -216,28 +226,24 @@ class FormularioRegistro extends Formulario
                     return;
                 }
 
-                // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
-                if ($ambito == '-') {
-                    $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
-                } else {
-                    $idAmbito = $ambito;
-                }
-
                 // Procesar registro de empresa
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 2);
-                $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
 
-                if (Empresa::registrar($empresa)) {
-                    // Registro exitoso, redirigir o realizar acciones necesarias
+                if($usuario != null){
+                    $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
+                    if (Empresa::registrar($empresa)) {
+                        // Registro exitoso, redirigir o realizar acciones necesarias
+                        $_SESSION['login'] = true;
+                        $_SESSION['nombre'] = $usuario->getNombre();
+                        $_SESSION['id'] = $usuario->getId();
+                        $_SESSION['rol'] = $usuario->getRol();    
+                    } else {
+                        // Manejar el error de registro
+                    }
                 } else {
-                    // Manejar el error de registro
+                    //Manejar error creación usuario
                 }
-                
-                $_SESSION['login'] = true;
-                $_SESSION['nombre'] = $usuario->getNombre();
-                $_SESSION['id'] = $usuario->getId();
-                $_SESSION['rol'] = $usuario->getRol();
-
+              
                 header('Location: index.php');
                 exit();
                 break;

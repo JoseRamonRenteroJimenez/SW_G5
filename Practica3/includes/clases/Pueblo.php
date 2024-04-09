@@ -169,4 +169,26 @@ class Pueblo extends Usuario
     {
         $this->comunidad = $comunidad;
     }
+
+    public static function buscaNombrePueblo($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        
+        // Query para obtener el nombre del usuario asociado a la ID del pueblo
+        $query = "SELECT nombreUsuario FROM Usuarios WHERE id = ?";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $idPueblo);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($fila = $result->fetch_assoc()) {
+                // Una vez obtenido el nombre de usuario, buscamos el pueblo por su nombre de usuario
+                $nombreUsuario = $fila['nombreUsuario'];
+                return $nombreUsuario;
+            }
+        }
+        return null;
+    }
+
+
 }

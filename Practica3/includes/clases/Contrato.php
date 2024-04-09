@@ -54,7 +54,7 @@ class Contrato
         $contratos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $contrato = new Contrato($fila['id'], $fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos']);
+                $contrato = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
                 $contratos[] = $contrato;
             }
             $rs->free();
@@ -88,12 +88,13 @@ class Contrato
         $rs = $conn->query($query);
         if ($rs) {
             if ($fila = $rs->fetch_assoc()) {
-                return new Contrato($fila['id'], $fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos']);
+                return new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
             }
             $rs->free();
         }
         return null;
     }
+    
 
     public static function buscaContratosPorEmpresa($idEmpresa)
     {
@@ -103,12 +104,29 @@ class Contrato
         $contratos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $contratos[] = new Contrato($fila['id'], $fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos']);
+                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
             }
             $rs->free();
         }
         return $contratos;
     }
+
+    public static function buscaContratosPorPueblo($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM contratos WHERE idPueblo=%d", $idPueblo);
+        $rs = $conn->query($query);
+        $contratos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
+            }
+            $rs->free();
+        }
+        return $contratos;
+    }
+    
+
 
     public static function registrar(Contrato $contrato)
     {
