@@ -25,7 +25,7 @@ class Comunidad
     public static function getComunidades()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = "SELECT * FROM Comunidades";
+        $query = "SELECT * FROM comunidades";
         $rs = $conn->query($query);
         $comunidades = [];
         if ($rs) {
