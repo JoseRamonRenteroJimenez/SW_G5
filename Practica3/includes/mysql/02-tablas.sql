@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-03-2024 a las 18:21:51
+-- Tiempo de generación: 09-04-2024 a las 21:10:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,12 +24,38 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `administradores`
+--
+
+CREATE TABLE `administradores` (
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `ambitos`
 --
 
 CREATE TABLE `ambitos` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `anuncios`
+--
+
+CREATE TABLE `anuncios` (
+  `id` int(11) NOT NULL,
+  `titulo` varchar(255) NOT NULL,
+  `descripcion` text NOT NULL,
+  `categoria` varchar(50) NOT NULL,
+  `contacto` varchar(255) DEFAULT NULL,
+  `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
+  `idAutor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -120,28 +146,25 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Estructura de tabla para la tabla `anuncios`
---
-
-CREATE TABLE `anuncios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `titulo` varchar(255) NOT NULL,
-  `descripcion` text NOT NULL,
-  `categoria` varchar(50) NOT NULL,
-  `contacto` varchar(255),
-  `fecha_publicacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
---
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `administradores`
+--
+ALTER TABLE `administradores`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `ambitos`
 --
 ALTER TABLE `ambitos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `anuncios`
+--
+ALTER TABLE `anuncios`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -182,6 +205,12 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `ambitos`
 --
 ALTER TABLE `ambitos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `anuncios`
+--
+ALTER TABLE `anuncios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

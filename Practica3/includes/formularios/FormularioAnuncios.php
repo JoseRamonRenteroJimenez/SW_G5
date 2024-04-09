@@ -6,11 +6,19 @@ require_once 'Formulario.php';
 class FormularioAnuncios extends Formulario
 {
     public function __construct() {
-        parent::__construct('formAnuncio', ['urlRedireccion' => '../index.php']);
+        parent::__construct('formAnuncio', ['urlRedireccion' => 'anuncioResumen.php']);
     }
 
     protected function generaCamposFormulario(&$datos) {
+
+        // Verificar si el usuario está logeado
+        if (!isset($_SESSION['login'])) {
+            return "Inicie sesión para poder publicar y ver anuncios.";
+        }
+
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
+        $erroresCampos = self::generaErroresCampos(['titulo', 'descripcion', 'contacto'], $this->errores, 'span', array('class' => 'error'));
+
         $html = <<<EOF
         $htmlErroresGlobales
         <fieldset>
@@ -18,21 +26,17 @@ class FormularioAnuncios extends Formulario
             <div>
                 <label for="titulo">Título de la noticia:</label>
                 <input type="text" id="titulo" name="titulo" required>
+                {$erroresCampos['titulo']}
             </div>
             <div>
                 <label for="descripcion">Contenido de la noticia:</label>
                 <textarea id="descripcion" name="descripcion" required></textarea>
-            </div>
-            <div>
-                <label for="categoria">Categoría:</label>
-                <select id="categoria" name="categoria">
-                    <option value="pueblo">Pueblo</option>
-                    <option value="empresa">Empresa</option>
-                </select>
+                {$erroresCampos['descripcion']}
             </div>
             <div>
                 <label for="contacto">Contacto:</label>
                 <input type="text" id="contacto" name="contacto">
+                {$erroresCampos['contacto']}
             </div>
             <div>
                 <button type="submit" name="submitAnuncio">Publicar</button>
@@ -44,34 +48,37 @@ class FormularioAnuncios extends Formulario
 
     protected function procesaFormulario(&$datos) {
         $this->errores = [];
+
+        $categoria = $_SESSION['rol'];
+        $idAutor = $_SESSION['id'];
+
         $titulo = trim($datos['titulo'] ?? '');
         $descripcion = trim($datos['descripcion'] ?? '');
-        $categoria = trim($datos['categoria'] ?? '');
         $contacto = trim($datos['contacto'] ?? '');
 
       // Validaciones
-    if (empty($titulo)) {
-        $this->errores['titulo'] = "El título no puede estar vacío.";
-    } elseif (strlen($titulo) < 5) {
-        $this->errores['titulo'] = "El título debe tener al menos 5 caracteres.";
-    }
+        if (empty($titulo)) {
+            $this->errores['titulo'] = "El título no puede estar vacío.";
+        } elseif (strlen($titulo) < 5) {
+            $this->errores['titulo'] = "El título debe tener al menos 5 caracteres.";
+        }
 
-    if (empty($descripcion)) {
-        $this->errores['descripcion'] = "La descripción no puede estar vacía.";
-    } elseif (strlen($descripcion) < 10) {
-        $this->errores['descripcion'] = "La descripción debe tener al menos 10 caracteres.";
-    }
-        
+        if (empty($descripcion)) {
+            $this->errores['descripcion'] = "La descripción no puede estar vacía.";
+        } elseif (strlen($descripcion) < 10) {
+            $this->errores['descripcion'] = "La descripción debe tener al menos 10 caracteres.";
+        }
+            
         if (count($this->errores) === 0) {
             $app = Aplicacion::getInstance();
             $conn = $app->getConexionBd();
-            $query = "INSERT INTO anuncios (titulo, descripcion, categoria, contacto) VALUES (?, ?, ?, ?)";
+            $query = "INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($query);
             if (!$stmt) {
                 $this->errores[] = "Error de preparación de la inserción en la base de datos.";
                 return;
             }
-            $stmt->bind_param("ssss", $titulo, $descripcion, $categoria, $contacto);
+            $stmt->bind_param("sssss", $titulo, $descripcion, $categoria, $contacto, $idAutor);
             if (!$stmt->execute()) {
                 $this->errores[] = "Error al insertar los datos en la base de datos: " . $stmt->error;
             }
@@ -84,4 +91,3 @@ class FormularioAnuncios extends Formulario
         }
     }
 }
-
