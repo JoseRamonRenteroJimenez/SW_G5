@@ -1,8 +1,8 @@
 <?php
 namespace es\ucm\fdi\aw;
 
-require_once __DIR__.'/includes/config.php'; 
-// Autoloader se encargará de cargar la clase Formulario si está en el path correcto.
+require_once __DIR__.'/../../includes/config.php';
+require_once 'Formulario.php'; 
 class FormularioAnuncio extends Formulario
 {
     public function __construct() {
