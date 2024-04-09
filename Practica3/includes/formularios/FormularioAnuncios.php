@@ -3,7 +3,7 @@ namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php'; 
-class FormularioAnuncio extends Formulario
+class FormularioAnuncios extends Formulario
 {
     public function __construct() {
         parent::__construct('formAnuncio', ['urlRedireccion' => '../index.php']);
