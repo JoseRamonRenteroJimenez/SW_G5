@@ -2,7 +2,8 @@
 
 namespace es\ucm\fdi\aw;
 
-require_once __DIR__ . '/includes/config.php';
+require_once __DIR__.'/../../includes/config.php';
+require_once 'Formulario.php'; 
 
 class FormularioSoporte extends Formulario {
     public function __construct() {
@@ -45,11 +46,24 @@ class FormularioSoporte extends Formulario {
         if (empty($mensaje)) {
             $errores[] = "El mensaje no puede estar vacío.";
         }
-
+    
         if (count($errores) === 0) {
-            //echar un ojo a esto
+            // Aquí implementarías el envío del correo a soporte@puebloinnova.com
+            $para = 'soporte@puebloinnova.com'; // Dirección de correo de soporte
+            $asunto = 'Solicitud de Soporte';
+            $cabeceras = "From: $email" . "\r\n" .
+                         "Reply-To: $email" . "\r\n" .
+                         "X-Mailer: PHP/" . phpversion();
+    
+            if(mail($para, $asunto, $mensaje, $cabeceras)) {
+                // Si el correo se envía exitosamente, 
+            } else {
+                // Si el correo no se puede enviar
+                $errores[] = "Hubo un problema enviando tu mensaje de soporte. Por favor intenta más tarde.";
+            }
         }
-
+    
         return $errores;
     }
+    
 }
