@@ -1,10 +1,13 @@
 <?php
 
 require_once __DIR__.'/includes/config.php'; // Carga el archivo de configuración de la aplicación
+require_once __DIR__.'/includes/formularios/FormularioAnuncios.php'; 
+//require_once __DIR__.'/vistas/misAnunciosVista.php';
+require_once __DIR__.'/includes/clases/Anuncios.php';
 
-use es\ucm\fdi\aw\FormularioAnuncio; 
+use es\ucm\fdi\aw\FormularioAnuncios; 
 
-$form = new FormularioAnuncio(); // Instancia la clase FormularioAnuncio
+$form = new FormularioAnuncios(); // Instancia la clase FormularioAnuncio
 $htmlFormNewAd = $form->gestiona(); // Obtiene el HTML generado por el formulario
 
 $tituloPagina = 'Tablón de Anuncios'; // Título de la página
