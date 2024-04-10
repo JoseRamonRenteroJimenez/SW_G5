@@ -1,5 +1,6 @@
 <?php
 
+// De momento esta funcionalidad no está implementa para esta práctica, es un boceto de lo que usaremos para la futura versión
 namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';

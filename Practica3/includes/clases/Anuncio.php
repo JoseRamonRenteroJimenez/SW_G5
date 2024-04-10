@@ -58,6 +58,36 @@ class Anuncio
         return $anuncios;
     }
 
+    public static function buscaAnuncioPorEmpresa($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM anuncios WHERE idEmpresa= %d", $idEmpresa); // ESTA ULTIMA PARTE HAY QUE REVISARLA
+        $rs = $conn->query($query);
+        $contratos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+            }
+            $rs->free();
+        }
+        return $anuncios;
+    }
+
+    public static function buscaAnuncioPorPueblo($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM anuncios WHERE idPueblo=%d", $idPueblo);  // ESTA ULTIMA PARTE HAY QUE REVISARLA
+        $rs = $conn->query($query);
+        $contratos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+            }
+            $rs->free();
+        }
+        return $anuncios;
+    }
+
     // Método estático para borrar un anuncio por su ID.
     public static function borrarPorId($idAnuncio)
     {
