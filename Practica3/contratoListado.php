@@ -5,8 +5,6 @@ require_once __DIR__.'/includes/clases/Contrato.php'; // Posiblemente no haga fa
 require_once __DIR__.'/includes/formularios/FormularioContratoListado.php'; // Ruta correcta hacia formulariocontrato.php
 require_once __DIR__.'/includes/clases/Usuario.php';
 
-
-
 use es\ucm\fdi\aw\FormularioContratoListado;
 
 $form = new FormularioContratoListado();
