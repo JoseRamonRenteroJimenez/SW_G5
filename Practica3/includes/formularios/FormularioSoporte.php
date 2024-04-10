@@ -7,9 +7,7 @@ require_once 'Formulario.php';
 
 class FormularioSoporte extends Formulario {
     public function __construct() {
-        parent::__construct('formSoporte', [
-            'urlRedireccion' => '/index.php' // Ajusta esta ruta según sea necesario.
-        ]);
+        parent::__construct('formSoporte', ['urlRedireccion' => 'index.php' ]); // Ajusta esta ruta según sea necesario. )
     }
 
     protected function generaCamposFormulario(&$datos) {
