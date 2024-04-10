@@ -175,7 +175,7 @@ class Pueblo extends Usuario
         $conn = Aplicacion::getInstance()->getConexionBd();
         
         // Query para obtener el nombre del usuario asociado a la ID del pueblo
-        $query = "SELECT nombreUsuario FROM Usuarios WHERE id = ?";
+        $query = "SELECT nombreUsuario FROM usuarios WHERE id = ?";
         
         $stmt = $conn->prepare($query);
         $stmt->bind_param('i', $idPueblo);
