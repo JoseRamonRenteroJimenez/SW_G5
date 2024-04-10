@@ -62,16 +62,16 @@ class FormularioAnuncios extends Formulario
         // Asignación y validación de datos
         $titulo = trim($datos['titulo'] ?? '');
         $descripcion = trim($datos['descripcion'] ?? '');
+        $contacto = trim($datos['contacto'] ?? '');
         $usuarioId = $_SESSION['id']; // El ID del usuario se obtiene de la sesión.
 
         
-        $idAnuncio = Anuncio::insertar($titulo, $descripcion, $usuarioId); // Intenta insertar el anuncio en la base de datos.
+        $idAnuncio = Anuncio::insertar($titulo, $descripcion, $_SESSION['rol'], $usuarioId, $contacto); // Intenta insertar el anuncio en la base de datos.
 
         if ($idAnuncio === false) {
             $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
         } else {
-            // Si todo va bien, establece un mensaje de éxito y redirecciona.
-            $_SESSION['mensaje'] = "Anuncio publicado con éxito. ID del anuncio: $idAnuncio";
+            // Si todo va bien, redirecciona.
             header("Location: {$this->urlRedireccion}");
             exit();
         }

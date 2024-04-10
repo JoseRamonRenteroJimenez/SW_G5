@@ -77,7 +77,7 @@ class Anuncio
         }
     }
 
-    public static function insertar($titulo, $descripcion, $usuarioId) {
+    public static function insertar($titulo, $descripcion, $categoria, $usuarioId, $contacto) {
         // Validaciones básicas
         if (empty($titulo) || empty($descripcion)) {
             error_log("El título y la descripción no pueden estar vacíos.");
@@ -99,10 +99,11 @@ class Anuncio
         $conn = Aplicacion::getInstance()->getConexionBd();
         $tituloSanitizado = $conn->real_escape_string($titulo);
         $descripcionSanitizada = $conn->real_escape_string($descripcion);
+        $contactoSanitizado = $conn->real_escape_string($contacto);
     
         // Inserción en la base de datos
-        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, idAutor) VALUES ('%s', '%s', %d)",
-            $tituloSanitizado, $descripcionSanitizada, $usuarioId);
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor) VALUES ('%s', '%s', %d, '%s', %d)",
+            $tituloSanitizado, $descripcionSanitizada, $categoria, $contactoSanitizado, $usuarioId);
         
         if ($conn->query($query)) {
             return $conn->insert_id; // Devuelve el ID del anuncio insertado.
