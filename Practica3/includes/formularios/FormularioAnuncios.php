@@ -56,7 +56,7 @@ class FormularioAnuncios extends Formulario
         return;
     }
 
-    if (!in_array($_SESSION['rol'], [Usuario::ADMIN_ROLE, Usuario::EMPRESA_ROLE])) {
+    if (!in_array($_SESSION['rol'], [Usuario::PUEBLO_ROLE, Usuario::EMPRESA_ROLE])) {
         $this->errores[] = "El usuario no tiene permiso para publicar anuncios.";
         return;
     }
