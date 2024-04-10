@@ -42,13 +42,13 @@ class Anuncio
     public static function obtenerPorUsuarioId($usuarioId)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM anuncios WHERE usuario_id = %d", $usuarioId);
+        $query = sprintf("SELECT * FROM anuncios WHERE idAutor = %d", $usuarioId);
         $result = $conn->query($query);
         $anuncios = [];
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['usuario_id'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
             }
             $result->free();
         } else {
@@ -101,7 +101,7 @@ class Anuncio
         $descripcionSanitizada = $conn->real_escape_string($descripcion);
     
         // Inserción en la base de datos
-        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, usuario_id) VALUES ('%s', '%s', %d)",
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, idAutor) VALUES ('%s', '%s', %d)",
             $tituloSanitizado, $descripcionSanitizada, $usuarioId);
         
         if ($conn->query($query)) {
@@ -131,7 +131,7 @@ class Anuncio
     
         // Continuar con la actualización despues de la validacion
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', usuario_id=%d WHERE id=%d",
+        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', idAutor=%d WHERE id=%d",
             $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $usuarioId, $idAnuncio);
     
         if ($conn->query($query)) {
