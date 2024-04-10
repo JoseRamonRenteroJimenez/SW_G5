@@ -12,7 +12,6 @@ $tituloPagina = 'Soporte o Ayuda';
 
 $contenidoPrincipal = <<<EOS
 <h1>Soporte o Ayuda</h1>
-<p>Si tienes algún problema o pregunta, por favor llena el siguiente formulario y te responderemos lo antes posible.</p>
 $htmlFormSoporte 
 EOS;
 
