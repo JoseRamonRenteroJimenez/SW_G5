@@ -45,7 +45,7 @@ class Usuario
         return $user; // Retorna el objeto Usuario, no solo el ID
     }
 
-    public static function buscaUsuario($nombreUsuario)
+    public static function buscaUsuario($nombreUsuario) // Busca un usuario por su nombre de usuario
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("SELECT * FROM usuarios U WHERE U.nombreUsuario='%s'", $conn->real_escape_string($nombreUsuario));
@@ -63,7 +63,7 @@ class Usuario
         return $result;
     }
 
-    public static function buscaPorId($idUsuario)
+    public static function buscaPorId($idUsuario) // Busca un usuario por su ID
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("SELECT * FROM usuarios WHERE id=%d", $idUsuario);
@@ -137,9 +137,7 @@ class Usuario
         } 
         
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("DELETE FROM usuarios U WHERE U.id = %d"
-            , $idUsuario
-        );
+        $query = sprintf("DELETE FROM usuarios WHERE id = %d", $idUsuario);
         if ( ! $conn->query($query) ) {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
             return false;
@@ -167,6 +165,14 @@ class Usuario
         return $this->rol;
     }
 
+    public function setNombreUsuario($nombreUsuario) {
+        $this->nombreUsuario = $nombreUsuario;
+    }
+
+    public function setNombre($nombre) {
+        $this->nombre = $nombre;
+    }
+
     public function compruebaPassword($password)
     {
         return password_verify($password, $this->password);
@@ -191,6 +197,10 @@ class Usuario
             return self::borra($this);
         }
         return false;
+    }
+
+    public static function eliminarUsuario($idUsuario) {
+        return self::borraPorId($idUsuario);
     }
 }
 ?>

@@ -9,5 +9,6 @@
 		<li><a href="<?= RUTA_APP ?>/contratoListado.php">Listado de contratos</a></li>
 		<li><a href="<?= RUTA_APP ?>/anuncioListado.php">Listado de anuncios</a></li>
 		<li><a href="<?= RUTA_APP ?>/perfil.php">Perfil</a></li>
+		<li><a href="<?= RUTA_APP ?>/modificarPerfil.php">Modificar perfil</a></li>
 	</ul>
 </nav>
