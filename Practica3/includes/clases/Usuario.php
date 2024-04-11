@@ -86,7 +86,7 @@ class Usuario
         return password_hash($password, PASSWORD_DEFAULT);
     }
    
-    private static function inserta($usuario)
+    private static function inserta($usuario) // Inserta un usuario en la base de datos
     {
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -105,7 +105,7 @@ class Usuario
         return $result;
     }
     
-    private static function actualiza($usuario)
+    private static function actualiza($usuario) // Actualiza los datos del usuario en la base de datos
     {
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -147,22 +147,22 @@ class Usuario
         return true;
     }
 
-    public function getId()
+    public function getId() // Devuelve el ID del usuario
     {
         return $this->id;
     }
 
-    public function getNombreUsuario()
+    public function getNombreUsuario() // Devuelve el nombre de usuario
     {
         return $this->nombreUsuario;
     }
 
-    public function getNombre()
+    public function getNombre() // Devuelve el nombre del usuario
     {
         return $this->nombre;
     }
 
-    public function getRol()
+    public function getRol() // Devuelve el rol del usuario
     {
         return $this->rol;
     }
@@ -177,7 +177,7 @@ class Usuario
         $this->password = self::hashPassword($nuevoPassword);
     }
     
-    public function guarda()
+    public function guarda() // Guarda el usuario en la base de datos
     {
         if ($this->id !== null) {
             return self::actualiza($this);
@@ -185,7 +185,7 @@ class Usuario
         return self::inserta($this);
     }
     
-    public function borrate()
+    public function borrate() // Borra el usuario de la base de datos
     {
         if ($this->id !== null) {
             return self::borra($this);
