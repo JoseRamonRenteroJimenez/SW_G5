@@ -25,7 +25,7 @@ class FormularioPerfil extends Formulario
 
         $nombreUsuario = $usuario->getNombreUsuario();
         $nombre = $usuario->getNombre();
-        $rol = $usuario->getRol();
+        $rol = $this->nombreRol($usuario->getRol());
 
         // Mostrar la información del perfil sin campos de entrada
         $html = <<<EOF
@@ -48,5 +48,18 @@ class FormularioPerfil extends Formulario
     protected function procesaFormulario(&$datos) {
         // Ya que solo mostramos información, no necesitamos procesar el formulario.
     }
-}
-?>
+
+    private function nombreRol($rolNum) {
+        switch ($rolNum) {
+            case Usuario::ADMIN_ROLE:
+                return 'Administrador';
+            case Usuario::EMPRESA_ROLE:
+                return 'Empresa';
+            case Usuario::PUEBLO_ROLE:
+                return 'Pueblo';
+            default:
+                return 'Desconocido';
+        }
+    } 
+
+} 
