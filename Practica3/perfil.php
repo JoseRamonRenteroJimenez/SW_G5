@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/clases/Usuario.php';
-require_once __DIR__./'includes/formularios/FormularioPerfil.php';
+require_once __DIR__.'/includes/formularios/FormularioPerfil.php';
 
 use es\ucm\fdi\aw\FormularioPerfil;
 
