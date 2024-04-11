@@ -9,11 +9,12 @@ require_once __DIR__.'/../../includes/clases/Comunidad.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Anuncio.php';
 
-class FormularioContratoListado extends Formulario
+class FormularioAnuncioListado extends Formulario
 {
     public function __construct() {
-        parent::__construct('formContratoListado', ['urlRedireccion' => '']);
+        parent::__construct('formAnuncioListado', ['urlRedireccion' => '']);
     }
     
     protected function generaCamposFormulario(&$datos)
@@ -24,17 +25,17 @@ class FormularioContratoListado extends Formulario
         if (isset($_SESSION['rol'])) {
             $rol = intval($_SESSION['rol']);
             if ($rol === Usuario::EMPRESA_ROLE) {
-                // Si el usuario es empresa, mostrar solo sus contratos
-                $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
-                $html .= '<h2>Tus Contratos:</h2>';
+                // Si el usuario es empresa, mostrar solo sus anuncios
+                $anuncios = Anuncio::buscaAnuncioPorEmpresa($_SESSION['id']);
+                $html .= '<h2>Tus Anuncios:</h2>';
             }elseif($rol === Usuario::PUEBLO_ROLE){
                 // Si el usuario es empresa, mostrar solo sus contratos
-                $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
-                $html .= '<h2>Tus Contratos:</h2>';
+                $anuncios = Anuncio::buscaAnuncioPorPueblo($_SESSION['id']);
+                $html .= '<h2>Tus Anuncios:</h2>';
             } elseif ($rol === Usuario::ADMIN_ROLE) {
                 // Si el usuario es admin, mostrar todos los contratos
-                $contratos = Contrato::getContratos();
-                $html .= '<h2>Contratos:</h2>';
+                $anuncios = Anuncio::obtenerPorUsuarioId($_SESSION['id']); // ESTE SESSION NOSE SI ESTA AQUI BIEN 
+                $html .= '<h2>Anuncios:</h2>';
             } else {
                 // Otros roles no tienen acceso a esta funcionalidad
                 $html .= '<p>No tienes permiso para acceder a esta página.</p>';
@@ -42,23 +43,19 @@ class FormularioContratoListado extends Formulario
             }
 
             // Mostrar contratos
-            if (!empty($contratos)) {
+            if (!empty($anuncios)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Contrato</th><th>Términos</th><th>ID Empresa</th><th>Nombre Empresa</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Duración (días)</th></tr>';
-                foreach ($contratos as $contrato) {
-                    $idContrato = $contrato->getId();
-                    $terminos = $contrato->getTerminos();
-                    $idEmpresa = $contrato->getIdEmpresa();
-                    $nombreEmpresa = Empresa::buscaNombreEmpresa($idEmpresa);
-                    $idPueblo = $contrato->getIdPueblo();
-                    $nombrePueblo = Pueblo::buscaNombrePueblo($idPueblo);
-                    $duracion = $contrato->getDuracion();
-
-                    $html .= "<tr><td>$idContrato</td><td>$terminos</td><td>$idEmpresa</td><td>$nombreEmpresa</td><td>$idPueblo</td><td>$nombrePueblo</td><td>$duracion</td></tr>";
+                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>ID Empresa</th><th>Descripcion</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Duración (días)</th></tr>';
+                foreach ($anuncios as $anuncio) {
+                    $idAnuncio = $anuncio->getId();
+                    $titulo = $anuncio->getTitulo();
+                    $descripcion = $anuncio->getDescripcion(); 
+                    $usuarioId = $anuncio->getUsuarioId(); // NOSE SI REALMENTE ASI ESTÁ COGIENDO BIEN EL USUARIO.
+                    $html .= "<tr><td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$usuarioId</td></tr>";
                 }
                 $html .= '</table>';
             } else {
-                $html .= '<p>No se encontraron contratos.</p>';
+                $html .= '<p>No se encontraron anuncios.</p>';
             }
         } else {
             $html .= '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';

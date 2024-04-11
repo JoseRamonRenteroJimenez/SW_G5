@@ -42,19 +42,49 @@ class Anuncio
     public static function obtenerPorUsuarioId($usuarioId)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM anuncios WHERE usuario_id = %d", $usuarioId);
+        $query = sprintf("SELECT * FROM anuncios WHERE idAutor = %d", $usuarioId);
         $result = $conn->query($query);
         $anuncios = [];
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['usuario_id'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
             }
             $result->free();
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
 
+        return $anuncios;
+    }
+
+    public static function buscaAnuncioPorEmpresa($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM anuncios WHERE idEmpresa= %d", $idEmpresa); // ESTA ULTIMA PARTE HAY QUE REVISARLA
+        $rs = $conn->query($query);
+        $contratos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+            }
+            $rs->free();
+        }
+        return $anuncios;
+    }
+
+    public static function buscaAnuncioPorPueblo($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM anuncios WHERE idPueblo=%d", $idPueblo);  // ESTA ULTIMA PARTE HAY QUE REVISARLA
+        $rs = $conn->query($query);
+        $contratos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+            }
+            $rs->free();
+        }
         return $anuncios;
     }
 
@@ -77,7 +107,7 @@ class Anuncio
         }
     }
 
-    public static function insertar($titulo, $descripcion, $usuarioId) {
+    public static function insertar($titulo, $descripcion, $categoria, $usuarioId, $contacto) {
         // Validaciones básicas
         if (empty($titulo) || empty($descripcion)) {
             error_log("El título y la descripción no pueden estar vacíos.");
@@ -99,10 +129,11 @@ class Anuncio
         $conn = Aplicacion::getInstance()->getConexionBd();
         $tituloSanitizado = $conn->real_escape_string($titulo);
         $descripcionSanitizada = $conn->real_escape_string($descripcion);
+        $contactoSanitizado = $conn->real_escape_string($contacto);
     
         // Inserción en la base de datos
-        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, usuario_id) VALUES ('%s', '%s', %d)",
-            $tituloSanitizado, $descripcionSanitizada, $usuarioId);
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor) VALUES ('%s', '%s', %d, '%s', %d)",
+            $tituloSanitizado, $descripcionSanitizada, $categoria, $contactoSanitizado, $usuarioId);
         
         if ($conn->query($query)) {
             return $conn->insert_id; // Devuelve el ID del anuncio insertado.
@@ -131,7 +162,7 @@ class Anuncio
     
         // Continuar con la actualización despues de la validacion
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', usuario_id=%d WHERE id=%d",
+        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', idAutor=%d WHERE id=%d",
             $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $usuarioId, $idAnuncio);
     
         if ($conn->query($query)) {

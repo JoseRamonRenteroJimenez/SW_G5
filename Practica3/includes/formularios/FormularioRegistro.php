@@ -118,24 +118,15 @@ class FormularioRegistro extends Formulario
         $nombre = trim($datos['nombre'] ?? '');
         $rol = $datos['rol'] ?? '';
 
-        // Validar nombre de usuario
+        // Validar nombre de usuario, nombre, password y rol
         if (empty($nombreUsuario)) {
             $this->errores['nombreUsuario'] = 'El nombre de usuario no puede estar vacío';
         }
-
-        // Validar nombre
         if (empty($nombre)) {
             $this->errores['nombre'] = 'El nombre no puede estar vacío';
         }
-
-        // Validar password
         if (empty($password)) {
             $this->errores['password'] = 'El password no puede estar vacío';
-        }
-
-        // Validar rol
-        if (!in_array($rol, ['admin', 'pueblo', 'empresa'])) {
-            $this->errores['rol'] = 'Selecciona un rol válido';
         }
 
         // Si hay errores, termina la validación
@@ -146,105 +137,62 @@ class FormularioRegistro extends Formulario
         // Procesar registro según el rol
         switch ($rol) {
             case 'admin':
-                // Si hay errores, termina la validación
-                if (count($this->errores) > 0) {
-                    return;
-                }
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 1);
+            case 'empresa':
+            case 'pueblo':
+                // Procesar registro de usuario
+                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, ($rol == 'admin' ? 1 : ($rol == 'empresa' ? 2 : 3)));
                 
-                if($usuario != null){
-                    $_SESSION['esAdmin'] = true;
+                if($usuario === 0){
+                    $_SESSION['error'] = 0;
+                    header('Location: controlErrores.php');
+                    exit();
+                    break;
+                }
+
+                if ($usuario != null) {
+                    // Añadir datos únicos a la sesión según el rol
+                    if ($rol == 'admin') {
+                        $_SESSION['esAdmin'] = true;
+                    } elseif ($rol == 'empresa') {
+                        $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
+                        $ambito = trim($datos['ambito'] ?? '');
+                        $ambito_manual = trim($datos['ambito_manual'] ?? '');
+
+                        // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
+                        if ($ambito == '-') {
+                            $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
+                        } else {
+                            $idAmbito = $ambito;
+                        }
+
+                        $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
+                        if (Empresa::registrar($empresa)) {
+                            // Registro exitoso, redirigir o realizar acciones necesarias
+                        } else {
+                            // Manejar el error de registro
+                        }
+                    } elseif ($rol == 'pueblo') {
+                        $cif = trim($datos['cif'] ?? '');
+                        $comunidad = trim($datos['comunidad'] ?? '');
+
+                        $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
+                        if (Pueblo::registrar($pueblo)) {
+                            // Registro exitoso, redirigir o realizar acciones necesarias
+                        } else {
+                            // Manejar el error de registro
+                        }
+                    }
+                    
+                    // Establecer datos comunes en la sesión
                     $_SESSION['login'] = true;
                     $_SESSION['nombre'] = $usuario->getNombre();
                     $_SESSION['id'] = $usuario->getId();
                     $_SESSION['rol'] = $usuario->getRol();
-                }
-                
-                header('Location: index.php');
-                exit();
-                break;
-
-                case 'pueblo':
-                $cif = trim($datos['cif'] ?? '');
-                $comunidad = trim($datos['comunidad'] ?? '');
-                
-                // Validar información adicional para el registro de pueblo
-                if (empty($cif)) {
-                    $this->errores['cif'] = 'El CIF no puede estar vacío';
-                }
-                if (empty($comunidad)) {
-                    $this->errores['comunidad'] = 'La comunidad no puede estar vacía';
-                }
-                
-                // Si hay errores, termina la validación
-                if (count($this->errores) > 0) {
-                    return;
-                }
-                
-                // Procesar registro de pueblo
-                // Dentro de FormularioRegistro->procesaFormulario, caso 'pueblo':
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 3);
-                if ($usuario != null) {
-                    $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
-                    if (Pueblo::registrar($pueblo)) {
-                        // Registro exitoso, redirigir o realizar acciones necesarias
-                        $_SESSION['login'] = true;
-                        $_SESSION['nombre'] = $usuario->getNombre();
-                        $_SESSION['id'] = $usuario->getId();
-                        $_SESSION['rol'] = $usuario->getRol();
-                    } else {
-                        // Manejar el error de registro
-                    }
-                    } else {
+                } else {
                     // Manejar el error de creación de usuario
                 }
-                header('Location: index.php');
-                exit();
-                break;                
-            case 'empresa':
-                $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
-                $ambito = trim($datos['ambito'] ?? '');
-                $ambito_manual = trim($datos['ambito_manual'] ?? '');
-
-                // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
-                if ($ambito == '-') {
-                    $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
-                } else {
-                    $idAmbito = $ambito;
-                }
-
-                // Validar información adicional para el registro de empresa
-                if (empty($nTrabajadores) || !is_numeric($nTrabajadores)) {
-                    $this->errores['nTrabajadores'] = 'Introduce un número válido de trabajadores';
-                }
-                if ($ambito == '-' && empty($ambito_manual)) {
-                    $this->errores['ambito'] = 'Selecciona un ámbito o ingresa uno nuevo';
-                }
-
-                // Si hay errores, termina la validación
-                if (count($this->errores) > 0) {
-                    return;
-                }
-
-                // Procesar registro de empresa
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, 2);
-
-                if($usuario != null){
-                    $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
-                    if (Empresa::registrar($empresa)) {
-                        // Registro exitoso, redirigir o realizar acciones necesarias
-                        $_SESSION['login'] = true;
-                        $_SESSION['nombre'] = $usuario->getNombre();
-                        $_SESSION['id'] = $usuario->getId();
-                        $_SESSION['rol'] = $usuario->getRol();    
-                    } else {
-                        // Manejar el error de registro
-                    }
-                } else {
-                    //Manejar error creación usuario
-                }
-              
-                header('Location: index.php');
+                
+                header('Location: registroResumen.php');
                 exit();
                 break;
             default:
@@ -252,5 +200,6 @@ class FormularioRegistro extends Formulario
                 break;
         }
     }
+
 }
 ?>

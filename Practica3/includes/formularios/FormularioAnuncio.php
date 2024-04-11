@@ -2,7 +2,10 @@
 namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
+require_once __DIR__.'/../../includes/clases/Usuario.php'; // Ruta correcta hacia Usuario.php
+require_once __DIR__.'/../../includes/clases/Anuncio.php';
 require_once 'Formulario.php'; 
+
 class FormularioAnuncios extends Formulario
 {
     public function __construct() {
@@ -47,36 +50,31 @@ class FormularioAnuncios extends Formulario
     }
 
     protected function procesaFormulario(&$datos)
-{
-    $this->errores = [];
+    {
+        $this->errores = [];
 
-    // Verificación de sesión y rol
-    if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
-        $this->errores[] = "Usuario no autenticado.";
-        return;
+        // Verificación de sesión y rol
+        if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+            $this->errores[] = "Usuario no autenticado.";
+            return;
+        }
+
+        // Asignación y validación de datos
+        $titulo = trim($datos['titulo'] ?? '');
+        $descripcion = trim($datos['descripcion'] ?? '');
+        $contacto = trim($datos['contacto'] ?? '');
+        $usuarioId = $_SESSION['id']; // El ID del usuario se obtiene de la sesión.
+
+        
+        $idAnuncio = Anuncio::insertar($titulo, $descripcion, $_SESSION['rol'], $usuarioId, $contacto); // Intenta insertar el anuncio en la base de datos.
+
+        if ($idAnuncio === false) {
+            $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
+        } else {
+            // Si todo va bien, redirecciona.
+            header("Location: {$this->urlRedireccion}");
+            exit();
+        }
     }
-
-    if (!in_array($_SESSION['rol'], [Usuario::ADMIN_ROLE, Usuario::EMPRESA_ROLE])) {
-        $this->errores[] = "El usuario no tiene permiso para publicar anuncios.";
-        return;
-    }
-
-    // Asignación y validación de datos
-    $titulo = trim($datos['titulo'] ?? '');
-    $descripcion = trim($datos['descripcion'] ?? '');
-    $usuarioId = $_SESSION['id']; // El ID del usuario se obtiene de la sesión.
-
-    
-    $idAnuncio = Anuncio::insertar($titulo, $descripcion, $usuarioId); // Intenta insertar el anuncio en la base de datos.
-
-    if ($idAnuncio === false) {
-        $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
-    } else {
-        // Si todo va bien, establece un mensaje de éxito y redirecciona.
-        $_SESSION['mensaje'] = "Anuncio publicado con éxito. ID del anuncio: $idAnuncio";
-        header("Location: {$this->urlRedireccion}");
-        exit();
-    }
-}
 
 }

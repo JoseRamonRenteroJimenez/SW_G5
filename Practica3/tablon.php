@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__.'/includes/config.php'; // Carga el archivo de configuración de la aplicación
-require_once __DIR__.'/includes/formularios/FormularioAnuncios.php'; 
+require_once __DIR__.'/includes/formularios/FormularioAnuncio.php'; 
 //require_once __DIR__.'/vistas/misAnunciosVista.php';
-require_once __DIR__.'/includes/clases/Anuncios.php';
+require_once __DIR__.'/includes/clases/Anuncio.php';
 
 use es\ucm\fdi\aw\FormularioAnuncios; 
 
