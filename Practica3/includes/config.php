@@ -13,7 +13,7 @@ define('BD_PASS', 'practica3');
  */
 define('RAIZ_APP', __DIR__);
 define('RUTA_APP', '/SW_G5/Practica3');
-define('RUTA_IMGS', RUTA_APP.'/img');
+define('RUTA_IMGS', RUTA_APP.'/includes/imagenes');
 define('RUTA_CSS', RUTA_APP.'/css');
 define('RUTA_JS', RUTA_APP.'/js');
 define('RUTA_CLASS', RUTA_APP.'/includes/clases');

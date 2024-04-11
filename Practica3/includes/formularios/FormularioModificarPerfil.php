@@ -12,6 +12,12 @@ class FormularioModificarPerfil extends Formulario
     }
     
     protected function generaCamposFormulario(&$datos) { 
+        if (!isset($_SESSION['id'])) {
+            // Redirecciona al usuario a la página de inicio de sesión si no hay ID en la sesión
+            header('Location: login.php');
+            exit();
+        }
+
         $usuario = Usuario::buscaPorId($_SESSION['id']);
         if (!$usuario) {
             return "Usuario no encontrado.";
@@ -56,6 +62,12 @@ class FormularioModificarPerfil extends Formulario
     
     protected function procesaFormulario(&$datos) {
         $this->errores = [];
+
+        if (!isset($_SESSION['id'])) {
+            // Redirecciona al usuario a la página de inicio de sesión si no hay ID en la sesión
+            header('Location: login.php');
+            exit();
+        }
     
         $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
         $nombre = trim($datos['nombre'] ?? '');

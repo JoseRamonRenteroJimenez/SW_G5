@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title><?= $tituloPagina ?></title>
     <!-- Utiliza la constante RUTA_CSS definida en tu archivo de configuración -->
-    <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/estilo.css" />
+    <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/prueba.css" />
 </head>
 <body>
 <div id="contenedor">

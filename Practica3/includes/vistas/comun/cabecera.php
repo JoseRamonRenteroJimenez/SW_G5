@@ -12,8 +12,10 @@ function mostrarSaludo() {
 
 ?>
 <header>
-	<h1>PuebloInnova</h1>
-	<div class="saludo">
-	<?= mostrarSaludo() ?>
-	</div>
+    <div class="logo">
+    <img src="includes/imagenes/logo.png" alt="Logotipo de PuebloInnova" />
+    </div>
+    <div class="saludo">
+        <?= mostrarSaludo() ?>
+    </div>
 </header>
