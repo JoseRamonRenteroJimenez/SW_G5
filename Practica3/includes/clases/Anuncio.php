@@ -39,7 +39,7 @@ class Anuncio
     }
 
     // Método estático para obtener los anuncios de un usuario específico.
-    public static function obtenerPorUsuarioId($usuarioId)
+    public static function getAnunciosByUserId($usuarioId)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("SELECT * FROM anuncios WHERE idAutor = %d", $usuarioId);
@@ -58,33 +58,22 @@ class Anuncio
         return $anuncios;
     }
 
-    public static function buscaAnuncioPorEmpresa($idEmpresa)
+    public static function getAllAnuncios()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM anuncios WHERE idEmpresa= %d", $idEmpresa); // ESTA ULTIMA PARTE HAY QUE REVISARLA
-        $rs = $conn->query($query);
-        $contratos = [];
-        if ($rs) {
-            while ($fila = $rs->fetch_assoc()) {
-                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+        $query = sprintf("SELECT * FROM anuncios");
+        $result = $conn->query($query);
+        $anuncios = [];
+        
+        if ($result) {
+            while ($fila = $result->fetch_assoc()) {
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
             }
-            $rs->free();
+            $result->free();
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
-        return $anuncios;
-    }
 
-    public static function buscaAnuncioPorPueblo($idPueblo)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM anuncios WHERE idPueblo=%d", $idPueblo);  // ESTA ULTIMA PARTE HAY QUE REVISARLA
-        $rs = $conn->query($query);
-        $contratos = [];
-        if ($rs) {
-            while ($fila = $rs->fetch_assoc()) {
-                $anuncios[] = new Anuncio($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
-            }
-            $rs->free();
-        }
         return $anuncios;
     }
 

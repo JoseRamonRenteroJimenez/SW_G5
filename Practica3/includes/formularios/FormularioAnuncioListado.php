@@ -22,30 +22,20 @@ class FormularioAnuncioListado extends Formulario
         $html = '';
 
         // Verificar si el usuario está logueado
-        if (isset($_SESSION['rol'])) {
-            $rol = intval($_SESSION['rol']);
-            if ($rol === Usuario::EMPRESA_ROLE) {
-                // Si el usuario es empresa, mostrar solo sus anuncios
-                $anuncios = Anuncio::buscaAnuncioPorEmpresa($_SESSION['id']);
-                $html .= '<h2>Tus Anuncios:</h2>';
-            }elseif($rol === Usuario::PUEBLO_ROLE){
-                // Si el usuario es empresa, mostrar solo sus contratos
-                $anuncios = Anuncio::buscaAnuncioPorPueblo($_SESSION['id']);
-                $html .= '<h2>Tus Anuncios:</h2>';
-            } elseif ($rol === Usuario::ADMIN_ROLE) {
-                // Si el usuario es admin, mostrar todos los contratos
-                $anuncios = Anuncio::obtenerPorUsuarioId($_SESSION['id']); // ESTE SESSION NOSE SI ESTA AQUI BIEN 
-                $html .= '<h2>Anuncios:</h2>';
-            } else {
-                // Otros roles no tienen acceso a esta funcionalidad
-                $html .= '<p>No tienes permiso para acceder a esta página.</p>';
-                return $html;
+        if (isset($_SESSION['login'])) {
+            
+            $html .= '<h2>Anuncios:</h2>';
+
+            if(isset($_SESSION['esAdmin']) && $_SESSION['esAdmin']){
+                $anuncios = Anuncio::getAllAnuncios();
+            }else{
+                $anuncios = Anuncio::getAnunciosByUserId($_SESSION['id']); // ESTE SESSION NOSE SI ESTA AQUI BIEN
             }
 
             // Mostrar contratos
             if (!empty($anuncios)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>ID Empresa</th><th>Descripcion</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Duración (días)</th></tr>';
+                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>ID autor</th>';
                 foreach ($anuncios as $anuncio) {
                     $idAnuncio = $anuncio->getId();
                     $titulo = $anuncio->getTitulo();
