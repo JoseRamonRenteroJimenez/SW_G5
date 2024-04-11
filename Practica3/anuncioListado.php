@@ -17,7 +17,7 @@ if(isset($_SESSION['rol']) && $_SESSION['rol'] === Usuario::ADMIN_ROLE){
 }
 
 $contenidoPrincipal = <<<EOS
-<h1>Listado de contratos</h1>
+<h1>Listado de anuncios</h1>
 $htmlFormAnuncio 
 EOS;
 
