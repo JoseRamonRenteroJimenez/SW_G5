@@ -85,7 +85,6 @@ class Servicio
         }
     }
 
-
     public static function buscaServicioPorId($idServicio)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -127,6 +126,19 @@ class Servicio
         $stmt->bind_param('i', $idServicio);
         
         if ($stmt->execute()) {
+            return true;
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+
+    public static function disminuirServiciosPorEmpresaYPueblo($ambitoEmpresa, $idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "UPDATE servicios SET cantidad = cantidad - 1 WHERE idAmbito = $ambitoEmpresa AND idPueblo = $idPueblo";
+
+        if ($conn->query($query)) {
             return true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");

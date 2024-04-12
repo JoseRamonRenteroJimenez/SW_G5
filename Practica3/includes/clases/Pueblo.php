@@ -190,5 +190,26 @@ class Pueblo extends Usuario
         return null;
     }
 
+    public static function eliminarPorId($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM pueblos WHERE id = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idPueblo);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar el pueblo ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
+    }
+
+
 
 }

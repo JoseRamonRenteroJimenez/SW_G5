@@ -26,22 +26,19 @@ class FormularioAnuncioListado extends Formulario
             
             $html .= '<h2>Anuncios:</h2>';
 
-            if(isset($_SESSION['esAdmin']) && $_SESSION['esAdmin']){
-                $anuncios = Anuncio::getAllAnuncios();
-            }else{
-                $anuncios = Anuncio::getAnunciosByUserId($_SESSION['id']); // ESTE SESSION NOSE SI ESTA AQUI BIEN
-            }
+            $anuncios = Anuncio::getAllAnuncios();
 
             // Mostrar contratos
             if (!empty($anuncios)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>ID autor</th>';
+                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>Contacto</th><th>ID autor</th>';
                 foreach ($anuncios as $anuncio) {
                     $idAnuncio = $anuncio->getId();
                     $titulo = $anuncio->getTitulo();
                     $descripcion = $anuncio->getDescripcion(); 
                     $usuarioId = $anuncio->getUsuarioId(); // NOSE SI REALMENTE ASI ESTÁ COGIENDO BIEN EL USUARIO.
-                    $html .= "<tr><td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$usuarioId</td></tr>";
+                    $contacto = $anuncio->getContacto();
+                    $html .= "<tr><td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$contacto</td><td>$usuarioId</td></tr>";
                 }
                 $html .= '</table>';
             } else {

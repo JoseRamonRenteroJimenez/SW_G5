@@ -18,7 +18,7 @@ require(RAIZ_APP.'/vistas/comun/sidebarIzq.php');
         </article>
     </main>
 <?php
-require(RAIZ_APP.'/vistas/comun/sidebarDer.php');
+//require(RAIZ_APP.'/vistas/comun/sidebarDer.php');
 require(RAIZ_APP.'/vistas/comun/pie.php');
 ?>
 </div>

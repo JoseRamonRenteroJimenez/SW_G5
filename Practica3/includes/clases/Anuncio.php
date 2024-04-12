@@ -8,13 +8,15 @@ class Anuncio
     private $titulo;
     private $descripcion;
     private $usuarioId; // Asume que cada anuncio está asociado con un usuario.
+    private $contacto;
 
-    public function __construct($titulo, $descripcion, $usuarioId, $id = null)
+    public function __construct($titulo, $descripcion, $usuarioId, $contacto, $id = null)
     {
         $this->id = $id;
         $this->titulo = $titulo;
         $this->descripcion = $descripcion;
         $this->usuarioId = $usuarioId;
+        $this->contacto = $contacto;
     }
 
     // Métodos getters para los atributos.
@@ -38,6 +40,11 @@ class Anuncio
         return $this->usuarioId;
     }
 
+    public function getContacto()
+    {
+        return $this->contacto;
+    }
+
     // Método estático para obtener los anuncios de un usuario específico.
     public static function getAnunciosByUserId($usuarioId)
     {
@@ -48,7 +55,7 @@ class Anuncio
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['contacto'], $fila['id']);
             }
             $result->free();
         } else {
@@ -67,7 +74,7 @@ class Anuncio
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['contacto'], $fila['id']);
             }
             $result->free();
         } else {
@@ -132,7 +139,7 @@ class Anuncio
         }
     }
     
-    public static function actualizar($idAnuncio, $titulo, $descripcion, $usuarioId) {
+    public static function actualizar($idAnuncio, $titulo, $descripcion, $contacto, $usuarioId) {
         // Validaciones 
         if (empty($titulo) || empty($descripcion)) {
             error_log("El título y la descripción no pueden estar vacíos.");
@@ -151,9 +158,9 @@ class Anuncio
     
         // Continuar con la actualización despues de la validacion
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', idAutor=%d WHERE id=%d",
-            $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $usuarioId, $idAnuncio);
-    
+        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', contacto='%s', idAutor=%d WHERE id=%d",
+            $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $conn->real_escape_string($contacto), $usuarioId, $idAnuncio);
+
         if ($conn->query($query)) {
             if ($conn->affected_rows > 0) {
                 return true;
@@ -166,6 +173,27 @@ class Anuncio
             return false;
         }
     }
+
+    public static function eliminarPorIdAutor($idAutor)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM anuncios WHERE idAutor = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idAutor);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar los anuncios del autor ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
+    }
+
     
     
 }
