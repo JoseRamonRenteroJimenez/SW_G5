@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-04-2024 a las 11:40:53
+-- Tiempo de generación: 18-04-2024 a las 10:38:33
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `practica3`
+-- Base de datos: `proyectosw`
 --
 
 -- --------------------------------------------------------
@@ -55,7 +55,8 @@ CREATE TABLE `anuncios` (
   `categoria` varchar(50) NOT NULL,
   `contacto` varchar(255) DEFAULT NULL,
   `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
-  `idAutor` int(11) NOT NULL
+  `idAutor` int(11) NOT NULL,
+  `nombreImg` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -79,8 +80,10 @@ CREATE TABLE `contratos` (
   `id` int(11) NOT NULL,
   `idEmpresa` int(11) NOT NULL,
   `idPueblo` int(11) NOT NULL,
-  `duracion` int(11) NOT NULL COMMENT 'Días',
-  `terminos` varchar(50) NOT NULL
+  `fechaInicial` date NOT NULL,
+  `fechaFinal` date NOT NULL,
+  `terminos` varchar(50) NOT NULL,
+  `estado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -142,7 +145,8 @@ CREATE TABLE `usuarios` (
   `nombreUsuario` varchar(30) NOT NULL,
   `password` varchar(70) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `rol` int(11) NOT NULL
+  `rol` int(11) NOT NULL,
+  `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
