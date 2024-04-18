@@ -1,0 +1,24 @@
+/* CSS generado para mejorar la apariencia de la tabla */
+.contratos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.contratos-table th, .contratos-table td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.contratos-table th {
+    background-color: #f2f2f2;
+}
+
+.contratos-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.contratos-table tr:hover {
+    background-color: #ddd;
+}
