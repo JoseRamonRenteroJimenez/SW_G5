@@ -3,6 +3,11 @@ namespace es\ucm\fdi\aw;
 
 class Contrato
 {
+
+    public const ACTIVO_ESTADO = 1;
+    public const FINALIZADO_ESTADO = 2;
+    public const CANCELADO_ESTADO = 3;
+
     private $id;
     private $idEmpresa;
     private $idPueblo;
