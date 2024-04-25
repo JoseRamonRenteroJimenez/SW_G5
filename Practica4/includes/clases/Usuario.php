@@ -7,6 +7,7 @@ class Usuario
     public const ADMIN_ROLE = 1;
     public const EMPRESA_ROLE = 2;
     public const PUEBLO_ROLE = 3;
+    public const VECINO_ROLE = 4;
 
     private $id;
     private $nombreUsuario;
