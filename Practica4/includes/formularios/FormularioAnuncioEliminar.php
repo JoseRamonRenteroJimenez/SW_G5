@@ -1,5 +1,5 @@
 <?php
-namespace es\ucm\fdi\aw;
+namespace es\ucm\fdi\aw\formularios;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php';
