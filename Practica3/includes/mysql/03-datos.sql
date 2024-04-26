@@ -42,14 +42,14 @@ INSERT INTO `ambitos` (`id`, `nombre`) VALUES
 (8, 'Musica'),
 (9, 'Programador');
 
---
+--  
 -- Volcado de datos para la tabla `anuncios`
 --
 
 INSERT INTO `anuncios` (`id`, `titulo`, `descripcion`, `categoria`, `contacto`, `fecha_publicacion`, `idAutor`) VALUES
-(1, 'aaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'pueblo', 'aaaaaaaa', '2024-04-09 16:16:48', 0),
-(2, 'HolaQTal', 'Yo me llamo Ralph', 'pueblo', 'HolaHolaHola', '2024-04-09 20:47:34', 0),
-(3, 'MentaFuerte', 'MentaFuerte', 'pueblo', 'MentaFuerte', '2024-04-09 20:53:15', 0);
+(1, 'Prueba', 'Prueba', '3', 'Paco', '2024-04-09 16:16:48', 11),
+(2, 'HolaQTal', 'Yo me llamo Ralph', '3', 'Paco', '2024-04-09 20:47:34', 11),
+(3, 'MentaFuerte', 'MentaFuerte', '3', 'Paco', '2024-04-09 20:53:15', 11);
 
 --
 -- Volcado de datos para la tabla `comunidades`

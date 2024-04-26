@@ -1,5 +1,7 @@
 <?php
-namespace es\ucm\fdi\aw;
+namespace es\ucm\fdi\aw\clases;
+
+use es\ucm\fdi\aw\Usuario;
 
 class Empresa extends Usuario
 {
@@ -101,7 +103,7 @@ class Empresa extends Usuario
         return null;
     }
 
-    public function getAmbitoEmpresa($idEmpresa)
+    public static function getAmbitoEmpresa($idEmpresa)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = "SELECT ambito FROM empresas WHERE id = ?";
@@ -117,5 +119,24 @@ class Empresa extends Usuario
         return null;
     }
 
+    public static function eliminarPorId($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM empresas WHERE id = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idEmpresa);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar la empresa ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
+    }
 }
 ?>

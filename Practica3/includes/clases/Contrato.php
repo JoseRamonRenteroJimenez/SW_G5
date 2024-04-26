@@ -1,5 +1,5 @@
 <?php
-namespace es\ucm\fdi\aw;
+namespace es\ucm\fdi\aw\clases;
 
 class Contrato
 {
@@ -123,8 +123,6 @@ class Contrato
         return $contratos;
     }
     
-
-
     public static function registrar(Contrato $contrato)
     {
         // Guardar la empresa en la base de datos
@@ -175,5 +173,46 @@ class Contrato
             return false;
         }
     }
+
+    public static function eliminarContratosPueblo($idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM contratos WHERE idPueblo = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idPueblo);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar los contratos del pueblo ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
+    }
+
+    public static function eliminarContratosEmpresa($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM contratos WHERE idEmpresa = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idEmpresa);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar los contratos de la empresa ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
+    }
+
 }
 ?>

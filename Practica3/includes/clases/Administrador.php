@@ -1,5 +1,7 @@
 <?php
-namespace es\ucm\fdi\aw;
+namespace es\ucm\fdi\aw\clases;
+
+use es\ucm\fdi\aw\Usuario;
 
 class Administrador extends Usuario
 {
@@ -47,6 +49,26 @@ class Administrador extends Usuario
             return true;
         }
         return false;
+    }
+
+    public static function eliminarPorId($idAdministrador)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM administradores WHERE id = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idAdministrador);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar el administrador ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
     }
 }
 ?>

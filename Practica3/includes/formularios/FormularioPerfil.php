@@ -3,6 +3,9 @@ namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';
+require_once __DIR__.'/../../includes/clases/Anuncio.php'; 
+require_once __DIR__.'/../../includes/clases/Contrato.php'; 
+
 require_once 'Formulario.php';
 
 class FormularioPerfil extends Formulario
@@ -27,6 +30,20 @@ class FormularioPerfil extends Formulario
         $nombre = $usuario->getNombre();
         $rol = $this->nombreRol($usuario->getRol());
 
+        // Obtener los anuncios del usuario
+        $anuncios = Anuncio::getAnunciosByUserId($_SESSION['id']);
+
+        // Obtener los contratos del usuario
+        $contratos = [];
+        switch ($usuario->getRol()) {
+            case Usuario::EMPRESA_ROLE:
+                $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
+                break;
+            case Usuario::PUEBLO_ROLE:
+                $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
+                break;
+        }
+
         // Mostrar la información del perfil sin campos de entrada
         $html = <<<EOF
         <fieldset>
@@ -42,6 +59,44 @@ class FormularioPerfil extends Formulario
             </div>
         </fieldset>
         EOF;
+
+        // Mostrar los anuncios del usuario
+        if (!empty($anuncios)) {
+            $html .= '<fieldset><legend>Anuncios del Usuario</legend>';
+            foreach ($anuncios as $anuncio) {
+                $html .= '<div>';
+                $html .= '<p><strong>Título:</strong> ' . $anuncio->getTitulo() . '</p>';
+                $html .= '<p><strong>Descripción:</strong> ' . $anuncio->getDescripcion() . '</p>';
+                $html .= '</div>';
+            }
+            $html .= '</fieldset>';
+        }
+
+        // Mostrar los contratos del usuario
+        if (!empty($contratos)) {
+            $html .= '<fieldset><legend>Contratos del Usuario</legend>';
+            foreach ($contratos as $contrato) {
+                $html .= '<div>';
+                $html .= '<p><strong>Pueblo:</strong> ' . $contrato->getIdPueblo() . '</p>';
+                $html .= '<p><strong>Duración:</strong> ' . $contrato->getDuracion() . '</p>';
+                $html .= '<p><strong>Terminos:</strong> ' . $contrato->getTerminos() . '</p>';
+                $html .= '</div>';
+            }
+            $html .= '</fieldset>';
+        }
+
+        // Añadir botones para modificar perfil, anuncios y contratos
+        $html .= <<<EOF
+        <fieldset>
+            <legend>Modificar</legend>
+            <div>
+                <a href="perfilModificar.php"><button type="button">Modificar Perfil</button></a>
+                <a href="anuncioModificar.php"><button type="button">Modificar Anuncios</button></a>
+                <a href="contratoModificar.php"><button type="button">Modificar Contratos</button></a>
+            </div>
+        </fieldset>
+        EOF;
+
         return $html;
     }
 
