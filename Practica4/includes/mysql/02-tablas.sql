@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-04-2024 a las 10:38:33
+-- Tiempo de generación: 26-04-2024 a las 12:16:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `proyectosw`
+-- Base de datos: `practica4`
 --
 
 -- --------------------------------------------------------
@@ -101,6 +101,54 @@ CREATE TABLE `empresas` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `encargos`
+--
+
+CREATE TABLE `encargos` (
+  `id` int(11) NOT NULL,
+  `idVecino` int(11) NOT NULL,
+  `idEmpresa` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `terminos` varchar(50) NOT NULL,
+  `estado` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `imagenes`
+--
+
+CREATE TABLE `imagenes` (
+  `id` int(11) NOT NULL,
+  `idPropietario` int(11) NOT NULL,
+  `ruta` varchar(50) NOT NULL COMMENT 'Nombre dentro de ficheros',
+  `nombre` varchar(50) NOT NULL COMMENT 'Nombre dado por propietario',
+  `mimeType` varchar(50) NOT NULL,
+  `tipoAcceso` tinyint(4) NOT NULL,
+  `tipoPropietario` int(11) NOT NULL COMMENT 'Foto de Usuario o Anuncio'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificaciones`
+--
+
+CREATE TABLE `notificaciones` (
+  `id` int(11) NOT NULL,
+  `idReferencia` int(11) NOT NULL COMMENT 'Id del contrato, noticia, servicio que ha causado la notificación',
+  `tipo` tinyint(4) NOT NULL COMMENT 'Tipo de notificación (contrato, encargo, noticia ...)',
+  `fecha` datetime NOT NULL,
+  `estado` tinyint(4) NOT NULL,
+  `idEmisor` int(11) NOT NULL,
+  `idReceptor` int(11) NOT NULL,
+  `titulo` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `pueblos`
 --
 
@@ -149,6 +197,18 @@ CREATE TABLE `usuarios` (
   `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vecinos`
+--
+
+CREATE TABLE `vecinos` (
+  `id` int(11) NOT NULL,
+  `idPueblo` int(11) NOT NULL,
+  `idEmpresa` int(11)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tablas volcadas
 --
@@ -184,6 +244,24 @@ ALTER TABLE `contratos`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `encargos`
+--
+ALTER TABLE `encargos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `imagenes`
+--
+ALTER TABLE `imagenes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -199,6 +277,12 @@ ALTER TABLE `servicios`
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `vecinos`
+--
+ALTER TABLE `vecinos`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -227,6 +311,24 @@ ALTER TABLE `comunidades`
 -- AUTO_INCREMENT de la tabla `contratos`
 --
 ALTER TABLE `contratos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `encargos`
+--
+ALTER TABLE `encargos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `imagenes`
+--
+ALTER TABLE `imagenes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
