@@ -3,10 +3,15 @@ namespace es\ucm\fdi\aw\clases;
 
 class Contrato
 {
-
+    // Estados de un contrato
     public const ACTIVO_ESTADO = 1;
     public const FINALIZADO_ESTADO = 2;
     public const CANCELADO_ESTADO = 3;
+
+    // Tipos de notificación
+    public const NOTIFICA_CREACION = 1;  // Asumamos que 1 es para la creación de un contrato pendiente de aprobación
+    public const NOTIFICA_APROBACION = 2;  // Asumamos que 2 es cuando un contrato es aprobado
+    public const NOTIFICA_RECHAZO = 3;  // Asumamos que 3 es cuando un contrato es rechazado
 
     private $id;
     private $idEmpresa;
@@ -144,9 +149,67 @@ class Contrato
             $idEmpresa, $idPueblo, $duracion, $conn->real_escape_string($terminos));
         
         if ($conn->query($query)) {
-            return $conn->insert_id;
+            $contratoId = $conn->insert_id;
+            // Inserta notificación de creación de contrato pendiente
+            self::insertarNotificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION);
+            return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+
+    private static function insertarNotificacion($idReferencia, $idEmisor, $idReceptor, $tipoNotificacion)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $titulo = "Nuevo Contrato Pendiente de Aprobación";
+        if ($tipoNotificacion == self::NOTIFICA_APROBACION) {
+            $titulo = "Contrato Aprobado";
+        }
+        $estado = 0; // Estado no leído
+
+        $query = "INSERT INTO notificaciones (idReferencia, tipo, fecha, estado, idEmisor, idReceptor, titulo) VALUES (?, ?, NOW(), ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("iiiiis", $idReferencia, $tipoNotificacion, $estado, $idEmisor, $idReceptor, $titulo);
+            if ($stmt->execute()) {
+                $stmt->close();
+                return true;
+            } else {
+                $stmt->close();
+                error_log("Error al insertar la notificación: " . $stmt->error);
+                return false;
+            }
+        } else {
+            error_log("Error al preparar la consulta de inserción de notificación: " . $conn->error);
+            return false;
+        }
+    }
+
+    public static function rechazarContrato($idContrato, $idPueblo)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        // Actualizar el estado del contrato a CANCELADO
+        $query = "UPDATE contratos SET estado = ? WHERE id = ? AND idPueblo = ?";
+        $stmt = $conn->prepare($query);
+        if ($stmt) {
+            $estadoCancelado = self::CANCELADO_ESTADO;
+            $stmt->bind_param("iii", $estadoCancelado, $idContrato, $idPueblo);
+            if ($stmt->execute()) {
+                // Envía notificación de rechazo al emisor del contrato
+                $contrato = self::buscaContratoPorId($idContrato);
+                if ($contrato) {
+                    self::insertarNotificacion($idContrato, $idPueblo, $contrato->getIdEmpresa(), self::NOTIFICA_RECHAZO);
+                }
+                $stmt->close();
+                return true;
+            } else {
+                $stmt->close();
+                error_log("Error al actualizar el estado del contrato ({$conn->errno}): {$conn->error}");
+                return false;
+            }
+        } else {
+            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
             return false;
         }
     }
