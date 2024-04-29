@@ -42,6 +42,9 @@ class FormularioPerfil extends Formulario
             case Usuario::PUEBLO_ROLE:
                 $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
                 break;
+            case Usuario::VECINO_ROLE:
+                $contratos = Contrato::buscaContratosPorVecino($_SESSION['id']);
+                break;    
         }
 
         // Mostrar la información del perfil sin campos de entrada
@@ -112,6 +115,8 @@ class FormularioPerfil extends Formulario
                 return 'Empresa';
             case Usuario::PUEBLO_ROLE:
                 return 'Pueblo';
+            case Usuario::VECINO_ROLE:
+                return 'Vecino';    
             default:
                 return 'Desconocido';
         }

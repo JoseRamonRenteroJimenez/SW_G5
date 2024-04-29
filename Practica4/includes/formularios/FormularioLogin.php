@@ -79,6 +79,9 @@ class FormularioLogin extends Formulario
                     case Usuario::PUEBLO_ROLE:
                         // Lógica para pueblo
                         break;
+                    case Usuario::VECINO_ROLE:
+                        // Lógica para el vecino
+                        break;    
                     default:
                         // Manejar cualquier otro caso
                         break;

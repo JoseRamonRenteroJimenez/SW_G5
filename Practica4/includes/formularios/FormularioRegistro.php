@@ -7,6 +7,7 @@ require_once __DIR__.'/../../includes/clases/Pueblo.php';
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
+require_once __DIR__.'/../../includes/clases/Vecino.php';
 
 class FormularioRegistro extends Formulario
 {
