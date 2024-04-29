@@ -1,6 +1,8 @@
 <?php
 namespace es\ucm\fdi\aw\clases;
 
+use es\ucm\fdi\aw\Usuario;
+
 class Empresa extends Usuario
 {
     private $id;

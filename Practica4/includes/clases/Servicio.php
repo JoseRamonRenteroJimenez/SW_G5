@@ -1,5 +1,5 @@
 <?php
-namespace es\ucm\fdi\aw\clases;
+namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/clases/Pueblo.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
