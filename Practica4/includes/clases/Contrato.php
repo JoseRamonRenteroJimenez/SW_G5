@@ -1,11 +1,14 @@
 <?php
 namespace es\ucm\fdi\aw;
 
+use es\ucm\fdi\aw;
+
+/*
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
-require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Servicio.php';*/
 
 class Contrato
 {
@@ -23,15 +26,18 @@ class Contrato
     private $id;
     private $idEmpresa;
     private $idPueblo;
-    private $duracion; // Días
+    private $fechaInicial;
+    private $fechaFinal;
     private $terminos;
+    private $estado;
 
-    public function __construct($idEmpresa, $idPueblo, $duracion, $terminos, $estado = self::ESPERA_ESTADO, $id = null)
+    public function __construct($idEmpresa, $idPueblo, $fechaInicial, $fechaFinal, $terminos, $estado = self::ESPERA_ESTADO, $id = null)
     {
         $this->id = $id;
         $this->idEmpresa = $idEmpresa;
         $this->idPueblo = $idPueblo;
-        $this->duracion = $duracion;
+        $this->fechaInicial = $fechaInicial;
+        $this->fechaFinal = $fechaFinal;
         $this->terminos = $terminos;
         $this->estado = $estado;
     }
@@ -51,11 +57,6 @@ class Contrato
         return $this->idPueblo;
     }
 
-    public function getDuracion()
-    {
-        return $this->duracion;
-    }
-
     public function getTerminos()
     {
         return $this->terminos;
@@ -65,6 +66,17 @@ class Contrato
     {
         return $this->estado;
     }
+    
+    public function getFechaInicial()
+    {
+        return $this->fechaInicial;
+    }
+
+    public function getFechaFinal()
+    {
+        return $this->fechaFinal;
+    }
+    
 
     public static function getContratos()
     {
@@ -74,7 +86,7 @@ class Contrato
         $contratos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $contrato = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
+                $contrato = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['fechaInicial'], $fila['fechaFinal'], $fila['terminos'], $fila['estado'], $fila['id']);
                 $contratos[] = $contrato;
             }
             $rs->free();
@@ -111,7 +123,7 @@ class Contrato
         $rs = $conn->query($query);
         if ($rs) {
             if ($fila = $rs->fetch_assoc()) {
-                return new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
+                return new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['fechaInicial'], $fila['fechaFinal'], $fila['terminos'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
@@ -127,7 +139,7 @@ class Contrato
         $contratos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
+                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['fechaInicial'], $fila['fechaFinal'], $fila['terminos'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
@@ -142,7 +154,7 @@ class Contrato
         $contratos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['duracion'], $fila['terminos'], $fila['id']);
+                $contratos[] = new Contrato($fila['idEmpresa'], $fila['idPueblo'], $fila['fechaInicial'], $fila['fechaFinal'], $fila['terminos'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
@@ -159,15 +171,17 @@ class Contrato
         }
     }
 
-    public static function inserta($idEmpresa, $idPueblo, $duracion, $terminos)
+    public static function inserta($idEmpresa, $idPueblo, $fechaInicial, $fechaFinal, $terminos)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $idEmpresa = $conn->real_escape_string($idEmpresa);
         $idPueblo = $conn->real_escape_string($idPueblo);
-        $duracion = $conn->real_escape_string($duracion);
+        $fechaInicial = $conn->real_escape_string($fechaInicial);
+        $fechaFinal = $conn->real_escape_string($fechaFinal);
         $terminos = $conn->real_escape_string($terminos);
-        $query = sprintf("INSERT INTO contratos (idEmpresa, idPueblo, duracion, terminos, estado) VALUES (%d, %d, %d, '%s', '%d')",
-            $idEmpresa, $idPueblo, $duracion, $terminos, self::ESPERA_ESTADO);
+
+        $query = sprintf("INSERT INTO contratos (idEmpresa, idPueblo, fechaInicial, fechaFinal, terminos, estado) VALUES (%d, %d, '%s', '%s', '%s', %d)",
+            $idEmpresa, $idPueblo, $fechaInicial, $fechaFinal, $terminos, self::ESPERA_ESTADO);
         
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
@@ -179,6 +193,7 @@ class Contrato
             return false;
         }
     }
+
 
     public static function confirmarContrato($idContrato, $confirmacion)
     {
@@ -260,12 +275,12 @@ class Contrato
         }
     }
 
-    // Esto deberia actualizar solo un contrato
-    public static function actualiza($id, $idEmpresa, $idPueblo, $duracion, $terminos)
+    // Esto debería actualizar solo un contrato
+    public static function actualiza($id, $fechaInicial, $fechaFinal, $terminos)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE contratos SET idEmpresa=%d, idPueblo=%d, duracion=%d, terminos='%s' WHERE id=%d",
-            $idEmpresa, $idPueblo, $duracion, $conn->real_escape_string($terminos), $id);
+        $query = sprintf("UPDATE contratos SET fechaInicial='%s', fechaFinal='%s', terminos='%s' WHERE id=%d",
+            $fechaInicial, $fechaFinal, $conn->real_escape_string($terminos), $id);
 
         if ($conn->query($query)) {
             return true;

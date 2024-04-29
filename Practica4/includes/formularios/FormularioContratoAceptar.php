@@ -35,7 +35,8 @@ class FormularioContratoAceptar extends Formulario
         $nombreEmpresa = Empresa::buscaNombreEmpresa($idEmpresa);
         $idPueblo = $contrato->getIdPueblo();
         $nombrePueblo = Pueblo::buscaNombrePueblo($idPueblo);
-        $duracion = $contrato->getDuracion();
+        $fechaInicio = $contrato->getFechaInicio();
+        $fechaFinal = $contrato->getFechaFinal();
 
         // Generar HTML para mostrar el contrato y los botones de aceptar y rechazar
         $html = <<<EOF
@@ -47,7 +48,8 @@ class FormularioContratoAceptar extends Formulario
             <p>Nombre Empresa: $nombreEmpresa</p>
             <p>ID Pueblo: $idPueblo</p>
             <p>Nombre Pueblo: $nombrePueblo</p>
-            <p>Duración (días): $duracion</p>
+            <p>Fecha de inicio: $fechaInicio</p>
+            <p>Fecha final: $fechaFinal</p>
             <div>
                 <button type="submit" name="confirmar" value="aceptar">Aceptar Contrato</button>
                 <button type="submit" name="confirmar" value="rechazar">Rechazar Contrato</button>

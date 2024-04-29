@@ -31,12 +31,14 @@ class FormularioContratoModificar extends Formulario
             }
         }
 
-        // Mostrar los contratos en un formulario para modificar la duración y los términos
+        // Mostrar los contratos en un formulario para modificar las fechas de inicio y fin, y los términos
         $html = '<fieldset><legend>Modificar Contratos</legend>';
         foreach ($contratos as $contrato) {
             $html .= '<div>';
-            $html .= '<label for="duracion_' . $contrato->getId() . '">Duración (días) para el contrato con ID ' . $contrato->getId() . ':</label>';
-            $html .= '<input id="duracion_' . $contrato->getId() . '" type="number" name="duracion_' . $contrato->getId() . '" value="' . $contrato->getDuracion() . '" required>';
+            $html .= '<label for="fecha_inicio_' . $contrato->getId() . '">Fecha de inicio para el contrato con ID ' . $contrato->getId() . ':</label>';
+            $html .= '<input id="fecha_inicio_' . $contrato->getId() . '" type="date" name="fecha_inicio_' . $contrato->getId() . '" value="' . $contrato->getFechaInicial() . '" required>';
+            $html .= '<label for="fecha_fin_' . $contrato->getId() . '">Fecha de fin para el contrato con ID ' . $contrato->getId() . ':</label>';
+            $html .= '<input id="fecha_fin_' . $contrato->getId() . '" type="date" name="fecha_fin_' . $contrato->getId() . '" value="' . $contrato->getFechaFinal() . '" required>';
             $html .= '<label for="terminos_' . $contrato->getId() . '">Términos para el contrato con ID ' . $contrato->getId() . ':</label>';
             $html .= '<input id="terminos_' . $contrato->getId() . '" type="text" name="terminos_' . $contrato->getId() . '" value="' . $contrato->getTerminos() . '" required>';
             $html .= '</div>';
@@ -50,13 +52,14 @@ class FormularioContratoModificar extends Formulario
     protected function procesaFormulario(&$datos) {
         // Procesar la actualización de los contratos
         foreach ($datos as $key => $value) {
-            if (strpos($key, 'duracion_') === 0) {
-                $idContrato = substr($key, strlen('duracion_'));
-                $duracion = $value;
+            if (strpos($key, 'fecha_inicio_') === 0) {
+                $idContrato = substr($key, strlen('fecha_inicio_'));
+                $fechaInicio = $value;
+                $fechaFin = $datos['fecha_fin_' . $idContrato];
                 $terminos = $datos['terminos_' . $idContrato];
                 
                 // Actualizar el contrato utilizando el método estático de la clase Contrato
-                if (!Contrato::actualiza($idContrato, $duracion, $terminos)) {
+                if (!Contrato::actualiza($idContrato, $fechaInicio, $fechaFin, $terminos)) {
                     return "Error al actualizar el contrato.";
                 }
             }

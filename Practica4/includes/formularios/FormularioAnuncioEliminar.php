@@ -3,7 +3,6 @@ namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php';
-require_once __DIR__.'/../../includes/clases/Anuncio.php'; 
 
 class FormularioAnuncioEliminar extends Formulario
 {

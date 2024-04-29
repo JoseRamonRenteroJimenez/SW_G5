@@ -4,8 +4,8 @@ namespace es\ucm\fdi\aw;
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php'; 
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
-require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
+require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Contrato.php';
@@ -28,8 +28,8 @@ class FormularioContratoListado extends Formulario
                 // Si el usuario es empresa, mostrar solo sus contratos
                 $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
                 $html .= '<h2>Tus Contratos:</h2>';
-            }elseif($rol === Usuario::PUEBLO_ROLE){
-                // Si el usuario es empresa, mostrar solo sus contratos
+            } elseif ($rol === Usuario::PUEBLO_ROLE) {
+                // Si el usuario es pueblo, mostrar solo sus contratos
                 $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
                 $html .= '<h2>Tus Contratos:</h2>';
             } elseif ($rol === Usuario::ADMIN_ROLE) {
@@ -45,7 +45,7 @@ class FormularioContratoListado extends Formulario
             // Mostrar contratos
             if (!empty($contratos)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Contrato</th><th>Términos</th><th>ID Empresa</th><th>Nombre Empresa</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Duración (días)</th></tr>';
+                $html .= '<tr><th>ID Contrato</th><th>Términos</th><th>ID Empresa</th><th>Nombre Empresa</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Fecha Inicial</th><th>Fecha Final</th></tr>';
                 foreach ($contratos as $contrato) {
                     $idContrato = $contrato->getId();
                     $terminos = $contrato->getTerminos();
@@ -53,9 +53,9 @@ class FormularioContratoListado extends Formulario
                     $nombreEmpresa = Empresa::buscaNombreEmpresa($idEmpresa);
                     $idPueblo = $contrato->getIdPueblo();
                     $nombrePueblo = Pueblo::buscaNombrePueblo($idPueblo);
-                    $duracion = $contrato->getDuracion();
-
-                    $html .= "<tr><td>$idContrato</td><td>$terminos</td><td>$idEmpresa</td><td>$nombreEmpresa</td><td>$idPueblo</td><td>$nombrePueblo</td><td>$duracion</td></tr>";
+                    $fechaInicial = $contrato->getFechaInicial();
+                    $fechaFinal = $contrato->getFechaFinal();
+                    $html .= "<tr><td>$idContrato</td><td>$terminos</td><td>$idEmpresa</td><td>$nombreEmpresa</td><td>$idPueblo</td><td>$nombrePueblo</td><td>$fechaInicial</td><td>$fechaFinal</td></tr>";
                 }
                 $html .= '</table>';
             } else {

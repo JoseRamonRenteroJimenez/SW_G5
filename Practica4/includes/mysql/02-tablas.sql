@@ -82,7 +82,7 @@ CREATE TABLE `contratos` (
   `idPueblo` int(11) NOT NULL,
   `fechaInicial` date NOT NULL,
   `fechaFinal` date NOT NULL,
-  `terminos` varchar(50) NOT NULL,
+  `terminos` varchar(256) NOT NULL,
   `estado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

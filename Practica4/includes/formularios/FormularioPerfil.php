@@ -90,7 +90,8 @@ class FormularioPerfil extends Formulario
             foreach ($contratos as $contrato) {
                 $html .= '<div>';
                 $html .= '<p><strong>Pueblo:</strong> ' . $contrato->getIdPueblo() . '</p>';
-                $html .= '<p><strong>Duración:</strong> ' . $contrato->getDuracion() . '</p>';
+                $html .= '<p><strong>Fecha Inicial:</strong> ' . $contrato->getFechaInicial() . '</p>';
+                $html .= '<p><strong>Fecha Final:</strong> ' . $contrato->getFechaFinal() . '</p>';
                 $html .= '<p><strong>Terminos:</strong> ' . $contrato->getTerminos() . '</p>';
                 $html .= '</div>';
             }
