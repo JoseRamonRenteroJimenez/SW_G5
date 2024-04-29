@@ -140,6 +140,7 @@ class FormularioRegistro extends Formulario
             case 'admin':
             case 'empresa':
             case 'pueblo':
+            case 'vecino':
                 // Procesar registro de usuario
                 $usuario = Usuario::crea($nombreUsuario, $password, $nombre, ($rol == 'admin' ? 1 : ($rol == 'empresa' ? 2 : 3)));
                 
@@ -178,6 +179,14 @@ class FormularioRegistro extends Formulario
 
                         $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
                         if (Pueblo::registrar($pueblo)) {
+                            // Registro exitoso, redirigir o realizar acciones necesarias
+                        } else {
+                            // Manejar el error de registro
+                        }
+                    } elseif ($rol == 'pueblo') {
+
+                        $vecino = new Vecino($usuario->getId(), $cif, $comunidad);
+                        if (Vecino::registrar($vecino)) {
                             // Registro exitoso, redirigir o realizar acciones necesarias
                         } else {
                             // Manejar el error de registro

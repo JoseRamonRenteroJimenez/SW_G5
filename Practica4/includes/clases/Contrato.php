@@ -1,12 +1,19 @@
 <?php
 namespace es\ucm\fdi\aw\clases;
 
+require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
+require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
+require_once __DIR__.'/../../includes/clases/Empresa.php';
+require_once __DIR__.'/../../includes/clases/Ambito.php'; 
+require_once __DIR__.'/../../includes/clases/Servicio.php';
+
 class Contrato
 {
     // Estados de un contrato
     public const ACTIVO_ESTADO = 1;
     public const FINALIZADO_ESTADO = 2;
     public const CANCELADO_ESTADO = 3;
+    public const ESPERA_ESTADO = 4 ;
 
     // Tipos de notificación
     public const NOTIFICA_CREACION = 1;  // Asumamos que 1 es para la creación de un contrato pendiente de aprobación
@@ -19,13 +26,14 @@ class Contrato
     private $duracion; // Días
     private $terminos;
 
-    public function __construct($idEmpresa, $idPueblo, $duracion, $terminos, $id = null)
+    public function __construct($idEmpresa, $idPueblo, $duracion, $terminos, $estado = self::ESPERA_ESTADO, $id = null)
     {
         $this->id = $id;
         $this->idEmpresa = $idEmpresa;
         $this->idPueblo = $idPueblo;
         $this->duracion = $duracion;
         $this->terminos = $terminos;
+        $this->estado = $estado;
     }
 
     public function getId()
@@ -53,6 +61,11 @@ class Contrato
         return $this->terminos;
     }
 
+    public function getEstado()
+    {
+        return $this->estado;
+    }
+
     public static function getContratos()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -70,6 +83,8 @@ class Contrato
         }
         return $contratos;
     }
+
+    /*
     // Puede ser muy similar a inserta, hay que revisarlo porque puede estar duplicado
     public static function guarda($idEmpresa, $idPueblo, $duracion, $terminos)
     {
@@ -87,6 +102,7 @@ class Contrato
             return false;
         }
     }
+    */
 
     public static function buscaContratoPorId($idContrato)
     {
@@ -142,11 +158,16 @@ class Contrato
             return false; // Error al registrar el pueblo
         }
     }
+
     public static function inserta($idEmpresa, $idPueblo, $duracion, $terminos)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("INSERT INTO contratos (idEmpresa, idPueblo, duracion, terminos) VALUES (%d, %d, %d, '%s')",
-            $idEmpresa, $idPueblo, $duracion, $conn->real_escape_string($terminos));
+        $idEmpresa = $conn->real_escape_string($idEmpresa);
+        $idPueblo = $conn->real_escape_string($idPueblo);
+        $duracion = $conn->real_escape_string($duracion);
+        $terminos = $conn->real_escape_string($terminos);
+        $query = sprintf("INSERT INTO contratos (idEmpresa, idPueblo, duracion, terminos, estado) VALUES (%d, %d, %d, '%s', '%d')",
+            $idEmpresa, $idPueblo, $duracion, $terminos, self::ESPERA_ESTADO);
         
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
@@ -155,6 +176,59 @@ class Contrato
             return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
+        }
+    }
+
+    public static function confirmarContrato($idContrato, $confirmacion)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        // Actualizar el estado del contrato
+        $estado = $confirmacion ? self::ACTIVO_ESTADO : self::CANCELADO_ESTADO;
+        $query = "UPDATE contratos SET estado = ? WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("ii", $estado, $idContrato);
+            if ($stmt->execute()) {
+                $stmt->close();
+
+                // Obtener la empresa asociada al contrato
+                $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = ?";
+                $stmt = $conn->prepare($query);
+                if ($stmt) {
+                    $stmt->bind_param("i", $idContrato);
+                    if ($stmt->execute()) {
+                        $stmt->bind_result($idEmpresa, $idPueblo);
+                        if ($stmt->fetch()) {
+                            $stmt->close();
+                            
+                            // Obtener el ámbito de la empresa
+                            $empresa = new Empresa($idEmpresa, null, null); // Crea una instancia de Empresa
+                            $ambitoEmpresa = $empresa->getAmbitoEmpresa($idEmpresa); // Obtener el ámbito de la empresa
+                            Servicio::registrar(new Servicio($idPueblo, $ambitoEmpresa, 1)); // Registrar el servicio en el pueblo
+
+                            return true;
+                        } else {
+                            $stmt->close();
+                            error_log("No se encontró el contrato con ID: $idContrato");
+                            return false;
+                        }
+                    } else {
+                        $stmt->close();
+                        error_log("Error al ejecutar la consulta para obtener la empresa asociada al contrato ({$conn->errno}): {$conn->error}");
+                        return false;
+                    }
+                } else {
+                    error_log("Error al preparar la consulta para obtener la empresa asociada al contrato: " . $conn->error);
+                    return false;
+                }
+            } else {
+                $stmt->close();
+                error_log("Error al actualizar el estado del contrato ({$conn->errno}): {$conn->error}");
+                return false;
+            }
+        } else {
+            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
             return false;
         }
     }
@@ -182,34 +256,6 @@ class Contrato
             }
         } else {
             error_log("Error al preparar la consulta de inserción de notificación: " . $conn->error);
-            return false;
-        }
-    }
-
-    public static function rechazarContrato($idContrato, $idPueblo)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        // Actualizar el estado del contrato a CANCELADO
-        $query = "UPDATE contratos SET estado = ? WHERE id = ? AND idPueblo = ?";
-        $stmt = $conn->prepare($query);
-        if ($stmt) {
-            $estadoCancelado = self::CANCELADO_ESTADO;
-            $stmt->bind_param("iii", $estadoCancelado, $idContrato, $idPueblo);
-            if ($stmt->execute()) {
-                // Envía notificación de rechazo al emisor del contrato
-                $contrato = self::buscaContratoPorId($idContrato);
-                if ($contrato) {
-                    self::insertarNotificacion($idContrato, $idPueblo, $contrato->getIdEmpresa(), self::NOTIFICA_RECHAZO);
-                }
-                $stmt->close();
-                return true;
-            } else {
-                $stmt->close();
-                error_log("Error al actualizar el estado del contrato ({$conn->errno}): {$conn->error}");
-                return false;
-            }
-        } else {
-            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
             return false;
         }
     }

@@ -5,6 +5,7 @@ require_once __DIR__.'/../../includes/config.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';
 require_once __DIR__.'/../../includes/clases/Anuncio.php'; 
 require_once __DIR__.'/../../includes/clases/Contrato.php'; 
+require_once __DIR__.'/../../includes/clases/Encargo.php';
 
 require_once 'Formulario.php';
 
@@ -41,10 +42,18 @@ class FormularioPerfil extends Formulario
                 break;
             case Usuario::PUEBLO_ROLE:
                 $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
+                break; 
+        }
+
+        // Obtener los encargos del usuario
+        $encargos = [];
+        switch ($usuario->getRol()) {
+            case Usuario::EMPRESA_ROLE:
+                $encargos = Encargo::buscaEncargosPorEmpresa($_SESSION['id']);
                 break;
             case Usuario::VECINO_ROLE:
-                $contratos = Contrato::buscaContratosPorVecino($_SESSION['id']);
-                break;    
+                $encargos = Encargo::buscaEncargosPorVecino($_SESSION['id']);
+                break; 
         }
 
         // Mostrar la información del perfil sin campos de entrada
@@ -88,6 +97,18 @@ class FormularioPerfil extends Formulario
             $html .= '</fieldset>';
         }
 
+        // Mostrar los encargos del usuario
+        if (!empty($encargos)) {
+            $html .= '<fieldset><legend>Encargos del Usuario</legend>';
+            foreach ($encargos as $encargo) {
+                $html .= '<div>';
+                $html .= '<p><strong>Descripción:</strong> ' . $encargo->getDescripcion() . '</p>';
+                $html .= '<p><strong>Fecha:</strong> ' . $encargo->getFecha() . '</p>';
+                $html .= '</div>';
+            }
+            $html .= '</fieldset>';
+        }
+
         // Añadir botones para modificar perfil, anuncios y contratos
         $html .= <<<EOF
         <fieldset>
@@ -96,6 +117,7 @@ class FormularioPerfil extends Formulario
                 <a href="perfilModificar.php"><button type="button">Modificar Perfil</button></a>
                 <a href="anuncioModificar.php"><button type="button">Modificar Anuncios</button></a>
                 <a href="contratoModificar.php"><button type="button">Modificar Contratos</button></a>
+                <a href="encargoModificar.php"><button type="button">Modificar Encargos</button></a>
             </div>
         </fieldset>
         EOF;

@@ -98,4 +98,24 @@ class Vecino extends Usuario
     {
         $this->idEmpresa = $idEmpresa;
     }
+
+    public static function buscaNombreVecino($idVecino)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        
+        // Query para obtener el nombre de usuario asociado a la ID de empresa
+        $query = "SELECT nombreUsuario FROM usuarios WHERE id = ?";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $idVecino);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($fila = $result->fetch_assoc()) {
+                // Una vez obtenido el nombre de usuario, buscamos la empresa por su nombre de usuario
+                $nombreUsuario = $fila['nombreUsuario'];
+                return $nombreUsuario;
+            }
+        }
+        return null;
+    }
 }

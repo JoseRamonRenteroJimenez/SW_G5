@@ -1,19 +1,18 @@
 <?php
-
 require_once __DIR__.'/includes/config.php';
-require_once __Dir__.'/includes/clases/Contrato.php'; // Posiblemente no haga falta pero por si acaso
-require_once __DIR__.'/includes/formularios/FormularioContrato.php'; // Ruta correcta hacia formulariocontrato.php
+require_once __DIR__.'/includes/formularios/FormularioContratoCrear.php'; 
 
-use es\ucm\fdi\aw\FormularioContrato;
+use es\ucm\fdi\aw\formularios\FormularioContratoCrear;
 
-$form = new FormularioContrato();
-$htmlFormContrato = $form->gestiona();
+$formulario = new FormularioContratoCrear();
+$htmlFormulario = $formulario->gestiona();
 
-$tituloPagina = 'Contrato';
+$tituloPagina = 'Crear Contrato';
 
-$contenidoPrincipal = <<<EOS
-<h1>Contrato entre ambas partes</h1>
-$htmlFormContrato
-EOS;
+$contenidoPrincipal = <<<HTML
+<h1>Crear Contrato</h1>
+$htmlFormulario
+HTML;
 
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';
+?>

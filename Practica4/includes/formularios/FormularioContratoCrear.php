@@ -10,8 +10,9 @@ require_once __DIR__.'/../../includes/clases/Ambito.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
 
+//Este formulario lo usará Empresa para ofrecer a un pueblo un contrato
 
-class FormularioContrato extends Formulario
+class FormularioContratoCrear extends Formulario
 {
     private $exito = false; // Si el contrato es generado correctamente pasa a true
 
@@ -122,12 +123,6 @@ class FormularioContrato extends Formulario
             if ($resultado) {
                 // Contrato registrado correctamente
                 $this->exito = true; // Indicar que el proceso fue exitoso
-                // Puedes redirigir a otra página o mostrar un mensaje de éxito
-                // Añadir un servicio al pueblo correspondiente
-                $empresa = new Empresa($_SESSION['id'], null, null); // Crea una instancia de Empresa
-                $ambitoEmpresa = $empresa->getAmbitoEmpresa($idEmpresa); // Obtener el ámbito de la empresa
-                Servicio::registrar(new Servicio($idPueblo, $ambitoEmpresa, 1)); // Registrar el servicio en el pueblo
-                
             } else {
                 $this->errores[] = 'Error al registrar el contrato';
             }
