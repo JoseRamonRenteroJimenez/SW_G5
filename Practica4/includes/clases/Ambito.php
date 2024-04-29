@@ -1,5 +1,5 @@
 <?php
-namespace es\ucm\fdi\aw\clases;
+namespace es\ucm\fdi\aw;
 
 class Ambito
 {
