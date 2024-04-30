@@ -19,15 +19,15 @@ class Encargo {
     private $id;
     private $idVecino;
     private $idEmpresa;
-    private $descripcion;
+    private $terminos;
     private $fecha;
     private $estado;
 
-    public function __construct($idVecino, $idEmpresa, $descripcion, $fecha, $estado, $id = null) {
+    public function __construct($idVecino, $idEmpresa, $terminos, $fecha, $estado, $id = null) {
         $this->id = $id;
         $this->idVecino = $idVecino;
         $this->idEmpresa = $idEmpresa;
-        $this->descripcion = $descripcion;
+        $this->terminos = $terminos;
         $this->fecha = $fecha;
         $this->estado = $estado;
     }
@@ -45,8 +45,8 @@ class Encargo {
         return $this->idEmpresa;
     }
 
-    public function getDescripcion() {
-        return $this->descripcion;
+    public function getTerminos() {
+        return $this->terminos;
     }
 
     public function getFecha() {
@@ -57,18 +57,18 @@ class Encargo {
         return $this->estado;
     }
 
-    public static function inserta($idVecino, $idEmpresa, $descripcion) {
+    public static function inserta($idVecino, $idEmpresa, $terminos) {
         $conn = Aplicacion::getInstance()->getConexionBd();
     
         $idVecino = $conn->real_escape_string($idVecino);
         $idEmpresa = $conn->real_escape_string($idEmpresa);
-        $descripcion = $conn->real_escape_string($descripcion);
+        $terminos = $conn->real_escape_string($terminos);
         
         $fecha = date('Y-m-d'); // Obtener la fecha actual en el formato 'YYYY-MM-DD'
 
     
         $query = sprintf("INSERT INTO encargos (idVecino, idEmpresa, terminos, fecha, estado) VALUES (%d, %d, '%s', '%s', %d)",
-            $idVecino, $idEmpresa, $descripcion, $fecha, self::ESPERA_ESTADO);
+            $idVecino, $idEmpresa, $terminos, $fecha, self::ESPERA_ESTADO);
         
         if ($conn->query($query)) {
             $encargoId = $conn->insert_id;
@@ -89,7 +89,7 @@ class Encargo {
         $rs = $conn->query($query);
         if ($rs) {
             if ($fila = $rs->fetch_assoc()) {
-                return new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['fecha'], $fila['descripcion'], $fila['estado'], $fila['id']);
+                return new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['fecha'], $fila['terminos'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
@@ -181,7 +181,7 @@ class Encargo {
         $encargos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $encargos[] = new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['descripcion'], $fila['fecha'], $fila['estado'], $fila['id']);
+                $encargos[] = new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['terminos'], $fila['fecha'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
@@ -196,11 +196,29 @@ class Encargo {
         $encargos = [];
         if ($rs) {
             while ($fila = $rs->fetch_assoc()) {
-                $encargos[] = new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['descripcion'], $fila['fecha'], $fila['estado'], $fila['id']);
+                $encargos[] = new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['terminos'], $fila['fecha'], $fila['estado'], $fila['id']);
             }
             $rs->free();
         }
         return $encargos;
+    }
+
+    public static function getEncargos()
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT * FROM encargos";
+        $rs = $conn->query($query);
+        $encargos = [];
+        if ($rs) {
+            while ($fila = $rs->fetch_assoc()) {
+                $encargo = new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['terminos'], $fila['fecha'], $fila['estado'], $fila['id']);
+                $encargos[] = $encargo;
+            }
+            $rs->free();
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+        }
+        return $contratos;
     }
 
 

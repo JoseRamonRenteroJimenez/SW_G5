@@ -6,11 +6,8 @@ require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php'; 
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
-require_once __DIR__.'/../../includes/clases/Empresa.php';
-require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
-require_once __DIR__.'/../../includes/clases/Ambito.php'; 
-require_once __DIR__.'/../../includes/clases/Contrato.php';
-require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Empresa.php'; 
+require_once __DIR__.'/../../includes/clases/Vecino.php';
 
 class FormularioEncargoListado extends Formulario
 {
@@ -46,10 +43,10 @@ class FormularioEncargoListado extends Formulario
             // Mostrar encargos
             if (!empty($encargos)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Encargo</th><th>Descripción</th><th>ID Vecino</th><th>Fecha</th><th>Estado</th></tr>';
+                $html .= "<tr><td>idEncargo</td><td>terminos</td><td>idVecino</td><td>nombreVecino</td><td>idEmpresa</td><td>nombreEmpresa</td><td>fecha</td><td>estado</td></tr>";
                 foreach ($encargos as $encargo) {
                     $idEncargo = $encargo->getId();
-                    $descripcion = $encargo->getDescripcion();
+                    $terminos = $encargo->getTerminos();
                     $idVecino = $encargo->getIdVecino();
                     $nombreVecino = Vecino::buscaNombreVecino($idVecino);
                     $idEmpresa = $encargo->getIdEmpresa();
@@ -57,7 +54,7 @@ class FormularioEncargoListado extends Formulario
                     $fecha = $encargo->getFecha();
                     $estado = $encargo->getEstado();
 
-                    $html .= "<tr><td>$idEncargo</td><td>$descripcion</td><td>$idVecino</td>td>$nombreVecino</td>td>$idEmpresa</td>td>$nombreEmpresa</td><td>$fecha</td><td>$estado</td></tr>";
+                    $html .= "<tr><td>$idEncargo</td><td>$terminos</td><td>$idVecino</td>td>$nombreVecino</td>td>$idEmpresa</td>td>$nombreEmpresa</td><td>$fecha</td><td>$estado</td></tr>";
                 }
                 $html .= '</table>';
             } else {
