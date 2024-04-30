@@ -1,5 +1,7 @@
 <?php
-namespace es\ucm\fdi\aw\clases;
+namespace es\ucm\fdi\aw;
+
+use es\ucm\fdi\aw\Usuario;
 
 class Empresa extends Usuario
 {
@@ -58,6 +60,11 @@ class Empresa extends Usuario
             }
         }
         return false;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     // Getters y setters para los nuevos atributos.
@@ -134,6 +141,41 @@ class Empresa extends Usuario
         } else {
             error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
             return false; // Error al preparar la consulta
+        }
+    }
+
+    public static function getEmpresas()
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT * FROM empresas";
+        $resultado = $conn->query($query);
+
+        $empresas = []; // Array para almacenar los objetos Pueblo
+
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $empresas[] = new Empresa($fila['id'], $fila['nTrabajadores'], $fila['ambito']);
+            }
+            $resultado->free();
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+        }
+
+        return $empresas;
+    }
+
+    public function getNombre()
+    {
+        // Buscar el usuario correspondiente al ID del pueblo
+        $usuario = Usuario::buscaPorId($this->id);
+        
+        // Verificar si se encontró el usuario
+        if ($usuario) {
+            // Devolver el nombre del usuario
+            return $usuario->getNombreUsuario();
+        } else {
+            // Si no se encuentra el usuario, devolver un valor por defecto o lanzar una excepción, dependiendo del caso de uso
+            return "Nombre no disponible";
         }
     }
 }

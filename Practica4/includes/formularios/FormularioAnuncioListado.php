@@ -1,5 +1,5 @@
 <?php
-namespace es\ucm\fdi\aw\formularios;
+namespace es\ucm\fdi\aw;
 
 require_once 'Formulario.php'; 
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
@@ -9,7 +9,6 @@ require_once __DIR__.'/../../includes/clases/Comunidad.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
-require_once __DIR__.'/../../includes/clases/Anuncio.php';
 
 class FormularioAnuncioListado extends Formulario
 {

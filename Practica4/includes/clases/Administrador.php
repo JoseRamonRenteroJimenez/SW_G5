@@ -1,5 +1,7 @@
 <?php
-namespace es\ucm\fdi\aw\clases;
+namespace es\ucm\fdi\aw;
+
+use es\ucm\fdi\aw\Usuario;
 
 class Administrador extends Usuario
 {

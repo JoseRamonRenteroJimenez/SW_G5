@@ -1,10 +1,11 @@
 <?php
-namespace es\ucm\fdi\aw\formularios;
+namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';
 require_once __DIR__.'/../../includes/clases/Pueblo.php';
 require_once __DIR__.'/../../includes/clases/Empresa.php';
+require_once __DIR__.'/../../includes/clases/Vecino.php';
 require_once __DIR__.'/../../includes/clases/Administrador.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
@@ -60,12 +61,16 @@ class FormularioBorrarPerfil extends Formulario
                             Servicio::disminuirServiciosPorEmpresaYPueblo(Empresa::getAmbitoEmpresa($_SESSION['id']),$contrato->getIdPueblo());
                         }
                         Contrato::eliminarContratosEmpresa($_SESSION['id']);
+                        Encargo::eliminarEncargosEmpresa($_SESSION['id']);
                         Empresa::eliminarPorId($_SESSION['id']);
                         break;
                     case Usuario::PUEBLO_ROLE:
                         Pueblo::eliminarPorId($_SESSION['id']);
                         Contrato::eliminarContratosPueblo($_SESSION['id']);
                         break;
+                    case USUARIO::VECINO_ROLE:
+                        Vecino::eliminarPorId($_SESSION['id']);
+                        Encargo::eliminarEncargosVecino($_SESSION['id']);
                     default:
                         // Manejar cualquier otro caso
                         break;

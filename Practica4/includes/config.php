@@ -4,15 +4,15 @@
  * Parámetros de conexión a la BD
  */
 define('BD_HOST', 'localhost');
-define('BD_NAME', 'proyectosw');
-define('BD_USER', 'ProyectoSW');
-define('BD_PASS', 'ProyectoSW');
+define('BD_NAME', 'practica4');
+define('BD_USER', 'practica4');
+define('BD_PASS', 'practica4');
 
 /**
  * Parámetros de configuración utilizados para generar las URLs y las rutas a ficheros en la aplicación
  */
 define('RAIZ_APP', __DIR__);
-define('RUTA_APP', '/SW_G5/ProyectoFinal');
+define('RUTA_APP', '/SW_G5/Practica4');
 define('RUTA_IMGS', RUTA_APP.'/includes/imagenes');
 define('RUTA_CSS', RUTA_APP.'/css');
 define('RUTA_JS', RUTA_APP.'/js');

@@ -1,8 +1,9 @@
 <?php
-namespace es\ucm\fdi\aw\formularios;
+
+namespace es\ucm\fdi\aw;
 
 require_once 'Formulario.php'; 
-require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
+require_once __DIR__.'/../../includes/clases/Usuario.php';  
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
@@ -10,10 +11,9 @@ require_once __DIR__.'/../../includes/clases/Ambito.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
 
-
-class FormularioContrato extends Formulario
+class FormularioContratoCrear extends Formulario
 {
-    private $exito = false; // Si el contrato es generado correctamente pasa a true
+    private $exito = false;
 
     public function __construct() {
         parent::__construct('formContrato', ['urlRedireccion' => 'contratoResumen.php']);
@@ -21,37 +21,29 @@ class FormularioContrato extends Formulario
     
     protected function generaCamposFormulario(&$datos)
     {
-        // Verificar si el usuario tiene el rol adecuado
         $rol = isset($_SESSION['rol']) ? intval($_SESSION['rol']) : null;
         if ($rol !== Usuario::EMPRESA_ROLE) {
             return "Inicie sesión como empresa para continuar correctamente.";
         }
         
-        // Obtener las comunidades y los pueblos
         $comunidades = Comunidad::getComunidades();
         $pueblos = Pueblo::getPueblos();
     
-        // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['idPueblo', 'idComunidad', 'duracion', 'terminos'], $this->errores, 'span', array('class' => 'error'));
+        $erroresCampos = self::generaErroresCampos(['idPueblo', 'idComunidad', 'fechaInicio', 'fechaFinal', 'terminos'], $this->errores, 'span', array('class' => 'error'));
 
-        // Inicia el desplegable de comunidades
         $htmlComunidades = "<select id='comunidad' name='comunidad'>";
         foreach ($comunidades as $comunidad) {
             $htmlComunidades .= "<option value='{$comunidad->getId()}'>{$comunidad->getNombre()}</option>";
         }
         $htmlComunidades .= "</select>";
     
-        //Nota -> Posteriormente esto debe sacar solo los pueblos que se encuentren en esa comunidad
-        // Inicia el desplegable de pueblos (inicialmente vacío, se llenará con JavaScript)
         $htmlPueblos = "<select id='pueblo' name='pueblo'><option value=''>Seleccione un pueblo...</option>";
         foreach ($pueblos as $pueblo) {
             $htmlPueblos .= "<option value='{$pueblo->getId()}'>{$pueblo->getNombre()}</option>";
         }
         $htmlPueblos .= "</select>";
 
-
-        // Se genera el HTML asociado a los campos del formulario y los mensajes de error.
         $html = <<<EOF
         
         $htmlErroresGlobales
@@ -68,9 +60,14 @@ class FormularioContrato extends Formulario
                 {$erroresCampos['idPueblo']}
             </div>
             <div>
-                <label for="duracion">Duración (días):</label>
-                <input id="duracion" type="text" name="duracion" value="" />
-                {$erroresCampos['duracion']}
+                <label for="fechaInicio">Fecha de inicio:</label>
+                <input id="fechaInicio" type="date" name="fechaInicio" value="" />
+                {$erroresCampos['fechaInicio']}
+            </div>
+            <div>
+                <label for="fechaFinal">Fecha final:</label>
+                <input id="fechaFinal" type="date" name="fechaFinal" value="" />
+                {$erroresCampos['fechaFinal']}
             </div>
             <div>
                 <label for="terminos">Términos:</label>
@@ -90,13 +87,12 @@ class FormularioContrato extends Formulario
     {
         $this->errores = [];
 
-        // Obtener los datos del formulario
         $idEmpresa = $_SESSION['id'] ?? '';
         $idPueblo = $datos['pueblo'] ?? '';
-        $duracion = $datos['duracion'] ?? '';
+        $fechaInicio = $datos['fechaInicio'] ?? '';
+        $fechaFinal = $datos['fechaFinal'] ?? '';
         $terminos = $datos['terminos'] ?? '';
 
-        // Validar los campos
         if (empty($idEmpresa)) {
             $this->errores['idEmpresa'] = 'El campo empresa es obligatorio';
         }
@@ -105,29 +101,25 @@ class FormularioContrato extends Formulario
             $this->errores['idPueblo'] = 'El campo pueblo es obligatorio';
         }
 
-        if (empty($duracion)) {
-            $this->errores['duracion'] = 'El campo duración es obligatorio';
-        } elseif (!ctype_digit($duracion) || $duracion <= 0) {
-            $this->errores['duracion'] = 'La duración debe ser un número entero positivo';
+        if (empty($fechaInicio)) {
+            $this->errores['fechaInicio'] = 'El campo fecha de inicio es obligatorio';
+        }
+
+        if (empty($fechaFinal)) {
+            $this->errores['fechaFinal'] = 'El campo fecha final es obligatorio';
+        } elseif ($fechaInicio >= $fechaFinal) {
+            $this->errores['fechaFinal'] = 'La fecha final debe ser posterior a la fecha de inicio';
         }
 
         if (empty($terminos)) {
             $this->errores['terminos'] = 'El campo términos es obligatorio';
         }
 
-        // Si no hay errores, registrar el contrato
         if (count($this->errores) === 0) {
-            $resultado = Contrato::inserta($idEmpresa, $idPueblo, $duracion, $terminos);
+            $resultado = Contrato::inserta($idEmpresa, $idPueblo, $fechaInicio, $fechaFinal, $terminos);
 
             if ($resultado) {
-                // Contrato registrado correctamente
-                $this->exito = true; // Indicar que el proceso fue exitoso
-                // Puedes redirigir a otra página o mostrar un mensaje de éxito
-                // Añadir un servicio al pueblo correspondiente
-                $empresa = new Empresa($_SESSION['id'], null, null); // Crea una instancia de Empresa
-                $ambitoEmpresa = $empresa->getAmbitoEmpresa($idEmpresa); // Obtener el ámbito de la empresa
-                Servicio::registrar(new Servicio($idPueblo, $ambitoEmpresa, 1)); // Registrar el servicio en el pueblo
-                
+                $this->exito = true;
             } else {
                 $this->errores[] = 'Error al registrar el contrato';
             }
@@ -137,6 +129,7 @@ class FormularioContrato extends Formulario
 }
 
 ?>
+
 
 <!--
 
