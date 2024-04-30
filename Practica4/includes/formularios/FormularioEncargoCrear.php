@@ -1,13 +1,15 @@
 <?php
-namespace es\ucm\fdi\aw\formularios;
+namespace es\ucm\fdi\aw;
 
 require_once 'Formulario.php'; 
+require_once __DIR__.'/../../includes/clases/Usuario.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
+require_once __DIR__.'/../../includes/clases/Vecino.php'; 
 require_once __DIR__.'/../../includes/clases/Encargo.php';
 require_once __DIR__.'/../../includes/clases/Servicio.php';
 
-class FormularioContratoCrear extends Formulario
+class FormularioEncargoCrear extends Formulario
 {
     private $exito = false;
 
@@ -27,7 +29,7 @@ class FormularioContratoCrear extends Formulario
     
         // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['idVecino', 'idEmpresa', 'terminos'], $this->errores, 'span', array('class' => 'error'));
+        $erroresCampos = self::generaErroresCampos(['idEmpresa', 'terminos'], $this->errores, 'span', array('class' => 'error'));
 
         // Inicia el desplegable de empresas
         $htmlEmpresas = "<select id='empresa' name='empresa'><option value=''>Seleccione una empresa...</option>";
@@ -53,7 +55,7 @@ class FormularioContratoCrear extends Formulario
                 {$erroresCampos['terminos']}
             </div>
             <div>
-                <button type="submit" name="registrarContrato">Registrar Contrato</button>
+                <button type="submit" name="registrarEncargo">Registrar Encargo</button>
             </div>
         </fieldset>
         

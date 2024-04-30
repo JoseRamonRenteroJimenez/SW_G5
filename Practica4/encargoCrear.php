@@ -2,7 +2,7 @@
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/formularios/FormularioEncargoCrear.php'; 
 
-use es\ucm\fdi\aw\formularios\FormularioEncargoCrear;
+use es\ucm\fdi\aw\FormularioEncargoCrear;
 
 $formulario = new FormularioEncargoCrear();
 $htmlFormulario = $formulario->gestiona();

@@ -67,7 +67,7 @@ class Encargo {
         $fecha = date('Y-m-d'); // Obtener la fecha actual en el formato 'YYYY-MM-DD'
 
     
-        $query = sprintf("INSERT INTO encargos (idVecino, idEmpresa, descripcion, fecha, estado) VALUES (%d, %d, '%s', '%s', %d)",
+        $query = sprintf("INSERT INTO encargos (idVecino, idEmpresa, terminos, fecha, estado) VALUES (%d, %d, '%s', '%s', %d)",
             $idVecino, $idEmpresa, $descripcion, $fecha, self::ESPERA_ESTADO);
         
         if ($conn->query($query)) {

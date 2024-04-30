@@ -73,6 +73,16 @@ class Vecino extends Usuario
         }
     }
 
+    public static function registrar(Vecino $vecino)
+    {
+        // Guardar el pueblo en la base de datos
+        if ($vecino->inserta()) {
+            return true; // Devolver true para indicar éxito
+        } else {
+            return false; // Error al registrar el pueblo
+        }
+    }
+
     // Getters y setters
     public function getId()
     {
