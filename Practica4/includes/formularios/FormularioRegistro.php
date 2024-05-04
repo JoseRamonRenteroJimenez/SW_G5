@@ -8,6 +8,7 @@ require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Vecino.php';
+require_once __DIR__.'/../../includes/clases/Imagen.php';
 
 class FormularioRegistro extends Formulario
 {
@@ -22,7 +23,7 @@ class FormularioRegistro extends Formulario
 
         // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'password', 'password2', 'rol', 'nTrabajadores', 'ambito', 'cif', 'comunidad'], $this->errores, 'span', array('class' => 'error'));
+        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'password', 'password2', 'rol', 'nTrabajadores', 'ambito', 'cif', 'comunidad', 'img'], $this->errores, 'span', array('class' => 'error'));
 
         // Obtener lista de comunidades autónomas desde la base de datos
         $comunidadesAutonomas = Comunidad::getComunidades();
@@ -117,6 +118,10 @@ class FormularioRegistro extends Formulario
             $html .= <<<EOF
             </select>
         <div>
+            <label for="img">Foto de perfil:</label>
+            <input id="img" type="file" name="img" accept="image/*"/>
+        </div>
+        <div>
             <button type="submit" name="registro">Registrar</button>
         </div>
     </fieldset>
@@ -143,6 +148,33 @@ class FormularioRegistro extends Formulario
         }
         if (empty($password)) {
             $this->errores['password'] = 'El password no puede estar vacío';
+        }
+
+        if (move_uploaded_file($fileTmpPath, $filePath)) {
+            $imagen = Imagen::crea(0, $filePath, $fileName, $fileType); // Note: 0 should be replaced with actual owner ID if required
+            if ($imagen === null) {
+                $this->errores['img'] = 'Failed to save the image in the database.';
+            }
+        } else {
+            $this->errores['img'] = 'Failed to move uploaded file.';
+            error_log('Failed to move uploaded file: ' . $filePath);
+        }
+
+        if (isset($_FILES['img'])) {
+            // Proceed with your file handling
+            $fileTmpPath = $_FILES['img']['tmp_name'];
+            $fileName = $_FILES['img']['name'];
+            $fileType = $_FILES['img']['type'];
+            $filePath = RUTA_IMGS . '/' . $fileName;
+        
+            if (!move_uploaded_file($fileTmpPath, $filePath)) {
+                $this->errores['img'] = 'Failed to upload image.';
+            }
+        } else {
+            // Handle cases where no file was uploaded or there's an error
+            if (!isset($_FILES['img']) || $_FILES['img']['error'] !== UPLOAD_ERR_OK) {
+                $this->errores['img'] = 'No file uploaded or error uploading file.';
+            }
         }
 
         // Si hay errores, termina la validación

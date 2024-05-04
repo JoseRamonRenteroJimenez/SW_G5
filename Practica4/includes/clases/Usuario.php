@@ -14,14 +14,16 @@ class Usuario
     private $password;
     private $nombre;
     private $rol;
+    private $idImg;
 
-    private function __construct($nombreUsuario, $password, $nombre, $rol, $id = null)
+    private function __construct($nombreUsuario, $password, $nombre, $rol, $idImg = null, $id = null)
     {
         $this->id = $id;
         $this->nombreUsuario = $nombreUsuario;
         $this->password = $password;
         $this->nombre = $nombre;
         $this->rol = $rol;
+        $this->idImg = $idImg;
     }
 
     public static function login($nombreUsuario, $password)
@@ -91,11 +93,12 @@ class Usuario
     {
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("INSERT INTO usuarios(nombreUsuario, nombre, password, rol) VALUES ('%s', '%s', '%s', %d)"
+        $query=sprintf("INSERT INTO usuarios(nombreUsuario, nombre, password, rol, idImg) VALUES ('%s', '%s', '%s', %d, %d)"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
-            , $usuario->rol
+            , $usuario->rol,
+            $usuario->idImg
         );
         if ( $conn->query($query) ) {
             $usuario->id = $conn->insert_id;
@@ -110,11 +113,12 @@ class Usuario
     {
         $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("UPDATE usuarios U SET nombreUsuario = '%s', nombre='%s', password='%s', rol=%d WHERE U.id=%d"
+        $query=sprintf("UPDATE usuarios U SET nombreUsuario = '%s', nombre='%s', password='%s', rol=%d, idImg=%d WHERE U.id=%d"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
             , $usuario->rol
+            , $usuario->idImg
             , $usuario->id
         );
         if ( $conn->query($query) ) {
@@ -172,6 +176,16 @@ class Usuario
 
     public function setNombre($nombre) {
         $this->nombre = $nombre;
+    }
+
+    public function getIdImg()
+    {
+        return $this->idImg;
+    }
+
+    public function setIdImg($idImg)
+    {
+        $this->idImg = $idImg;
     }
 
     public function compruebaPassword($password)

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-04-2024 a las 12:16:02
+-- Tiempo de generación: 03-05-2024 a las 22:14:38
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -125,7 +125,6 @@ CREATE TABLE `imagenes` (
   `ruta` varchar(50) NOT NULL COMMENT 'Nombre dentro de ficheros',
   `nombre` varchar(50) NOT NULL COMMENT 'Nombre dado por propietario',
   `mimeType` varchar(50) NOT NULL,
-  `tipoAcceso` tinyint(4) NOT NULL,
   `tipoPropietario` int(11) NOT NULL COMMENT 'Foto de Usuario o Anuncio'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -194,7 +193,7 @@ CREATE TABLE `usuarios` (
   `password` varchar(70) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `rol` int(11) NOT NULL,
-  `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
+  `idImg` int(11) NOT NULL COMMENT 'Id de la foto de perfil'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -206,7 +205,7 @@ CREATE TABLE `usuarios` (
 CREATE TABLE `vecinos` (
   `id` int(11) NOT NULL,
   `idPueblo` int(11) NOT NULL,
-  `idEmpresa` int(11)
+  `idEmpresa` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
