@@ -2,11 +2,11 @@
 
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/clases/Usuario.php';
-require_once __DIR__.'/includes/formularios/FormularioRegistro.php'; // Asegúrate de que la ruta sea correcta
+require_once __DIR__.'/includes/formularios/FormularioRegistroRol.php'; // Asegúrate de que la ruta sea correcta
 
-use es\ucm\fdi\aw\FormularioRegistro;
+use es\ucm\fdi\aw\FormularioRegistroRol;
 
-$form = new FormularioRegistro();
+$form = new FormularioRegistroRol();
 $htmlFormRegistro = $form->gestiona();
 
 $tituloPagina = 'Registro';

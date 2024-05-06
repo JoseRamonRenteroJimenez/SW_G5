@@ -111,7 +111,7 @@ class Contrato
             return $conn->insert_id; // Devuelve el ID del contrato insertado
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
-            return false;
+            sreturn false;
         }
     }
     */
@@ -186,7 +186,7 @@ class Contrato
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
             // Inserta notificación de creación de contrato pendiente
-            self::insertarNotificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION);
+            Notificacion::insertarNotificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION, "Nuevo Contrato Pendiente de Aprobación");
             return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
@@ -244,33 +244,6 @@ class Contrato
             }
         } else {
             error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
-            return false;
-        }
-    }
-
-    private static function insertarNotificacion($idReferencia, $idEmisor, $idReceptor, $tipoNotificacion)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        $titulo = "Nuevo Contrato Pendiente de Aprobación";
-        if ($tipoNotificacion == self::NOTIFICA_APROBACION) {
-            $titulo = "Contrato Aprobado";
-        }
-        $estado = 0; // Estado no leído
-
-        $query = "INSERT INTO notificaciones (idReferencia, tipo, fecha, estado, idEmisor, idReceptor, titulo) VALUES (?, ?, NOW(), ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        if ($stmt) {
-            $stmt->bind_param("iiiiis", $idReferencia, $tipoNotificacion, $estado, $idEmisor, $idReceptor, $titulo);
-            if ($stmt->execute()) {
-                $stmt->close();
-                return true;
-            } else {
-                $stmt->close();
-                error_log("Error al insertar la notificación: " . $stmt->error);
-                return false;
-            }
-        } else {
-            error_log("Error al preparar la consulta de inserción de notificación: " . $conn->error);
             return false;
         }
     }
