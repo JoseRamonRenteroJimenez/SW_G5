@@ -12,7 +12,7 @@ require_once __DIR__.'/../../includes/clases/Vecino.php';
 class FormularioRegistro extends Formulario
 {
     public function __construct() {
-        parent::__construct('formRegistro', ['urlRedireccion' => 'index.php']);
+        parent::__construct('formRegistro', ['urlRedireccion' => 'index.php','enctype'=>'multipart/form-data']);
     }
     
     protected function generaCamposFormulario(&$datos)
@@ -61,10 +61,10 @@ class FormularioRegistro extends Formulario
         <div>
             <label for="rol">Rol:</label>
             <select id="rol" name="rol">
-                <option value="admin">Administrador</option>
-                <option value="pueblo">Pueblo</option>
-                <option value="empresa">Empresa</option>
-                <option value="vecino">Vecino</option>
+              <option value="1">Administrador</option>
+              <option value="3">Pueblo</option>
+              <option value="2">Empresa</option>
+              <option value="4">Vecino</option>
             </select>
             {$erroresCampos['rol']}
         </div>
@@ -114,12 +114,21 @@ class FormularioRegistro extends Formulario
             foreach ($listaProcedencias as $procedencia) {
                 $html .= "<option value=\"{$procedencia->getId()}\">{$procedencia->getNombre()}</option>";
             }
+    
             $html .= <<<EOF
-            </select>
-        <div>
-            <button type="submit" name="registro">Registrar</button>
-        </div>
-    </fieldset>
+                    </select>
+                </div>
+                <div>
+                    <label for="fotoPerfil">Foto de perfil:</label>
+                    <input id="fotoPerfil" type="file" name="fotoPerfil" accept="image/*"/>
+                </div>
+                <div>
+                    <button type="submit" name="registro">Registrar</button>
+                </div>
+            </fieldset>
+    EOF;
+    
+            return $html;
     EOF;
 
         return $html;
@@ -128,13 +137,15 @@ class FormularioRegistro extends Formulario
     protected function procesaFormulario(&$datos)
     {
         $this->errores = [];
-        
+    
+        // Recuperar datos del formulario
         $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
         $password = trim($datos['password'] ?? '');
         $nombre = trim($datos['nombre'] ?? '');
-        $rol = $datos['rol'] ?? '';
-
-        // Validar nombre de usuario, nombre, password y rol
+        $rol = intval($datos['rol'] ?? ''); // Asegúrate de que el rol se convierte a entero
+        $rutaImagen = "uploads/sample.png"; // Ruta predeterminada si no se carga una imagen
+    
+        // Validaciones básicas
         if (empty($nombreUsuario)) {
             $this->errores['nombreUsuario'] = 'El nombre de usuario no puede estar vacío';
         }
@@ -144,88 +155,112 @@ class FormularioRegistro extends Formulario
         if (empty($password)) {
             $this->errores['password'] = 'El password no puede estar vacío';
         }
-
+        if ($rol <= 0 || $rol > 4) {
+            $this->errores['rol'] = 'El rol seleccionado no es válido';
+        }
+    
         // Si hay errores, termina la validación
         if (count($this->errores) > 0) {
             return;
         }
-
-        // Procesar registro según el rol
-        switch ($rol) {
-            case 'admin':
-            case 'empresa':
-            case 'pueblo':
-            case 'vecino':
-                // Procesar registro de usuario
-                $usuario = Usuario::crea($nombreUsuario, $password, $nombre, ($rol == 'admin' ? 1 : ($rol == 'empresa' ? 2 : ($rol == 'vecino' ? 4 : 3))));
-
-                if($usuario === 0){
-                    $_SESSION['error'] = 0;
-                    header('Location: controlErrores.php');
-                    exit();
+    
+        // Manejo de la carga de imágenes
+        if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] == UPLOAD_ERR_OK) {
+            $imagenSubida = $_FILES['fotoPerfil'];
+            $rutaImagen = $this->manejaCargaDeImagen($imagenSubida);
+        }
+    
+        // Crear el usuario según el rol
+        $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rutaImagen, $rol);
+    
+        if ($usuario === 0) {
+            $this->errores['general'] = 'El usuario ya existe';
+            return;
+        }
+    
+        if ($usuario != null) {
+            // Establecer datos comunes en la sesión
+            $_SESSION['login'] = true;
+            $_SESSION['nombre'] = $usuario->getNombre();
+            $_SESSION['id'] = $usuario->getId();
+            $_SESSION['rol'] = $usuario->getRol();
+    
+            switch ($rol) {
+                case Usuario::ADMIN_ROLE:
+                    $_SESSION['esAdmin'] = true;
                     break;
-                }
-
-                if ($usuario != null) {
-                    // Añadir datos únicos a la sesión según el rol
-                    if ($rol == 'admin') {
-                        $_SESSION['esAdmin'] = true;
-                    } elseif ($rol == 'empresa') {
-                        $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
-                        $ambito = trim($datos['ambito'] ?? '');
-                        $ambito_manual = trim($datos['ambito_manual'] ?? '');
-
-                        // Si se seleccionó la opción adicional (-), guardar el ámbito manualmente
-                        if ($ambito == '-') {
-                            $idAmbito = Ambito::guardarAmbitoManualmente($ambito_manual);
-                        } else {
-                            $idAmbito = $ambito;
-                        }
-
-                        $empresa = new Empresa($usuario->getId(), $nTrabajadores, $idAmbito);
-                        if (Empresa::registrar($empresa)) {
-                            // Registro exitoso, redirigir o realizar acciones necesarias
-                        } else {
-                            // Manejar el error de registro
-                        }
-                    } elseif ($rol == 'pueblo') {
-                        $cif = trim($datos['cif'] ?? '');
-                        $comunidad = trim($datos['comunidad'] ?? '');
-
-                        $pueblo = new Pueblo($usuario->getId(), $cif, $comunidad);
-                        if (Pueblo::registrar($pueblo)) {
-                            // Registro exitoso, redirigir o realizar acciones necesarias
-                        } else {
-                            // Manejar el error de registro
-                        }
-                    } elseif ($rol == 'vecino') {
-                        $procedencia = $datos['procedencia'] ?? '';
-
-                        $vecino = new Vecino($usuario->getId(), $procedencia);
-                        if (Vecino::registrar($vecino)) {
-                            // Registro exitoso, redirigir o realizar acciones necesarias
-                        } else {
-                            // Manejar el error de registro
-                        }
-                    }
-                    
-                    // Establecer datos comunes en la sesión
-                    $_SESSION['login'] = true;
-                    $_SESSION['nombre'] = $usuario->getNombre();
-                    $_SESSION['id'] = $usuario->getId();
-                    $_SESSION['rol'] = $usuario->getRol();
-                } else {
-                    // Manejar el error de creación de usuario
-                }
-                
-                header('Location: registroResumen.php');
-                exit();
-                break;
-            default:
-                // Manejar caso no válido
-                break;
+                case Usuario::EMPRESA_ROLE:
+                    // Procesar datos adicionales para empresa
+                    $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
+                    $ambito = trim($datos['ambito'] ?? '');
+                    $ambito_manual = trim($datos['ambito_manual'] ?? '');
+    
+                    // Crear y registrar la empresa
+                    break;
+                case Usuario::PUEBLO_ROLE:
+                    // Procesar datos adicionales para pueblo
+                    $cif = trim($datos['cif'] ?? '');
+                    $comunidad = trim($datos['comunidad'] ?? '');
+    
+                    // Crear y registrar el pueblo
+                    break;
+                case Usuario::VECINO_ROLE:
+                    // Procesar datos adicionales para vecino
+                    $procedencia = $datos['procedencia'] ?? '';
+    
+                    // Crear y registrar el vecino
+                    break;
+                default:
+                    // Manejar caso no válido
+                    break;
+            }
+            header('Location: registroResumen.php'); // Redirigir a una página de resumen
+            exit();
+        } else {
+            $this->errores['general'] = 'Error al crear el usuario';
         }
     }
+    
+    // Función para manejar la carga de imágenes
+    private function manejaCargaDeImagen($imagen)
+{
+    $directorioDestino = "uploads/";
+    $extPermitidas = ['jpg', 'jpeg', 'png', 'gif'];  // Extensiones permitidas
+    $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];  // Mime types permitidos
+    $maxTam = 5 * 1024 * 1024; // Tamaño máximo de 5 MB
+
+    $nombreArchivo = basename($imagen['name']);
+    $tipoArchivo = $imagen['type'];
+    $tamArchivo = $imagen['size'];
+    $temporal = $imagen['tmp_name'];
+
+    $extArchivo = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
+
+    // Validación de tipo de archivo
+    if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
+        $this->errores['fotoPerfil'] = 'Formato de imagen no permitido';
+        return null;  // Devuelve null en caso de error
+    }
+
+    // Validación de tamaño de archivo
+    if ($tamArchivo > $maxTam) {
+        $this->errores['fotoPerfil'] = 'El archivo es demasiado grande';
+        return null;  // Devuelve null en caso de error
+    }
+
+    // Sanitización del nombre del archivo
+    $nombreUnico = uniqid() . '.' . $extArchivo;
+    $rutaDestino = $directorioDestino . $nombreUnico;
+
+    // Mover el archivo subido al directorio de destino
+    if (move_uploaded_file($temporal, $rutaDestino)) {
+        return $rutaDestino;  // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
+    } else {
+        $this->errores['fotoPerfil'] = 'Error al subir la imagen';
+        return null;  // Devuelve null en caso de error
+    }
+}
+
 
 }
 ?>

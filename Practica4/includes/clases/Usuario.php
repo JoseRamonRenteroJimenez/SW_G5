@@ -3,7 +3,6 @@ namespace es\ucm\fdi\aw;
 
 class Usuario
 {
-
     public const ADMIN_ROLE = 1;
     public const EMPRESA_ROLE = 2;
     public const PUEBLO_ROLE = 3;
@@ -14,14 +13,16 @@ class Usuario
     private $password;
     private $nombre;
     private $rol;
+    private $nombreImg; 
 
-    private function __construct($nombreUsuario, $password, $nombre, $rol, $id = null)
+    private function __construct($nombreUsuario, $password, $nombre, $rol, $nombreImg, $id = null)
     {
         $this->id = $id;
         $this->nombreUsuario = $nombreUsuario;
         $this->password = $password;
         $this->nombre = $nombre;
         $this->rol = $rol;
+        $this->nombreImg = $nombreImg; // Se actualiza el constructor para incluir nombreImg
     }
 
     public static function login($nombreUsuario, $password)
@@ -32,30 +33,28 @@ class Usuario
         }
         return false;
     }
-    
-    public static function crea($nombreUsuario, $password, $nombre, $rol)
+
+    public static function crea($nombreUsuario, $password, $nombre, $nombreImg, $rol)
     {
-        // Verificar si ya existe un usuario con el mismo nombreUsuario
         if (self::buscaUsuario($nombreUsuario) != false) {
             error_log("Usuario ya existe");
-            return 0; // Retorna 0 para indicar que el usuario ya existe
+            return 0;
         }
-        //Creamos e introducimos el usuario a la base de datos
-        $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, $rol);
+        $user = new Usuario($nombreUsuario, self::hashPassword($password), $nombre, $rol, $nombreImg);
         self::inserta($user);
-        return $user; // Retorna el objeto Usuario, no solo el ID
+        return $user;
     }
 
-    public static function buscaUsuario($nombreUsuario) // Busca un usuario por su nombre de usuario
+    public static function buscaUsuario($nombreUsuario)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM usuarios U WHERE U.nombreUsuario='%s'", $conn->real_escape_string($nombreUsuario));
+        $query = sprintf("SELECT * FROM usuarios WHERE nombreUsuario='%s'", $conn->real_escape_string($nombreUsuario));
         $rs = $conn->query($query);
         $result = false;
         if ($rs) {
             $fila = $rs->fetch_assoc();
             if ($fila) {
-                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['id']);
+                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['nombreImg'], $fila['id']);
             }
             $rs->free();
         } else {
@@ -73,7 +72,7 @@ class Usuario
         if ($rs) {
             $fila = $rs->fetch_assoc();
             if ($fila) {
-                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['id']);
+                $result = new Usuario($fila['nombreUsuario'], $fila['password'], $fila['nombre'], $fila['rol'], $fila['nombreImg'], $fila['id']);
             }
             $rs->free();
         } else {
@@ -81,50 +80,50 @@ class Usuario
         }
         return $result;
     }
-    
+
     private static function hashPassword($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
-   
-    private static function inserta($usuario) // Inserta un usuario en la base de datos
+
+    private static function inserta($usuario)
     {
-        $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("INSERT INTO usuarios(nombreUsuario, nombre, password, rol) VALUES ('%s', '%s', '%s', %d)"
+        $query = sprintf("INSERT INTO usuarios(nombreUsuario, nombre, password, rol, nombreImg) VALUES ('%s', '%s', '%s', %d, '%s')"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
             , $usuario->rol
+            , $conn->real_escape_string($usuario->nombreImg)
         );
-        if ( $conn->query($query) ) {
+        if ($conn->query($query)) {
             $usuario->id = $conn->insert_id;
-            $result = true;
+            return true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
         }
-        return $result;
     }
-    
-    private static function actualiza($usuario) // Actualiza los datos del usuario en la base de datos
+
+    private static function actualiza($usuario)
     {
-        $result = false;
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query=sprintf("UPDATE usuarios U SET nombreUsuario = '%s', nombre='%s', password='%s', rol=%d WHERE U.id=%d"
+        $query = sprintf("UPDATE usuarios SET nombreUsuario='%s', nombre='%s', password='%s', rol=%d, nombreImg='%s' WHERE id=%d"
             , $conn->real_escape_string($usuario->nombreUsuario)
             , $conn->real_escape_string($usuario->nombre)
             , $conn->real_escape_string($usuario->password)
             , $usuario->rol
+            , $conn->real_escape_string($usuario->nombreImg)
             , $usuario->id
         );
-        if ( $conn->query($query) ) {
-            $result = true;
+        if ($conn->query($query)) {
+            return true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
         }
-        
-        return $result;
     }
+    
     
     private static function borra($usuario)
     {
@@ -164,6 +163,11 @@ class Usuario
     public function getRol() // Devuelve el rol del usuario
     {
         return $this->rol;
+    }
+
+    public function getNombreImg() // Devuelve el nombre de la imagen del usuario
+    {
+        return $this->nombreImg;
     }
 
     public function setNombreUsuario($nombreUsuario) {
