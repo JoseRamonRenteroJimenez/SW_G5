@@ -178,14 +178,9 @@ class Usuario
         $this->nombre = $nombre;
     }
 
-    public function getIdImg()
+    public function setNombreImg($nombreImg)
     {
-        return $this->idImg;
-    }
-
-    public function setIdImg($idImg)
-    {
-        $this->idImg = $idImg;
+        $this->nombreImg = $nombreImg;
     }
 
     public function compruebaPassword($password)

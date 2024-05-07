@@ -3,12 +3,12 @@ namespace es\ucm\fdi\aw;
 
 use es\ucm\fdi\aw;
 
-/*
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
-require_once __DIR__.'/../../includes/clases/Servicio.php';*/
+require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Notificacion.php';
 
 class Contrato
 {
@@ -186,7 +186,7 @@ class Contrato
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
             // Inserta notificación de creación de contrato pendiente
-            Notificacion::insertarNotificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION, "Nuevo Contrato Pendiente de Aprobación");
+            Notificacion::insertarNotificacion(new Notificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION, "Nuevo Contrato Pendiente de Aprobación"));
             return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
