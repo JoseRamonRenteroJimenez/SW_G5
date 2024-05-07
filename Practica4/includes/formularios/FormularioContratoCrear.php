@@ -84,47 +84,51 @@ class FormularioContratoCrear extends Formulario
     }
     
     protected function procesaFormulario(&$datos)
-    {
-        $this->errores = [];
+{
+    $this->errores = [];
 
-        $idEmpresa = $_SESSION['id'] ?? '';
-        $idPueblo = $datos['pueblo'] ?? '';
-        $fechaInicio = $datos['fechaInicio'] ?? '';
-        $fechaFinal = $datos['fechaFinal'] ?? '';
-        $terminos = $datos['terminos'] ?? '';
+    $idEmpresa = $_SESSION['id'] ?? '';
+    $idPueblo = $datos['pueblo'] ?? '';
+    $fechaInicio = $datos['fechaInicio'] ?? '';
+    $fechaFinal = $datos['fechaFinal'] ?? '';
+    $terminos = $datos['terminos'] ?? '';
 
-        if (empty($idEmpresa)) {
-            $this->errores['idEmpresa'] = 'El campo empresa es obligatorio';
-        }
+    if (empty($idEmpresa)) {
+        $this->errores['idEmpresa'] = 'El campo empresa es obligatorio';
+    }
 
-        if (empty($idPueblo)) {
-            $this->errores['idPueblo'] = 'El campo pueblo es obligatorio';
-        }
+    if (empty($idPueblo)) {
+        $this->errores['idPueblo'] = 'El campo pueblo es obligatorio';
+    }
 
-        if (empty($fechaInicio)) {
-            $this->errores['fechaInicio'] = 'El campo fecha de inicio es obligatorio';
-        }
+    if (empty($fechaInicio)) {
+        $this->errores['fechaInicio'] = 'El campo fecha de inicio es obligatorio';
+    }
 
-        if (empty($fechaFinal)) {
-            $this->errores['fechaFinal'] = 'El campo fecha final es obligatorio';
-        } elseif ($fechaInicio >= $fechaFinal) {
-            $this->errores['fechaFinal'] = 'La fecha final debe ser posterior a la fecha de inicio';
-        }
+    if (empty($fechaFinal)) {
+        $this->errores['fechaFinal'] = 'El campo fecha final es obligatorio';
+    } elseif ($fechaInicio >= $fechaFinal) {
+        $this->errores['fechaFinal'] = 'La fecha final debe ser posterior a la fecha de inicio';
+    }
 
-        if (empty($terminos)) {
-            $this->errores['terminos'] = 'El campo términos es obligatorio';
-        }
+    if (empty($terminos)) {
+        $this->errores['terminos'] = 'El campo términos es obligatorio';
+    }
 
-        if (count($this->errores) === 0) {
-            $resultado = Contrato::inserta($idEmpresa, $idPueblo, $fechaInicio, $fechaFinal, $terminos);
+    if (count($this->errores) === 0) {
+        $resultado = Contrato::inserta($idEmpresa, $idPueblo, $fechaInicio, $fechaFinal, $terminos);
 
-            if ($resultado) {
-                $this->exito = true;
-            } else {
-                $this->errores[] = 'Error al registrar el contrato';
-            }
+        if ($resultado) {
+            $this->exito = true;
+            // Redirigir al usuario a la página de resumen del contrato o donde puedan ver el estado del contrato
+            header('Location: contratoResumen.php?idContrato=' . $resultado);
+            exit();
+        } else {
+            $this->errores[] = 'Error al registrar el contrato';
         }
     }
+}
+
 
 }
 
