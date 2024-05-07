@@ -1,0 +1,83 @@
+:root {
+    --primary-color: #5c67f2;
+    --hover-color: #4a54e1;
+    --text-color: #333;
+    --background-notification: #f8f9fa;
+    --border-radius: 4px;
+    --box-shadow-light: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --box-shadow-heavy: 0 3px 6px rgba(0, 0, 0, 0.15);
+    --spacing-unit: 20px;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff; /* Consider adding a soft background color */
+}
+
+#perfil img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    box-shadow: var(--box-shadow-heavy);
+    display: block;
+    margin: 0 auto; /* Center align the profile image */
+    margin-top: var(--spacing-unit);
+}
+
+#notificaciones {
+    background-color: var(--background-notification);
+    border-left: 5px solid var(--primary-color);
+    padding: 15px;
+    margin-top: var(--spacing-unit);
+    box-shadow: var(--box-shadow-light);
+    margin-bottom: var(--spacing-unit);
+}
+
+h1 {
+    color: var(--text-color);
+    font-size: 1.5em; /* Larger font size for main title */
+    text-align: center;
+}
+
+h2 {
+    color: var(--text-color);
+    font-size: 1.2em;
+    margin-top: 0;
+    padding-top: var(--spacing-unit);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Larger padding for better finger tap area */
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: 100%; /* Full-width buttons */
+    box-sizing: border-box; /* Includes padding and border in width */
+    margin-top: var(--spacing-unit);
+}
+
+button:hover {
+    background-color: var(--hover-color);
+}
+
+@media (max-width: 768px) {
+    #perfil img {
+        width: 100px;
+        height: 100px; /* Smaller image for smaller screens */
+    }
+
+    button {
+        padding: 8px 16px; /* Smaller padding on smaller screens */
+    }
+
+    #notificaciones, .container {
+        padding: 10px;
+    }
+}

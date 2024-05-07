@@ -178,8 +178,8 @@ class Usuario
         $this->nombre = $nombre;
     }
 
-    public function setNombreImg($nombreImg)
-    {
+    public function setNombreImg($nombreImg) {
+        
         $this->nombreImg = $nombreImg;
     }
 

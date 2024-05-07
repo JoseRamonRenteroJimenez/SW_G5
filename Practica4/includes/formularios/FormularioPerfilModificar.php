@@ -8,26 +8,29 @@ require_once 'Formulario.php';
 class FormularioModificarPerfil extends Formulario
 {
     public function __construct() {
-        parent::__construct('formPasswordUpdate', ['urlRedireccion' => 'perfil.php']);
+        parent::__construct('formPasswordUpdate', [
+            'urlRedireccion' => 'perfil.php',
+            'enctype' => 'multipart/form-data'  // Permitir la carga de archivos
+        ]);
     }
     
     protected function generaCamposFormulario(&$datos) { 
         if (!isset($_SESSION['id'])) {
-            // Redirecciona al usuario a la página de inicio de sesión si no hay ID en la sesión
             header('Location: login.php');
             exit();
         }
-
+    
         $usuario = Usuario::buscaPorId($_SESSION['id']);
         if (!$usuario) {
             return "Usuario no encontrado.";
         }
     
-        $nombreUsuario = $usuario->getNombreUsuario(); // Obtener el nombre de usuario
-        $nombre = $usuario->getNombre(); // Obtener el nombre
+        $nombreUsuario = $usuario->getNombreUsuario(); 
+        $nombre = $usuario->getNombre(); 
+        $rutaImagenActual = $usuario->getNombreImg();  // Usar el método getter
     
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'previousPassword', 'password'], $this->errores, 'span', array('class' => 'error'));
+        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'previousPassword', 'password', 'fotoPerfil'], $this->errores, 'span', array('class' => 'error'));
     
         return <<<EOF
         $htmlErroresGlobales
@@ -54,17 +57,23 @@ class FormularioModificarPerfil extends Formulario
                 {$erroresCampos['password']}
             </div>
             <div>
+                <label for="fotoPerfil">Foto de perfil:</label>
+                <input id="fotoPerfil" type="file" name="fotoPerfil" accept="image/*">
+                {$erroresCampos['fotoPerfil']}
+                <img src="$rutaImagenActual" alt="Foto de perfil actual" style="width: 100px;">
+            </div>
+            <div>
                 <button type="submit" name="update">Actualizar</button>
             </div>
         </fieldset>
         EOF;
     }
     
+    
     protected function procesaFormulario(&$datos) {
         $this->errores = [];
-
+    
         if (!isset($_SESSION['id'])) {
-            // Redirecciona al usuario a la página de inicio de sesión si no hay ID en la sesión
             header('Location: login.php');
             exit();
         }
@@ -74,22 +83,26 @@ class FormularioModificarPerfil extends Formulario
         $previousPassword = trim($datos['previousPassword'] ?? '');
         $password = trim($datos['password'] ?? '');
         
-        $usuarioId = $_SESSION['id'] ?? null;
+        $usuarioId = $_SESSION['id'];
         $usuario = Usuario::buscaPorId($usuarioId);
     
         if ($usuario) {
-            // Verificar si se intenta cambiar la contraseña
             if (!empty($password) && !empty($previousPassword)) {
                 if (!$usuario->compruebaPassword($previousPassword)) {
                     $this->errores['previousPassword'] = 'La contraseña actual no es correcta.';
                 } else {
-                    // Cambiar la contraseña
                     $usuario->cambiaPassword($password);
                 }
             }
-            
+    
+            if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
+                $rutaImagen = $this->manejaCargaDeImagen($_FILES['fotoPerfil'], $usuario->getNombreImg());
+                if ($rutaImagen) {
+                    $usuario->setNombreImg($rutaImagen);  // Correct usage of setter
+                }
+            }
+    
             if (count($this->errores) === 0) {
-                // Actualizar otros datos
                 $usuario->setNombreUsuario($nombreUsuario);
                 $usuario->setNombre($nombre);
     
@@ -105,5 +118,24 @@ class FormularioModificarPerfil extends Formulario
         } else {
             $this->errores[] = "Usuario no identificado.";
         }
-    }    
+    }
+    
+
+    private function manejaCargaDeImagen($imagen, $rutaImagenActual = null) {
+        if ($rutaImagenActual && file_exists($rutaImagenActual)) {
+            unlink($rutaImagenActual);  // Consider adding logic to ensure this only happens if a new image is successfully uploaded
+        }
+    
+        $directorioDestino = "uploads/";
+        $nombreArchivo = basename($imagen['name']);
+        $rutaDestino = $directorioDestino . $nombreArchivo;
+    
+        if (move_uploaded_file($imagen['tmp_name'], $rutaDestino)) {
+            return $rutaDestino;
+        } else {
+            $this->errores['fotoPerfil'] = 'Error al subir la imagen';
+            return null;
+        }
+    }
 }
+?>
