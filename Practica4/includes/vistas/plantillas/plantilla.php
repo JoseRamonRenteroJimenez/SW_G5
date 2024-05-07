@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title><?= $tituloPagina ?></title>
-    <!-- Utiliza la constante RUTA_CSS definida en tu archivo de configuración -->
-    <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/prueba.css" />
+    <!-- Carga el CSS común para todas las páginas -->
+    <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/prueba.css">
+    <!-- Carga el CSS específico si está definido -->
+    <?php if (isset($cssEspecifico)): ?>
+        <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/<?= $cssEspecifico ?>">
+    <?php endif; ?>
 </head>
 <body>
 <div id="contenedor">

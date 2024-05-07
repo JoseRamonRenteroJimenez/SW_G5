@@ -223,43 +223,50 @@ class FormularioRegistro extends Formulario
     
     // Función para manejar la carga de imágenes
     private function manejaCargaDeImagen($imagen)
-{
-    $directorioDestino = "uploads/";
-    $extPermitidas = ['jpg', 'jpeg', 'png', 'gif'];  // Extensiones permitidas
-    $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];  // Mime types permitidos
-    $maxTam = 5 * 1024 * 1024; // Tamaño máximo de 5 MB
-
-    $nombreArchivo = basename($imagen['name']);
-    $tipoArchivo = $imagen['type'];
-    $tamArchivo = $imagen['size'];
-    $temporal = $imagen['tmp_name'];
-
-    $extArchivo = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
-
-    // Validación de tipo de archivo
-    if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
-        $this->errores['fotoPerfil'] = 'Formato de imagen no permitido';
-        return null;  // Devuelve null en caso de error
+    {
+        $directorioDestino = "uploads/";
+        $extPermitidas = ['jpg', 'jpeg', 'png', 'gif']; // Extensiones permitidas
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif']; // Mime types permitidos
+        $maxTam = 5 * 1024 * 1024; // Tamaño máximo de 5 MB
+    
+        $nombreArchivo = basename($imagen['name']);
+        $tipoArchivo = $imagen['type'];
+        $tamArchivo = $imagen['size'];
+        $temporal = $imagen['tmp_name'];
+    
+        $extArchivo = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
+    
+        // Validación de tipo de archivo
+        if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
+            $this->errores['fotoPerfil'] = 'Formato de imagen no permitido';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Validación de tamaño de archivo
+        if ($tamArchivo > $maxTam) {
+            $this->errores['fotoPerfil'] = 'El archivo es demasiado grande';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Validación de contenido real de la imagen
+        if (!@getimagesize($temporal)) {
+            $this->errores['fotoPerfil'] = 'El archivo no es una imagen válida.';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Sanitización del nombre del archivo
+        $nombreUnico = uniqid() . '.' . $extArchivo;
+        $rutaDestino = $directorioDestino . $nombreUnico;
+    
+        // Mover el archivo subido al directorio de destino
+        if (move_uploaded_file($temporal, $rutaDestino)) {
+            return $rutaDestino; // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
+        } else {
+            $this->errores['fotoPerfil'] = 'Error al subir la imagen';
+            return null; // Devuelve null en caso de error
+        }
     }
-
-    // Validación de tamaño de archivo
-    if ($tamArchivo > $maxTam) {
-        $this->errores['fotoPerfil'] = 'El archivo es demasiado grande';
-        return null;  // Devuelve null en caso de error
-    }
-
-    // Sanitización del nombre del archivo
-    $nombreUnico = uniqid() . '.' . $extArchivo;
-    $rutaDestino = $directorioDestino . $nombreUnico;
-
-    // Mover el archivo subido al directorio de destino
-    if (move_uploaded_file($temporal, $rutaDestino)) {
-        return $rutaDestino;  // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
-    } else {
-        $this->errores['fotoPerfil'] = 'Error al subir la imagen';
-        return null;  // Devuelve null en caso de error
-    }
-}
+    
 
 
 }

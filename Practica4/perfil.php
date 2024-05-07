@@ -25,6 +25,7 @@ $tituloPagina = 'Perfil';
 // Incluir jQuery 
 $scriptsAdicionales = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
 
+
 // Código para cargar y actualizar notificaciones
 $scriptsAdicionales .= <<<JS
 <script>
@@ -50,6 +51,6 @@ $contenidoPrincipal = <<<EOS
 </div>
 $htmlFormNewAd
 EOS;
-
+$cssEspecifico = 'perfil.css'; // Nombre del archivo CSS específico para perfil
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';
 ?>

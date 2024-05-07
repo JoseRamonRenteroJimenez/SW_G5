@@ -178,6 +178,11 @@ class Usuario
         $this->nombre = $nombre;
     }
 
+    public function setNombreImg($nombreImg) {
+        
+        $this->nombreImg = $nombreImg;
+    }
+
     public function compruebaPassword($password)
     {
         return password_verify($password, $this->password);
