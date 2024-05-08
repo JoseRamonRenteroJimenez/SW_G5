@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-05-2024 a las 22:14:38
+-- Tiempo de generación: 08-05-2024 a las 16:10:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -116,21 +116,6 @@ CREATE TABLE `encargos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `imagenes`
---
-
-CREATE TABLE `imagenes` (
-  `id` int(11) NOT NULL,
-  `idPropietario` int(11) NOT NULL,
-  `ruta` varchar(50) NOT NULL COMMENT 'Nombre dentro de ficheros',
-  `nombre` varchar(50) NOT NULL COMMENT 'Nombre dado por propietario',
-  `mimeType` varchar(50) NOT NULL,
-  `tipoPropietario` int(11) NOT NULL COMMENT 'Foto de Usuario o Anuncio'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `notificaciones`
 --
 
@@ -193,7 +178,7 @@ CREATE TABLE `usuarios` (
   `password` varchar(70) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `rol` int(11) NOT NULL,
-  `idImg` int(11) NOT NULL COMMENT 'Id de la foto de perfil'
+  `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre la foto de perfil. Calcula la ruta en carpetas'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -246,12 +231,6 @@ ALTER TABLE `contratos`
 -- Indices de la tabla `encargos`
 --
 ALTER TABLE `encargos`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `imagenes`
---
-ALTER TABLE `imagenes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -316,12 +295,6 @@ ALTER TABLE `contratos`
 -- AUTO_INCREMENT de la tabla `encargos`
 --
 ALTER TABLE `encargos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `imagenes`
---
-ALTER TABLE `imagenes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

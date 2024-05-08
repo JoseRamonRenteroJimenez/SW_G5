@@ -27,37 +27,32 @@ class FormularioContratoCrear extends Formulario
         }
         
         $comunidades = Comunidad::getComunidades();
-        $pueblos = Pueblo::getPueblos();
     
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['idPueblo', 'idComunidad', 'fechaInicio', 'fechaFinal', 'terminos'], $this->errores, 'span', array('class' => 'error'));
-
-        $htmlComunidades = "<select id='comunidad' name='comunidad'>";
+        $erroresCampos = self::generaErroresCampos(['comunidad', 'pueblo', 'fechaInicio', 'fechaFinal', 'terminos'], $this->errores, 'span', array('class' => 'error'));
+        
+        $htmlComunidades = "<select id='comunidad' name='comunidad' onchange='updatePueblos()'>";
+        $htmlComunidades .= "<option value=''>Seleccione una comunidad...</option>";
         foreach ($comunidades as $comunidad) {
             $htmlComunidades .= "<option value='{$comunidad->getId()}'>{$comunidad->getNombre()}</option>";
         }
         $htmlComunidades .= "</select>";
     
-        $htmlPueblos = "<select id='pueblo' name='pueblo'><option value=''>Seleccione un pueblo...</option>";
-        foreach ($pueblos as $pueblo) {
-            $htmlPueblos .= "<option value='{$pueblo->getId()}'>{$pueblo->getNombre()}</option>";
-        }
-        $htmlPueblos .= "</select>";
+        $htmlPueblos = "<select id='pueblo' name='pueblo'><option value=''>Seleccione un pueblo...</option></select>";
 
         $html = <<<EOF
-        
         $htmlErroresGlobales
         <fieldset>
             <legend>Detalles del contrato</legend>
             <div>
                 <label for="comunidad">Comunidad Autónoma:</label>
                 $htmlComunidades
-                {$erroresCampos['idComunidad']}
+                {$erroresCampos['comunidad']}
             </div>
             <div>
                 <label for="pueblo">Pueblo:</label>
                 $htmlPueblos
-                {$erroresCampos['idPueblo']}
+                {$erroresCampos['pueblo']}
             </div>
             <div>
                 <label for="fechaInicio">Fecha de inicio:</label>
@@ -128,5 +123,42 @@ class FormularioContratoCrear extends Formulario
             }
         }
     }
+
+    public static function getPueblosPorComunidad($comunidadId) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT id, nombre FROM pueblos WHERE comunidad_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $comunidadId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $pueblos = [];
+        while ($row = $result->fetch_assoc()) {
+            $pueblos[] = ['id' => $row['id'], 'nombre' => $row['nombre']];
+        }
+        $stmt->close();
+        return $pueblos;
+    }
+    
 }
 ?>
+
+<script>
+function updatePueblos() {
+    const comunidadId = document.getElementById('comunidad').value;
+    const puebloSelect = document.getElementById('pueblo');
+    puebloSelect.innerHTML = '<option>Loading...</option>';
+
+    fetch('includes/scriptsApoyo/getPueblos.php?comunidadId=' + comunidadId)
+        .then(response => response.json())
+        .then(data => {
+            puebloSelect.innerHTML = '<option value="">Seleccione un pueblo...</option>';
+            data.forEach(pueblo => {
+                puebloSelect.innerHTML += `<option value="${pueblo.id}">${pueblo.nombre}</option>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error loading the pueblos:', error);
+            puebloSelect.innerHTML = '<option value="">Error loading pueblos</option>';
+        });
+}
+</script>
