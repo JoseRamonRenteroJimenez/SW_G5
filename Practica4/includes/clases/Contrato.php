@@ -173,7 +173,7 @@ class Contrato
 
     public static function inserta($idEmpresa, $idPueblo, $fechaInicial, $fechaFinal, $terminos)
     {
-        $conn = Aplicacion::getInstance()->getConexionBd();
+            $conn = Aplicacion::getInstance()->getConexionBd();
         $idEmpresa = $conn->real_escape_string($idEmpresa);
         $idPueblo = $conn->real_escape_string($idPueblo);
         $fechaInicial = $conn->real_escape_string($fechaInicial);
@@ -186,7 +186,7 @@ class Contrato
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
             // Inserta notificación de creación de contrato pendiente
-            Notificacion::insertarNotificacion(new Notificacion($contratoId, $idEmpresa, $idPueblo, self::NOTIFICA_CREACION, "Nuevo Contrato Pendiente de Aprobación"));
+            Notificacion::insertarNotificacion(new Notificacion($contratoId, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, "Nuevo Contrato Pendiente de Aprobación"));
             return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");

@@ -5,6 +5,12 @@ use es\ucm\fdi\aw;
 
 class Notificacion
 {
+    public const CONTRATO_TIPO = 1;
+    public const ENCARGO_TIPO = 2;
+    public const NOTICIA_TIPO = 3;
+
+    public const NO_VISTO_ESTADO = 1;
+    public const VISTO_ESTADO = 2;
     
     private $id;
     private $idReferencia;
@@ -15,12 +21,11 @@ class Notificacion
     private $idReceptor;
     private $titulo;
 
-    public function __construct($idReferencia, $tipo, $fecha, $estado, $idEmisor, $idReceptor, $titulo, $id = null)
+    public function __construct($idReferencia, $tipo, $estado, $idEmisor, $idReceptor, $titulo, $id = null)
     {
         $this->id = $id;
         $this->idReferencia = $idReferencia;
         $this->tipo = $tipo;
-        $this->fecha = $fecha;
         $this->estado = $estado;
         $this->idEmisor = $idEmisor;
         $this->idReceptor = $idReceptor;
@@ -33,10 +38,11 @@ class Notificacion
         $query = "INSERT INTO notificaciones (idReferencia, tipo, fecha, estado, idEmisor, idReceptor, titulo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
         if ($stmt) {
-            $stmt->bind_param("iiiiis", 
+            $currentDate = date('Y-m-d H:i:s');
+            $stmt->bind_param("iisiiis", 
                 $notificacion->idReferencia, 
                 $notificacion->tipo, 
-                $notificacion->fecha, 
+                $currentDate, 
                 $notificacion->estado, 
                 $notificacion->idEmisor, 
                 $notificacion->idReceptor, 
