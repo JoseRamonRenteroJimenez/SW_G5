@@ -267,8 +267,5 @@ class FormularioRegistro extends Formulario
             return null; // Devuelve null en caso de error
         }
     }
-    
-
-
 }
 ?>
