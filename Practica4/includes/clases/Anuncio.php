@@ -9,14 +9,16 @@ class Anuncio
     private $descripcion;
     private $usuarioId; // Asume que cada anuncio está asociado con un usuario.
     private $contacto;
+    private $anuncioImg; 
 
-    public function __construct($titulo, $descripcion, $usuarioId, $contacto, $id = null)
+    public function __construct($titulo, $descripcion, $usuarioId, $contacto, $anuncioImg, $id = null)
     {
         $this->id = $id;
         $this->titulo = $titulo;
         $this->descripcion = $descripcion;
         $this->usuarioId = $usuarioId;
         $this->contacto = $contacto;
+        $this->anuncioImg = $anuncioImg;
     }
 
     // Métodos getters para los atributos.
@@ -45,6 +47,15 @@ class Anuncio
         return $this->contacto;
     }
 
+    public function getAnuncioImg() {
+        return $this->anuncioImg;
+    }
+
+    public function setAnuncioImg($anuncioImg) {
+        $this->anuncioImg = $anuncioImg;
+    }
+
+
     // Método estático para obtener los anuncios de un usuario específico.
     public static function getAnunciosByUserId($usuarioId)
     {
@@ -55,7 +66,7 @@ class Anuncio
         
         if ($result) {
             while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['contacto'], $fila['id']);
+                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['contacto'], $fila['anuncioImg'], $fila['id']);
             }
             $result->free();
         } else {
@@ -65,24 +76,33 @@ class Anuncio
         return $anuncios;
     }
 
-    public static function getAllAnuncios()
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("SELECT * FROM anuncios");
-        $result = $conn->query($query);
-        $anuncios = [];
-        
-        if ($result) {
-            while ($fila = $result->fetch_assoc()) {
-                $anuncios[] = new self($fila['titulo'], $fila['descripcion'], $fila['idAutor'], $fila['contacto'], $fila['id']);
-            }
-            $result->free();
-        } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
+    // Método estático para obtener todos los anuncios
+public static function getAllAnuncios()
+{
+    $conn = Aplicacion::getInstance()->getConexionBd();
+    $query = "SELECT * FROM anuncios";
+    $result = $conn->query($query);
+    $anuncios = [];
+    
+    if ($result) {
+        while ($fila = $result->fetch_assoc()) {
+            $anuncios[] = new self(
+                $fila['titulo'],
+                $fila['descripcion'],
+                $fila['idAutor'],
+                $fila['contacto'],
+                $fila['anuncioImg'],
+                $fila['id'] 
+            );
         }
-
-        return $anuncios;
+        $result->free();
+    } else {
+        error_log("Error BD ({$conn->errno}): {$conn->error}");
     }
+
+    return $anuncios;
+}
+
 
     // Método estático para borrar un anuncio por su ID.
     public static function borrarPorId($idAnuncio)
@@ -103,7 +123,7 @@ class Anuncio
         }
     }
 
-    public static function insertar($titulo, $descripcion, $categoria, $usuarioId, $contacto) {
+    public static function insertar($titulo, $descripcion, $categoria, $usuarioId, $contacto, $anuncioImg) {
         // Validaciones básicas
         if (empty($titulo) || empty($descripcion)) {
             error_log("El título y la descripción no pueden estar vacíos.");
@@ -126,10 +146,11 @@ class Anuncio
         $tituloSanitizado = $conn->real_escape_string($titulo);
         $descripcionSanitizada = $conn->real_escape_string($descripcion);
         $contactoSanitizado = $conn->real_escape_string($contacto);
+        $anuncioImgSanitizado = $conn->real_escape_string($anuncioImg);
     
         // Inserción en la base de datos
-        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor) VALUES ('%s', '%s', %d, '%s', %d)",
-            $tituloSanitizado, $descripcionSanitizada, $categoria, $contactoSanitizado, $usuarioId);
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor, anuncioImg) VALUES ('%s', '%s', %d, '%s', %d, '%s')",
+            $tituloSanitizado, $descripcionSanitizada, $categoria, $contactoSanitizado, $usuarioId, $anuncioImgSanitizado);
         
         if ($conn->query($query)) {
             return $conn->insert_id; // Devuelve el ID del anuncio insertado.
@@ -139,28 +160,18 @@ class Anuncio
         }
     }
     
-    public static function actualizar($idAnuncio, $titulo, $descripcion, $contacto, $usuarioId) {
-        // Validaciones 
-        if (empty($titulo) || empty($descripcion)) {
-            error_log("El título y la descripción no pueden estar vacíos.");
-            return false;
-        }
     
-        if (strlen($titulo) < 5) {
-            error_log("El título debe tener al menos 5 caracteres.");
-            return false;
-        }
-    
-        if (strlen($descripcion) < 10) {
-            error_log("La descripción debe tener al menos 10 caracteres.");
-            return false;
-        }
-    
-        // Continuar con la actualización despues de la validacion
+    public static function actualizar($idAnuncio, $titulo, $descripcion, $contacto, $usuarioId, $anuncioImg) {
+        // Continuar con la actualización después de la validación
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', contacto='%s', idAutor=%d WHERE id=%d",
-            $conn->real_escape_string($titulo), $conn->real_escape_string($descripcion), $conn->real_escape_string($contacto), $usuarioId, $idAnuncio);
-
+        $query = sprintf("UPDATE anuncios SET titulo='%s', descripcion='%s', contacto='%s', anuncioImg='%s', idAutor=%d WHERE id=%d",
+            $conn->real_escape_string($titulo),
+            $conn->real_escape_string($descripcion),
+            $conn->real_escape_string($contacto),
+            $conn->real_escape_string($anuncioImg),
+            $usuarioId,
+            $idAnuncio);
+    
         if ($conn->query($query)) {
             if ($conn->affected_rows > 0) {
                 return true;
@@ -173,6 +184,7 @@ class Anuncio
             return false;
         }
     }
+    
 
     public static function eliminarPorIdAutor($idAutor)
     {

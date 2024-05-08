@@ -56,7 +56,7 @@ CREATE TABLE `anuncios` (
   `contacto` varchar(255) DEFAULT NULL,
   `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `idAutor` int(11) NOT NULL,
-  `nombreImg` varchar(70) NOT NULL
+  `anuncioImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

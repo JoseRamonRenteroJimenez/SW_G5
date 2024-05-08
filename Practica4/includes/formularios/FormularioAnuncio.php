@@ -8,7 +8,7 @@ require_once 'Formulario.php';
 class FormularioAnuncios extends Formulario
 {
     public function __construct() {
-        parent::__construct('formAnuncio', ['urlRedireccion' => 'anuncioResumen.php']);
+        parent::__construct('formAnuncio', ['urlRedireccion' => 'anuncioResumen.php', 'enctype' => 'multipart/form-data']);
     }
 
     protected function generaCamposFormulario(&$datos) {
@@ -22,29 +22,34 @@ class FormularioAnuncios extends Formulario
         $erroresCampos = self::generaErroresCampos(['titulo', 'descripcion', 'contacto'], $this->errores, 'span', array('class' => 'error'));
 
         $html = <<<EOF
-        $htmlErroresGlobales
-        <fieldset>
-            <legend>Publicar Noticia</legend>
-            <div>
-                <label for="titulo">Título de la noticia:</label>
-                <input type="text" id="titulo" name="titulo" required>
-                {$erroresCampos['titulo']}
-            </div>
-            <div>
-                <label for="descripcion">Contenido de la noticia:</label>
-                <textarea id="descripcion" name="descripcion" required></textarea>
-                {$erroresCampos['descripcion']}
-            </div>
-            <div>
-                <label for="contacto">Contacto:</label>
-                <input type="text" id="contacto" name="contacto">
-                {$erroresCampos['contacto']}
-            </div>
-            <div>
-                <button type="submit" name="submitAnuncio">Publicar</button>
-            </div>
-        </fieldset>
-        EOF;
+    $htmlErroresGlobales
+    <fieldset>
+        <legend>Publicar Noticia</legend>
+        <div>
+            <label for="titulo">Título de la noticia:</label>
+            <input type="text" id="titulo" name="titulo" required>
+            {$erroresCampos['titulo']}
+        </div>
+        <div>
+            <label for="descripcion">Contenido de la noticia:</label>
+            <textarea id="descripcion" name="descripcion" required></textarea>
+            {$erroresCampos['descripcion']}
+        </div>
+        <div>
+            <label for="contacto">Contacto:</label>
+            <input type="text" id="contacto" name="contacto">
+            {$erroresCampos['contacto']}
+        </div>
+        <div>
+            <label for="fotoAnuncio">Foto del anuncio:</label>
+            <input id="fotoAnuncio" type="file" name="fotoAnuncio" accept="image/*">
+        </div>
+        <div>
+            <button type="submit" name="submitAnuncio">Publicar</button>
+        </div>
+    </fieldset>
+EOF;
+       
         return $html;
     }
 
@@ -64,9 +69,14 @@ class FormularioAnuncios extends Formulario
         $contacto = trim($datos['contacto'] ?? '');
         $usuarioId = $_SESSION['id']; // El ID del usuario se obtiene de la sesión.
 
-        
-        $idAnuncio = Anuncio::insertar($titulo, $descripcion, $_SESSION['rol'], $usuarioId, $contacto); // Intenta insertar el anuncio en la base de datos.
+        // Manejo de la carga de la imagen
+    if (isset($_FILES['fotoAnuncio']) && $_FILES['fotoAnuncio']['error'] == UPLOAD_ERR_OK) {
+        $rutaImagen = $this->manejaCargaDeImagen($_FILES['fotoAnuncio']);
+    } else {
+        $rutaImagen = null; // Manejar caso en que no se sube imagen
+    }
 
+    $idAnuncio = Anuncio::insertar($titulo, $descripcion, $_SESSION['rol'], $usuarioId, $contacto, $rutaImagen); // Intenta insertar el anuncio en la base de datos con la imagen.
         if ($idAnuncio === false) {
             $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
         } else {
@@ -76,4 +86,48 @@ class FormularioAnuncios extends Formulario
         }
     }
 
+    private function manejaCargaDeImagen($imagen)
+    {
+        $directorioDestino = "uploads/";
+        $extPermitidas = ['jpg', 'jpeg', 'png', 'gif']; // Extensiones permitidas
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif']; // Mime types permitidos
+        $maxTam = 5 * 1024 * 1024; // Tamaño máximo de 5 MB
+    
+        $nombreArchivo = basename($imagen['name']);
+        $tipoArchivo = $imagen['type'];
+        $tamArchivo = $imagen['size'];
+        $temporal = $imagen['tmp_name'];
+    
+        $extArchivo = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
+    
+        // Validación de tipo de archivo
+        if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
+            $this->errores['fotoAnuncio'] = 'Formato de imagen no permitido';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Validación de tamaño de archivo
+        if ($tamArchivo > $maxTam) {
+            $this->errores['fotoAnuncio'] = 'El archivo es demasiado grande';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Validación de contenido real de la imagen
+        if (!@getimagesize($temporal)) {
+            $this->errores['fotoAnuncio'] = 'El archivo no es una imagen válida.';
+            return null; // Devuelve null en caso de error
+        }
+    
+        // Sanitización del nombre del archivo
+        $nombreUnico = uniqid() . '.' . $extArchivo;
+        $rutaDestino = $directorioDestino . $nombreUnico;
+    
+        // Mover el archivo subido al directorio de destino
+        if (move_uploaded_file($temporal, $rutaDestino)) {
+            return $rutaDestino; // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
+        } else {
+            $this->errores['fotoAnuncio'] = 'Error al subir la imagen';
+            return null; // Devuelve null en caso de error
+        }
+    }
 }
