@@ -17,61 +17,77 @@ class FormularioContratoListado extends Formulario
         parent::__construct('formContratoListado', ['urlRedireccion' => '']);
     }
     
-    protected function generaCamposFormulario(&$datos)
-    {
-        $html = '';
-
-        // Verificar si el usuario está logueado
-        if (isset($_SESSION['rol'])) {
-            $rol = intval($_SESSION['rol']);
-            if ($rol === Usuario::EMPRESA_ROLE) {
-                // Si el usuario es empresa, mostrar solo sus contratos
-                $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
-                $html .= '<h2>Tus Contratos:</h2>';
-            } elseif ($rol === Usuario::PUEBLO_ROLE) {
-                // Si el usuario es pueblo, mostrar solo sus contratos
-                $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
-                $html .= '<h2>Tus Contratos:</h2>';
-            } elseif ($rol === Usuario::ADMIN_ROLE) {
-                // Si el usuario es admin, mostrar todos los contratos
-                $contratos = Contrato::getContratos();
-                $html .= '<h2>Contratos:</h2>';
-            } else {
-                // Otros roles no tienen acceso a esta funcionalidad
-                $html .= '<p>No tienes permiso para acceder a esta página.</p>';
-                return $html;
-            }
-
-            // Mostrar contratos
-            if (!empty($contratos)) {
-                $html .= '<table>';
-                $html .= '<tr><th>ID Contrato</th><th>Términos</th><th>ID Empresa</th><th>Nombre Empresa</th><th>ID Pueblo</th><th>Nombre Pueblo</th><th>Fecha Inicial</th><th>Fecha Final</th></tr>';
-                foreach ($contratos as $contrato) {
-                    $idContrato = $contrato->getId();
-                    $terminos = $contrato->getTerminos();
-                    $idEmpresa = $contrato->getIdEmpresa();
-                    $nombreEmpresa = Empresa::buscaNombreEmpresa($idEmpresa);
-                    $idPueblo = $contrato->getIdPueblo();
-                    $nombrePueblo = Pueblo::buscaNombrePueblo($idPueblo);
-                    $fechaInicial = $contrato->getFechaInicial();
-                    $fechaFinal = $contrato->getFechaFinal();
-                    $html .= "<tr><td>$idContrato</td><td>$terminos</td><td>$idEmpresa</td><td>$nombreEmpresa</td><td>$idPueblo</td><td>$nombrePueblo</td><td>$fechaInicial</td><td>$fechaFinal</td></tr>";
-                }
-                $html .= '</table>';
-            } else {
-                $html .= '<p>No se encontraron contratos.</p>';
-            }
-        } else {
-            $html .= '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
+    protected function generaCamposFormulario(&$datos) {
+        if (!isset($_SESSION['rol'])) {
+            return '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
         }
 
+        $html = '<h2>Listado de Contratos</h2>';
+
+        if ($_SESSION['rol'] == Usuario::PUEBLO_ROLE) {
+            $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
+        } elseif ($_SESSION['rol'] == Usuario::EMPRESA_ROLE) {
+            $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
+        } elseif ($_SESSION['rol'] == Usuario::ADMIN_ROLE) {
+            $contratos = Contrato::getContratos();
+        } else {
+            return $html .= '<p>Acceso no autorizado.</p>';
+        }
+
+        if (empty($contratos)) {
+            return $html .= '<p>No se encontraron contratos.</p>';
+        }
+
+        $estados = [
+            Contrato::ACTIVO_ESTADO => 'Activos',
+            Contrato::FINALIZADO_ESTADO => 'Finalizados',
+            Contrato::CANCELADO_ESTADO => 'Cancelados',
+            Contrato::ESPERA_ESTADO => 'En Espera'
+        ];
+
+        foreach ($estados as $estado => $nombreEstado) {
+            $html .= "<h3>$nombreEstado</h3>";
+            $filteredContracts = array_filter($contratos, function ($contrato) use ($estado) {
+                return $contrato->getEstado() == $estado;
+            });
+    
+            if (empty($filteredContracts)) {
+                $html .= "<p>No hay contratos $nombreEstado.</p>";
+                continue;
+            }
+    
+            $html .= '<table border="1">';
+            $html .= '<tr><th>ID</th><th>Empresa</th><th>Pueblo</th><th>Fecha Inicio</th><th>Fecha Fin</th><th>Términos</th><th>Estado</th><th>Detalle</th></tr>';
+            foreach ($filteredContracts as $contrato) {
+                $link = $_SESSION['rol'] == Usuario::PUEBLO_ROLE && $contrato->getEstado() == Contrato::ESPERA_ESTADO ?
+                        "<a href='../scriptsApoyo/contratoDetalle.php?id={$contrato->getId()}'>Ver/Accionar</a>" :
+                        "<a href='../scriptsApoyo/contratoDetalle.php?id={$contrato->getId()}'>Ver</a>";
+    
+                $html .= sprintf(
+                    '<tr><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                    $contrato->getId(),
+                    Empresa::buscaNombreEmpresa($contrato->getIdEmpresa()),
+                    Pueblo::buscaNombrePueblo($contrato->getIdPueblo()),
+                    $contrato->getFechaInicial(),
+                    $contrato->getFechaFinal(),
+                    htmlspecialchars($contrato->getTerminos()),
+                    $nombreEstado,
+                    $link
+                );
+            }
+            $html .= '</table>';
+        }
+    
         return $html;
     }
     
-    protected function procesaFormulario(&$datos)
-    {
-        // Este formulario no procesa ningún dato
-        return true;
+    protected function procesaFormulario(&$datos) {
+        if (isset($datos['aceptar'])) {
+            Contrato::confirmarContrato($datos['aceptar'], true);
+        } elseif (isset($datos['denegar'])) {
+            Contrato::confirmarContrato($datos['denegar'], false);
+        }
+        return true; // Redirect to the list again to see the updates
     }
 }
 ?>

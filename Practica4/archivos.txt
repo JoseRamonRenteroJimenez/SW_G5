@@ -75,6 +75,7 @@ C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioAnuncioListado.ph
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioAnuncioModificar.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoAceptar.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoCrear.php
+C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoDetalle.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoEliminar.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoListado.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioContratoModificar.php
@@ -89,16 +90,13 @@ C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioPerfil.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioPerfilBorrar.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioPerfilModificar.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistro.php
-C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistroAdmin.php
-C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistroEmpresa.php
-C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistroPueblo.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistroRol.php
-C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioRegistroVecino.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\formularios\FormularioSoporte.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\mysql\00-createdb.sql
 C:\xampp\htdocs\SW_G5\Practica4\includes\mysql\01-createuser.sql
 C:\xampp\htdocs\SW_G5\Practica4\includes\mysql\02-tablas.sql
 C:\xampp\htdocs\SW_G5\Practica4\includes\mysql\03-datos.sql
+C:\xampp\htdocs\SW_G5\Practica4\includes\scriptsApoyo\getContrato.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\scriptsApoyo\getPueblos.php
 C:\xampp\htdocs\SW_G5\Practica4\includes\vistas\comun
 C:\xampp\htdocs\SW_G5\Practica4\includes\vistas\misAnunciosVista.php
