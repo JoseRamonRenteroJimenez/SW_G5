@@ -9,6 +9,9 @@
     <?php if (isset($cssEspecifico)): ?>
         <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/<?= $cssEspecifico ?>">
     <?php endif; ?>
+    <?php if (isset($cssAnuncio)): ?>
+        <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/<?= $cssAnuncio ?>">
+    <?php endif; ?>
 </head>
 <body>
 <div id="contenedor">

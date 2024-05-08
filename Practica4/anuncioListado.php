@@ -21,4 +21,6 @@ $contenidoPrincipal = <<<EOS
 $htmlFormAnuncio 
 EOS;
 
+$cssAnuncio = 'anuncios.css'; // Nombre del archivo CSS específico para perfil
+
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';

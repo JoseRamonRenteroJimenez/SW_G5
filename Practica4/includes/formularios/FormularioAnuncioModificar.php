@@ -10,19 +10,18 @@ use es\ucm\fdi\aw\Anuncio;
 class FormularioAnuncioModificar extends Formulario
 {
     public function __construct() {
-        parent::__construct('formModificarAnuncio', ['urlRedireccion' => 'anuncioModificadoResumen.php']);
+        parent::__construct('formModificarAnuncio', [
+            'urlRedireccion' => 'anuncioModificadoResumen.php',
+            'enctype' => 'multipart/form-data'  // Permitir la carga de archivos
+        ]);
     }
 
     protected function generaCamposFormulario(&$datos) {
-        // Verificar si el usuario está logeado
         if (!isset($_SESSION['login']) || !$_SESSION['login']) {
             return "Inicie sesión para poder modificar sus anuncios.";
         }
 
-        // Obtener información del usuario
         $anuncios = Anuncio::getAnunciosByUserId($_SESSION['id']);
-
-        // Mostrar los anuncios del usuario en un formulario para modificar
         $html = '<fieldset><legend>Modificar Anuncios</legend>';
         foreach ($anuncios as $anuncio) {
             $html .= '<div>';
@@ -32,30 +31,48 @@ class FormularioAnuncioModificar extends Formulario
             $html .= '<input id="descripcion_' . $anuncio->getId() . '" type="text" name="descripcion_' . $anuncio->getId() . '" value="' . $anuncio->getDescripcion() . '" required>';
             $html .= '<label for="contacto_' . $anuncio->getId() . '">Contacto:</label>';
             $html .= '<input id="contacto_' . $anuncio->getId() . '" type="text" name="contacto_' . $anuncio->getId() . '" value="' . $anuncio->getContacto() . '" required>';
+            $html .= '<label for="imagen_' . $anuncio->getId() . '">Imagen:</label>';
+            $html .= '<input type="file" id="imagen_' . $anuncio->getId() . '" name="imagen_' . $anuncio->getId() . '">';
+            $html .= '<img src="' . $anuncio->getAnuncioImg() . '" style="width: 100px;">';  // Muestra la imagen actual
             $html .= '</div>';
         }
         $html .= '<button type="submit" name="update">Actualizar</button>';
         $html .= '</fieldset>';
-
         return $html;
     }
 
     protected function procesaFormulario(&$datos) {
-        // Procesar la actualización de los anuncios
         foreach ($datos as $key => $value) {
             if (strpos($key, 'titulo_') === 0) {
                 $idAnuncio = substr($key, strlen('titulo_'));
                 $titulo = $value;
                 $descripcion = $datos['descripcion_' . $idAnuncio];
                 $contacto = $datos['contacto_' . $idAnuncio];
-                
-                // Actualizar el anuncio utilizando el método estático de la clase Anuncio
-                if (!Anuncio::actualizar($idAnuncio, $titulo, $descripcion, $contacto, $_SESSION['id'])) {
+                $imagen = $this->manejaCargaDeImagen($_FILES['imagen_' . $idAnuncio], $idAnuncio);
+
+                if (!Anuncio::actualizar($idAnuncio, $titulo, $descripcion, $contacto, $_SESSION['id'], $imagen)) {
                     return "Error al actualizar el anuncio.";
                 }
             }
         }
-        
         return true; // Actualización exitosa
     }
+
+    private function manejaCargaDeImagen($imagen, $rutaImagenActual = null) {
+        if ($rutaImagenActual && file_exists($rutaImagenActual)) {
+            unlink($rutaImagenActual);  // Consider adding logic to ensure this only happens if a new image is successfully uploaded
+        }
+    
+        $directorioDestino = "uploads/";
+        $nombreArchivo = basename($imagen['name']);
+        $rutaDestino = $directorioDestino . $nombreArchivo;
+    
+        if (move_uploaded_file($imagen['tmp_name'], $rutaDestino)) {
+            return $rutaDestino;
+        } else {
+            $this->errores['fotoPerfil'] = 'Error al subir la imagen';
+            return null;
+        }
+    }
 }
+?>

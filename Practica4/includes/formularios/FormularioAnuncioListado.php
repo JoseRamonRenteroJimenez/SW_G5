@@ -19,36 +19,43 @@ class FormularioAnuncioListado extends Formulario
     protected function generaCamposFormulario(&$datos)
     {
         $html = '';
-
+    
         // Verificar si el usuario está logueado
         if (isset($_SESSION['login'])) {
             
             $html .= '<h2>Anuncios:</h2>';
-
+    
             $anuncios = Anuncio::getAllAnuncios();
-
-            // Mostrar contratos
+    
+            // Mostrar anuncios
             if (!empty($anuncios)) {
                 $html .= '<table>';
-                $html .= '<tr><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>Contacto</th><th>ID autor</th>';
+                $html .= '<tr><th>Imagen</th><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>Contacto</th><th>ID autor</th></tr>';
                 foreach ($anuncios as $anuncio) {
                     $idAnuncio = $anuncio->getId();
                     $titulo = $anuncio->getTitulo();
-                    $descripcion = $anuncio->getDescripcion(); 
-                    $usuarioId = $anuncio->getUsuarioId(); // NOSE SI REALMENTE ASI ESTÁ COGIENDO BIEN EL USUARIO.
+                    $descripcion = $anuncio->getDescripcion();
                     $contacto = $anuncio->getContacto();
-                    $html .= "<tr><td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$contacto</td><td>$usuarioId</td></tr>";
+                    $usuarioId = $anuncio->getUsuarioId();
+                    $imagen = $anuncio->getAnuncioImg();
+            
+                    $html .= "<tr>";
+                    $html .= "<td><img src='$imagen' alt='Imagen del anuncio' style='width:100px; height:auto; border-radius: 5%;'></td>";
+                    $html .= "<td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$contacto</td><td>$usuarioId</td>";
+                    $html .= "</tr>";
                 }
                 $html .= '</table>';
             } else {
                 $html .= '<p>No se encontraron anuncios.</p>';
             }
+            
         } else {
             $html .= '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
         }
-
+    
         return $html;
     }
+    
     
     protected function procesaFormulario(&$datos)
     {
