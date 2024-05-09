@@ -67,6 +67,10 @@ class Notificacion
         return $this->estado;
     }
 
+    public function setEstado($estado) {
+        $this->estado = $estado;
+    }
+
     public function getTipo() {
         return $this->tipo;
     }
@@ -111,11 +115,11 @@ class Notificacion
                 return new Notificacion(
                     $fila['idReferencia'],
                     $fila['tipo'],
-                    $fila['fecha'],
                     $fila['estado'],
                     $fila['idEmisor'],
                     $fila['idReceptor'],
                     $fila['titulo'],
+                    $fila['fecha'],
                     $fila['id']
                 );
             }
