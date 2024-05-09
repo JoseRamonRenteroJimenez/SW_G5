@@ -135,7 +135,7 @@ class Notificacion
                 $result = $stmt->get_result();
                 $notificaciones = [];
                 while ($fila = $result->fetch_assoc()) {
-                    $notificaciones[] = new Notificacion($fila['idReferencia'], $fila['tipo'], $fila['fecha'], $fila['estado'], $fila['idEmisor'], $fila['idReceptor'], $fila['titulo'], $fila['id']);
+                    $notificaciones[] = new Notificacion($fila['idReferencia'], $fila['tipo'], $fila['estado'], $fila['idEmisor'], $fila['idReceptor'], $fila['titulo'], $fila['fecha'], $fila['id']);
                 }
                 $stmt->close();
                 return $notificaciones;
