@@ -3,13 +3,7 @@ namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php'; 
-require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
-require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
-require_once __DIR__.'/../../includes/clases/Empresa.php';
-require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
-require_once __DIR__.'/../../includes/clases/Ambito.php'; 
-require_once __DIR__.'/../../includes/clases/Contrato.php';
-require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Anuncio.php'; 
 
 class FormularioAnuncioListado extends Formulario
 {
@@ -27,25 +21,10 @@ class FormularioAnuncioListado extends Formulario
             $html .= '<h2>Anuncios:</h2>';
     
             $anuncios = Anuncio::getAllAnuncios();
-    
             // Mostrar anuncios
             if (!empty($anuncios)) {
-                $html .= '<table>';
-                $html .= '<tr><th>Imagen</th><th>ID Anuncio</th><th>Título</th><th>Descripción</th><th>Contacto</th><th>ID autor</th></tr>';
-                foreach ($anuncios as $anuncio) {
-                    $idAnuncio = $anuncio->getId();
-                    $titulo = $anuncio->getTitulo();
-                    $descripcion = $anuncio->getDescripcion();
-                    $contacto = $anuncio->getContacto();
-                    $usuarioId = $anuncio->getUsuarioId();
-                    $imagen = $anuncio->getAnuncioImg();
-            
-                    $html .= "<tr>";
-                    $html .= "<td><img src='$imagen' alt='Imagen del anuncio' style='width:100px; height:auto; border-radius: 5%;'></td>";
-                    $html .= "<td>$idAnuncio</td><td>$titulo</td><td>$descripcion</td><td>$contacto</td><td>$usuarioId</td>";
-                    $html .= "</tr>";
-                }
-                $html .= '</table>';
+                $html .= $this->generateAnunciosTableHtml($anuncios);
+                return $html;
             } else {
                 $html .= '<p>No se encontraron anuncios.</p>';
             }
@@ -56,7 +35,26 @@ class FormularioAnuncioListado extends Formulario
     
         return $html;
     }
-    
+
+    private function generateAnunciosTableHtml($anuncios) {
+        $html = '<table border="1">';
+        $html .= '<tr><th>Image</th><th>ID anuncio</th><th>Título</th><th>Descripción</th><th>Contacto</th><th>Detalles</th></tr>';
+
+        foreach ($anuncios as $anuncio) {
+            $html .= sprintf(
+                '<tr><td><img src="%s" alt="Ad Image" style="width:100px; height:auto;"></td><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td><a href="%s">View Details</a></td></tr>',
+                htmlspecialchars($anuncio->getAnuncioImg()), // Assuming there is a getImagen method
+                $anuncio->getId(),
+                htmlspecialchars($anuncio->getTitulo()),
+                htmlspecialchars($anuncio->getDescripcion()),
+                htmlspecialchars($anuncio->getContacto()),
+                RUTA_APP . "/anuncioDetallado.php?id=" . $anuncio->getId() // Assuming there is a detail page
+            );
+        }
+
+        $html .= '</table>';
+        return $html;
+    }
     
     protected function procesaFormulario(&$datos)
     {
