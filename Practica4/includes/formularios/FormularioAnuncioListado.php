@@ -43,12 +43,12 @@ class FormularioAnuncioListado extends Formulario
         foreach ($anuncios as $anuncio) {
             $html .= sprintf(
                 '<tr><td><img src="%s" alt="Ad Image" style="width:100px; height:auto;"></td><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td><a href="%s">View Details</a></td></tr>',
-                htmlspecialchars($anuncio->getAnuncioImg()), // Assuming there is a getImagen method
+                htmlspecialchars($anuncio->getAnuncioImg()), 
                 $anuncio->getId(),
                 htmlspecialchars($anuncio->getTitulo()),
                 htmlspecialchars($anuncio->getDescripcion()),
                 htmlspecialchars($anuncio->getContacto()),
-                RUTA_APP . "/anuncioDetallado.php?id=" . $anuncio->getId() // Assuming there is a detail page
+                RUTA_APP . "/anuncioDetallado.php?id=" . $anuncio->getId() 
             );
         }
 

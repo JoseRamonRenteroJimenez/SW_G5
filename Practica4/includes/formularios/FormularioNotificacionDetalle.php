@@ -10,7 +10,7 @@ class FormularioNotificacionDetalle extends Formulario
     private $idNotificacion;
 
     public function __construct($idNotificacion) {
-        parent::__construct('formNotificacionDetalle', ['urlRedireccion' => RUTA_APP.'/notificacionListado.php']); // Default redirection after processing
+        parent::__construct('formNotificacionDetalle', ['urlRedireccion' => RUTA_APP.'/notificacionListado.php']); 
         $this->idNotificacion = $idNotificacion;
     }
     
@@ -20,10 +20,10 @@ class FormularioNotificacionDetalle extends Formulario
             return "<p>Error: La notificación no existe.</p>";
         }
         
-        // Check if the notification is unseen and update its state
+        
         if ($notificacion->getEstado() == Notificacion::NO_VISTO_ESTADO) {
             Notificacion::actualizarEstado($this->idNotificacion, Notificacion::VISTO_ESTADO);
-            $notificacion->setEstado(Notificacion::VISTO_ESTADO);  // Update the local object if needed
+            $notificacion->setEstado(Notificacion::VISTO_ESTADO); 
         }
         
         $tipoLink = $this->determineLink($notificacion->getTipo(), $notificacion->getIdReferencia());
@@ -46,7 +46,7 @@ class FormularioNotificacionDetalle extends Formulario
             case Notificacion::NOTICIA_TIPO:
                 return RUTA_APP . "/anuncioDetallado.php?id=$idReferencia";
             default:
-                return RUTA_APP . "/error.php";  // A generic error page or a notification summary page
+                return RUTA_APP . "/error.php";  
         }
     }
     
@@ -57,12 +57,12 @@ class FormularioNotificacionDetalle extends Formulario
             case Notificacion::VISTO_ESTADO:
                 return 'Visto';
             default:
-                return 'Desconocido';  // Handle unexpected values gracefully
+                return 'Desconocido';  
         }
     }
     
     protected function procesaFormulario(&$datos) {
-        // You can implement specific actions here if needed
+        // No se procesa nada, solo se muestra la información.
     }
 }
 ?>

@@ -19,12 +19,12 @@ class FormularioContratoListado extends Formulario
 
     protected function generaCamposFormulario(&$datos) {
         if (!isset($_SESSION['rol'])) {
-            return '<p>You must log in to access this functionality.</p>';
+            return '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
         }
     
-        $html = '<h2>List of Contracts</h2>';
+        $html = '<h2>Lista de Contratos</h2>';
     
-        // Fetch contracts based on user role
+        // Obtener contratos según el rol del usuario
         if ($_SESSION['rol'] == Usuario::PUEBLO_ROLE) {
             $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
         } elseif ($_SESSION['rol'] == Usuario::EMPRESA_ROLE) {
@@ -35,12 +35,12 @@ class FormularioContratoListado extends Formulario
             return $html .= '<p>Acceso no autorizado.</p>';
         }
     
-        // Check if there are contracts to display
+      // Mostrar contratos
         if (empty($contratos)) {
-            return $html . '<p>No contracts found.</p>';
+            return $html . '<p>No se han encontrado contratos.</p>';
         }
     
-        // Return HTML for contracts sorted by state
+     
         $html .= $this->generateContractsTableHtmlSorted($contratos);
         return $html;
     }
@@ -60,11 +60,11 @@ class FormularioContratoListado extends Formulario
 
     private function generateContractsTableHtmlSorted($contratos) {
         $estados = [
-            Contrato::ACTIVO_ESTADO => 'Active',
-            Contrato::FINALIZADO_ESTADO => 'Finished',
-            Contrato::CANCELADO_ESTADO => 'Canceled',
-            Contrato::ESPERA_ESTADO => 'Pending',
-            Contrato::ALTERADO_ESTADO => 'Modified Pending'
+            Contrato::ACTIVO_ESTADO => 'Activo',
+            Contrato::FINALIZADO_ESTADO => 'Finalizado',
+            Contrato::CANCELADO_ESTADO => 'Cancelado',
+            Contrato::ESPERA_ESTADO => 'Pendiente de Aprobación',
+            Contrato::ALTERADO_ESTADO => 'Modificacion pendiente'
         ];
         $html = '';
     
@@ -75,12 +75,12 @@ class FormularioContratoListado extends Formulario
             });
     
             if (empty($filteredContracts)) {
-                $html .= "<p>No contracts $nombreEstado.</p>";
+                $html .= "<p>No hay contratos $nombreEstado.</p>";
                 continue;
             }
     
             $html .= '<table border="1">';
-            $html .= '<tr><th>ID</th><th>Company</th><th>Village</th><th>Start Date</th><th>End Date</th><th>Terms</th><th>Status</th><th>Details</th></tr>';
+            $html .= '<tr><th>ID</th><th>Empresa</th><th>Pueblo</th><th>Fecha de Inicio</th><th>Fecha Final</th><th>Terminos</th><th>Estado</th><th>Detalles</th></tr>';
             foreach ($filteredContracts as $contrato) {
                 $link = $this->generateActionLink($contrato);
                 $html .= sprintf(

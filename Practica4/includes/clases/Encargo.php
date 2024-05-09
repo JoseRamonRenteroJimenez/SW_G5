@@ -79,7 +79,7 @@ class Encargo {
         $stmt->bind_param("ii", $nuevoEstado, $idEncargo);
         if ($stmt->execute()) {
             $stmt->close();
-            // Send notification after updating the encargo status
+            
             return self::enviarNotificacionEstadoEncargo($idEncargo, $nuevoEstado);
         } else {
             error_log("Error updating encargo status ({$stmt->errno}): {$stmt->error}");
@@ -112,7 +112,7 @@ class Encargo {
         $stmt->close();
         $notificacionVecino = null;
         $notificacionEmpresa = null;
-        // Prepare the notification message
+        // Mensaje por defecto
         $message = "Encargo Actualizado";
         switch ($nuevoEstado) {
             case self::ACTIVO_ESTADO:
@@ -134,7 +134,7 @@ class Encargo {
                 break;
         }
 
-        // Notify both Vecino and Empresa about the encargo state change
+        // Insertar notificaciones
         if($notificacionVecino != null)Notificacion::insertarNotificacion($notificacionVecino);
         if($notificacionEmpresa != null)Notificacion::insertarNotificacion($notificacionEmpresa);
 

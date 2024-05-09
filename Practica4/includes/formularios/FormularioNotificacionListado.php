@@ -13,20 +13,20 @@ class FormularioNotificacionListado extends Formulario
 
     protected function generaCamposFormulario(&$datos) {
         if (!isset($_SESSION['rol'])) {
-            return '<p>You must log in to access this functionality.</p>';
+            return '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
         }
     
-        $html = '<h2>List of Notifications</h2>';
+        $html = '<h2>Lista de Notificaciones</h2>';
         
-        // Fetch notifications
+        
         $notificaciones = Notificacion::getNotificacionesPorUsuario($_SESSION['id']);
         
-        // Check if there are notifications to display
+     
         if (empty($notificaciones)) {
-            return $html . '<p>No notifications found.</p>';
+            return $html . '<p>No se han encontrado notificaciones.</p>';
         }
 
-        // Group notifications by seen and unseen status
+     
         $html .= $this->generateNotificationsTableHtml($notificaciones, Notificacion::NO_VISTO_ESTADO);
         $html .= $this->generateNotificationsTableHtml($notificaciones, Notificacion::VISTO_ESTADO);
         
@@ -34,19 +34,19 @@ class FormularioNotificacionListado extends Formulario
     }
 
     private function generateNotificationsTableHtml($notificaciones, $estado) {
-        $estadoNombre = ($estado === Notificacion::VISTO_ESTADO) ? 'Seen' : 'Unseen';
-        $html = "<h3>$estadoNombre Notifications</h3>";
+        $estadoNombre = ($estado === Notificacion::VISTO_ESTADO) ? 'Visto' : 'No visto';
+        $html = "<h3>$estadoNombre Notificaciones</h3>";
         $filteredNotifications = array_filter($notificaciones, function ($notificacion) use ($estado) {
             return $notificacion->getEstado() == $estado;
         });
     
         if (empty($filteredNotifications)) {
-            $html .= "<p>No $estadoNombre notifications.</p>";
+            $html .= "<p>No $estadoNombre notificacion.</p>";
             return $html;
         }
     
         $html .= '<table border="1">';
-        $html .= '<tr><th>ID</th><th>Type</th><th>Message</th><th>Details</th></tr>';
+        $html .= '<tr><th>ID</th><th>Tipo</th><th>Mensaje</th><th>Detalles</th></tr>';
         foreach ($filteredNotifications as $notificacion) {
             $link = $this->generateActionLink($notificacion);
             $html .= sprintf(
@@ -61,9 +61,9 @@ class FormularioNotificacionListado extends Formulario
         
         return $html;
     }
-
+    
     private function generateActionLink($notificacion) {
-        return "<a href='". RUTA_APP ."/notificacionDetallado.php?id={$notificacion->getId()}'>View Details</a>";
+        return "<a href='". RUTA_APP ."/notificacionDetallado.php?id={$notificacion->getId()}'>Ver detalles</a>";
     }
     
     protected function procesaFormulario(&$datos) {

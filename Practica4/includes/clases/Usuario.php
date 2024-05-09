@@ -44,7 +44,7 @@ class Usuario
         self::inserta($user);
         return $user;
     }
-
+    
     public static function buscaUsuario($nombreUsuario)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();

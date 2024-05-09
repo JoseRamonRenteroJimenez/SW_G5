@@ -7,15 +7,18 @@ require_once __DIR__.'/includes/formularios/FormularioPerfilModificar.php';
 use es\ucm\fdi\aw\FormularioPerfil;
 use es\ucm\fdi\aw\Usuario;
 
+
 $usuarioId = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 
-$usuario = Usuario::buscaPorId($_SESSION['id']);
-$rutaImagenDefecto =  'imagenes/sample.png';
-
-if($usuario){
-    $rutaImagenBD = $usuario->getNombreImg();
-  }
-$rutaImagen = $rutaImagenBD ? $rutaImagenBD : $rutaImagenDefecto;
+if ($usuarioId) {
+    $usuario = Usuario::buscaPorId($usuarioId);
+    $rutaImagenDefecto = 'imagenes/default.png';
+    $rutaImagenBD = $usuario ? $usuario->getNombreImg() : null;
+    $rutaImagen = $rutaImagenBD ? $rutaImagenBD : $rutaImagenDefecto;
+} else {
+ 
+    $rutaImagen = 'imagenes/default.png'; 
+}
 
 $form = new FormularioPerfil();
 $htmlFormNewAd = $form->gestiona();
@@ -24,7 +27,6 @@ $tituloPagina = 'Perfil';
 
 // Incluir jQuery 
 $scriptsAdicionales = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
-
 
 // Código para cargar y actualizar notificaciones
 $scriptsAdicionales .= <<<JS

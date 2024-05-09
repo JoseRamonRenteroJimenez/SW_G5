@@ -16,12 +16,12 @@ class FormularioEncargoListado extends Formulario
     
     protected function generaCamposFormulario(&$datos) {
         if (!isset($_SESSION['rol'])) {
-            return '<p>You must log in to access this functionality.</p>';
+            return '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
         }
     
-        $html = '<h2>List of Encargos</h2>';
+        $html = '<h2>Lista de Encargos</h2>';
     
-        // Fetch encargos based on user role
+       
         if ($_SESSION['rol'] == Usuario::EMPRESA_ROLE) {
             $encargos = Encargo::buscaEncargosPorEmpresa($_SESSION['id']);
         } elseif ($_SESSION['rol'] == Usuario::VECINO_ROLE) {
@@ -44,10 +44,10 @@ class FormularioEncargoListado extends Formulario
     
     private function generateEncargosTableHtmlSorted($encargos) {
         $estados = [
-            Encargo::ACTIVO_ESTADO => 'Active',
-            Encargo::FINALIZADO_ESTADO => 'Finished',
-            Encargo::CANCELADO_ESTADO => 'Canceled',
-            Encargo::ESPERA_ESTADO => 'Pending'
+            Encargo::ACTIVO_ESTADO => 'Activo',
+            Encargo::FINALIZADO_ESTADO => 'Finalizado',
+            Encargo::CANCELADO_ESTADO => 'Cancelado',
+            Encargo::ESPERA_ESTADO => 'Pendiente de Aprobación',
         ];
         $html = '';
     
@@ -63,7 +63,7 @@ class FormularioEncargoListado extends Formulario
             }
     
             $html .= '<table border="1">';
-            $html .= '<tr><th>ID</th><th>Company</th><th>Resident</th><th>Date</th><th>Terms</th><th>Status</th><th>Details</th></tr>';
+            $html .= '<tr><th>ID</th><th>Empresa</th><th>Vecino</th><th>Fecha</th><th>Terminos</th><th>Estado</th><th>Detalles</th></tr>';
             foreach ($filteredEncargos as $encargo) {
                 $html .= sprintf(
                     '<tr><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href="encargoDetallado.php?id=%d">View/Action</a></td></tr>',
@@ -82,7 +82,7 @@ class FormularioEncargoListado extends Formulario
     }
     
     protected function procesaFormulario(&$datos) {
-        // This form does not process any data directly
+        // Este formulario no procesa ningún dato
         return true;
     }
 }

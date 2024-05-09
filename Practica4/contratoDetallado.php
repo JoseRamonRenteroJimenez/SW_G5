@@ -7,13 +7,12 @@ require_once __DIR__ . '/includes/formularios/FormularioContratoDetalle.php';
 
 $idContrato = isset($_GET['id']) ? $_GET['id'] : null;
 
-// Fetch contract details
 $contrato = Contrato::buscaContratoPorId($idContrato);
 if (!$contrato) {
     die("Error: Contract not found.");
 }
 
-// Instantiate FormularioContratoDetalle and get the HTML
+// Formulario para gestionar el contrato
 $formulario = new FormularioContratoDetalle($idContrato);
 $formularioHtml = $formulario->gestiona();
 
