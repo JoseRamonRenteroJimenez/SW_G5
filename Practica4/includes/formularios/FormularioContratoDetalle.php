@@ -53,7 +53,7 @@ class FormularioContratoDetalle extends Formulario
             $html .= '<button type="submit" name="accion" value="denegar">Denegar Contrato</button>';
         }
         if ($contrato->getEstado() == Contrato::ACTIVO_ESTADO && ($_SESSION['rol'] == Usuario::EMPRESA_ROLE || $_SESSION['rol'] == Usuario::PUEBLO_ROLE)) {
-            $html .= '<button type="button" name="accion" value="modificar" onclick="toggleModifiableFields()">Modificar Contrato</button>';
+            if($_SESSION['rol'] == Usuario::EMPRESA_ROLE){$html .= '<button type="button" name="accion" value="modificar" onclick="toggleModifiableFields()">Modificar Contrato</button>';}
             $html .= '<button type="submit" name="accion" value="cancelar">Cancelar Contrato</button>';
         }
         $html .= '<button type="submit" name="accion" value="enviarCambios" style="display:none;" id="enviarCambios">Enviar Cambios</button>';

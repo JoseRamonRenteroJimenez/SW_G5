@@ -63,9 +63,7 @@ class FormularioNotificacionListado extends Formulario
     }
 
     private function generateActionLink($notificacion) {
-        $baseURL = RUTA_APP;
-        $detailsPage = ($notificacion->getTipo() === 'contrato') ? "/contratoDetallado.php?id={$notificacion->getId()}" : "/encargoDetallado.php?id={$notificacion->getId()}";
-        return "<a href='{$baseURL}{$detailsPage}'>View Details</a>";
+        return "<a href='". RUTA_APP ."/notificacionDetallado.php?id={$notificacion->getId()}'>View Details</a>";
     }
     
     protected function procesaFormulario(&$datos) {

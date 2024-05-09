@@ -17,7 +17,7 @@
 <div id="contenedor">
 <?php
 require(RAIZ_APP.'/vistas/comun/cabecera.php');
-require(RAIZ_APP.'/vistas/comun/sidebarIzq.php');
+require(RAIZ_APP.'/vistas/comun/encabezado.php');
 ?>
     <main>
         <article>
