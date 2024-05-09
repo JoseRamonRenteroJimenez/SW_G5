@@ -100,19 +100,14 @@ class FormularioContratoDetalle extends Formulario
                 $estado = Contrato::CANCELADO_ESTADO;
                 break;
             case 'enviarCambios':
-                if (Contrato::actualiza($this->idContrato, $datos['fechaInicial'], $datos['fechaFinal'], $datos['terminos'], Contrato::ALTERADO_ESTADO)) {
-                    header('Location: ' . $this->urlRedireccion);
-                    exit();
-                } else {
-                    return "<p>Error updating contract.</p>";
-                }
+                $estado = Contrato::ALTERADO_ESTADO;
                 break;
             case 'cancelar':
                 $estado = Contrato::CANCELADO_ESTADO;
                 break;
         }
     
-        if (isset($estado) && Contrato::actualizaEstado($this->idContrato, $estado)) {
+        if (isset($estado) && Contrato::actualizarEstadoContrato($this->idContrato, $estado)) {
             header('Location: ' . $this->urlRedireccion);
             exit();
         } else {

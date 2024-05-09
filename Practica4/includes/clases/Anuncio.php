@@ -1,6 +1,9 @@
 <?php
 
 namespace es\ucm\fdi\aw;
+use es\ucm\fdi\aw;
+
+require_once __DIR__.'/../../includes/clases/Notificacion.php';
 
 class Anuncio
 {
@@ -144,7 +147,7 @@ public static function buscarPorId($id) {
         }
     }
 
-    public static function insertar($titulo, $descripcion, $categoria, $usuarioId, $contacto, $anuncioImg) {
+    public static function insertar($titulo, $descripcion, $usuarioId, $contacto, $anuncioImg) {
         // Validaciones básicas
         if (empty($titulo) || empty($descripcion)) {
             error_log("El título y la descripción no pueden estar vacíos.");
@@ -170,10 +173,16 @@ public static function buscarPorId($id) {
         $anuncioImgSanitizado = $conn->real_escape_string($anuncioImg);
     
         // Inserción en la base de datos
-        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, categoria, contacto, idAutor, anuncioImg) VALUES ('%s', '%s', %d, '%s', %d, '%s')",
-            $tituloSanitizado, $descripcionSanitizada, $categoria, $contactoSanitizado, $usuarioId, $anuncioImgSanitizado);
+        $query = sprintf("INSERT INTO anuncios (titulo, descripcion, contacto, idAutor, anuncioImg) VALUES ('%s', '%s', '%s', %d, '%s')",
+            $tituloSanitizado, $descripcionSanitizada, $contactoSanitizado, $usuarioId, $anuncioImgSanitizado);
         
         if ($conn->query($query)) {
+            $anuncioId = $conn->insert_id;
+            // Check if the user is an admin and send notifications
+            $user = Usuario::buscaPorId($usuarioId);
+            if ($user && $user->getRol() == Usuario::ADMIN_ROLE) {
+                self::notificarUsuarios($anuncioId, $titulo, $usuarioId);
+            }
             return $conn->insert_id; // Devuelve el ID del anuncio insertado.
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
@@ -181,6 +190,20 @@ public static function buscarPorId($id) {
         }
     }
     
+    private static function notificarUsuarios($anuncioId, $titulo, $adminId) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT id FROM usuarios WHERE id != ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $adminId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $notificacion = new Notificacion($anuncioId, Notificacion::NOTICIA_TIPO, Notificacion::NO_VISTO_ESTADO, $adminId, $row['id'], "Nuevo Anuncio: $titulo");
+            Notificacion::insertarNotificacion($notificacion);
+        }
+        $stmt->close();
+    }
     
     public static function actualizar($idAnuncio, $titulo, $descripcion, $contacto, $usuarioId, $anuncioImg) {
         // Continuar con la actualización después de la validación

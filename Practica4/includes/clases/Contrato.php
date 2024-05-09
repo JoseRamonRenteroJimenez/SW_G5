@@ -170,86 +170,86 @@ class Contrato
         }
     }
 
-
-    public static function confirmarContrato($idContrato, $confirmacion)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        // Actualizar el estado del contrato
-        $estado = $confirmacion ? self::ACTIVO_ESTADO : self::CANCELADO_ESTADO;
-        $query = "UPDATE contratos SET estado = ? WHERE id = ?";
-        $stmt = $conn->prepare($query);
-        if ($stmt) {
-            $stmt->bind_param("ii", $estado, $idContrato);
-            if ($stmt->execute()) {
-                $stmt->close();
-
-                // Obtener la empresa asociada al contrato
-                $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = ?";
-                $stmt = $conn->prepare($query);
-                if ($stmt) {
-                    $stmt->bind_param("i", $idContrato);
-                    if ($stmt->execute()) {
-                        $stmt->bind_result($idEmpresa, $idPueblo);
-                        if ($stmt->fetch()) {
-                            $stmt->close();
-                            
-                            // Obtener el ámbito de la empresa
-                            $empresa = new Empresa($idEmpresa, null, null); // Crea una instancia de Empresa
-                            $ambitoEmpresa = $empresa->getAmbitoEmpresa($idEmpresa); // Obtener el ámbito de la empresa
-                            Servicio::registrar(new Servicio($idPueblo, $ambitoEmpresa, 1)); // Registrar el servicio en el pueblo
-                            $notificationTitle = $confirmacion ? "Contrato Aprobado" : "Contrato Rechazado";
-                            $notificationType = $confirmacion ? Notificacion::NOTIFICA_APROBACION : Notificacion::NOTIFICA_RECHAZO;
-                            $notificacion = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $notificationTitle);
-                            Notificacion::insertarNotificacion($notificacion);
-                            return true;
-                        } else {
-                            $stmt->close();
-                            error_log("No se encontró el contrato con ID: $idContrato");
-                            return false;
-                        }
-                    } else {
-                        $stmt->close();
-                        error_log("Error al ejecutar la consulta para obtener la empresa asociada al contrato ({$conn->errno}): {$conn->error}");
-                        return false;
-                    }
-                } else {
-                    error_log("Error al preparar la consulta para obtener la empresa asociada al contrato: " . $conn->error);
-                    return false;
-                }
-            } else {
-                $stmt->close();
-                error_log("Error al actualizar el estado del contrato ({$conn->errno}): {$conn->error}");
-                return false;
-            }
-        } else {
-            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
-            return false;
-        }
-    }
-
-    public static function actualizaEstado($idContrato, $nuevoEstado)
+    public static function actualizarEstadoContrato($idContrato, $nuevoEstado)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = "UPDATE contratos SET estado = ? WHERE id = ?";
         $stmt = $conn->prepare($query);
-
         if (!$stmt) {
-            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
+            error_log("Error preparing statement: " . $conn->error);
             return false;
         }
 
         $stmt->bind_param("ii", $nuevoEstado, $idContrato);
-
-        if ($stmt->execute()) {
-            $stmt->close();
-
-            return true;
-        } else {
-            error_log("Error al actualizar el estado del contrato ({$stmt->errno}): {$stmt->error}");
+        if (!$stmt->execute()) {
+            error_log("Error updating contract status ({$conn->errno}): {$conn->error}");
             $stmt->close();
             return false;
         }
+        $stmt->close();
+
+        // After updating, fetch contract details for notification
+        return self::enviarNotificacionEstadoContrato($idContrato, $nuevoEstado);
     }
+
+    private static function enviarNotificacionEstadoContrato($idContrato, $estado)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            error_log("Error preparing select statement: " . $conn->error);
+            return false;
+        }
+
+        $stmt->bind_param("i", $idContrato);
+        if (!$stmt->execute()) {
+            error_log("Error executing select statement ({$conn->errno}): {$conn->error}");
+            $stmt->close();
+            return false;
+        }
+        $stmt->bind_result($idEmpresa, $idPueblo);
+        if (!$stmt->fetch()) {
+            error_log("No contract found with ID: $idContrato");
+            $stmt->close();
+            return false;
+        }
+        $stmt->close();
+
+        // Decide the notification message based on the contract's new state
+        $notificacionEmpresa = null;
+        $notificacionPueblo = null;
+        switch ($estado) {
+            case self::ACTIVO_ESTADO:
+                $message = "Contrato Aprobado";
+                $notificacionEmpresa = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);
+                break;
+            case self::FINALIZADO_ESTADO:
+                $message = "Contrato Finalizado";
+                $notificacionEmpresa = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);
+                break;
+            case self::CANCELADO_ESTADO:
+                $message = "Contrato Cancelado";
+                $notificacionEmpresa = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);
+                break;
+            case self::ESPERA_ESTADO:
+                $message = "Contrato en Espera";
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);  
+            case self::ALTERADO_ESTADO:
+                $message = "Contrato Modificado";
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);                
+                break;
+            default:
+                $message = "Actualización de Contrato";
+                break;
+        }
+        if($notificacionEmpresa != null) Notificacion::insertarNotificacion($notificacionEmpresa);
+        if($notificacionPueblo != null) Notificacion::insertarNotificacion($notificacionPueblo);
+        return true;
+    }
+
 
     // Esto debería actualizar solo un contrato
     public static function actualiza($id, $fechaInicial, $fechaFinal, $terminos, $nuevoEstado)
