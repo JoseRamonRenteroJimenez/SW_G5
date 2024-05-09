@@ -110,29 +110,33 @@ class Encargo {
             return false;
         }
         $stmt->close();
-
+        $notificacionVecino = null;
+        $notificacionEmpresa = null;
         // Prepare the notification message
         $message = "Encargo Actualizado";
         switch ($nuevoEstado) {
             case self::ACTIVO_ESTADO:
                 $message = "Encargo Aceptado";
-                break;
+                $notificacionVecino = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, $message);                break;
             case self::FINALIZADO_ESTADO:
                 $message = "Encargo Completado";
+                $notificacionVecino = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, $message);
+                $notificacionEmpresa = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, $message);
                 break;
             case self::CANCELADO_ESTADO:
                 $message = "Encargo Cancelado";
+                $notificacionVecino = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, $message);
+                $notificacionEmpresa = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, $message);
                 break;
             case self::ESPERA_ESTADO:
                 $message = "Encargo Pendiente de Confirmación";
+                $notificacionEmpresa = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, $message);
                 break;
         }
 
         // Notify both Vecino and Empresa about the encargo state change
-        $notificacionVecino = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, $message);
-        $notificacionEmpresa = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, $message);
-        Notificacion::insertarNotificacion($notificacionVecino);
-        Notificacion::insertarNotificacion($notificacionEmpresa);
+        if($notificacionVecino != null)Notificacion::insertarNotificacion($notificacionVecino);
+        if($notificacionEmpresa != null)Notificacion::insertarNotificacion($notificacionEmpresa);
 
         return true;
     }
