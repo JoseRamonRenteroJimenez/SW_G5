@@ -26,19 +26,49 @@ class Notificacion
     private $idReceptor;
     private $titulo;
 
-    public function __construct($idReferencia, $tipo, $estado, $idEmisor, $idReceptor, $titulo, $id = null)
+    public function __construct($idReferencia, $tipo, $estado, $idEmisor, $idReceptor, $titulo, $fecha = null, $id = null)
     {
         $this->id = $id;
         $this->idReferencia = $idReferencia;
         $this->tipo = $tipo;
         $this->estado = $estado;
+        $this->fecha = $fecha;
         $this->idEmisor = $idEmisor;
         $this->idReceptor = $idReceptor;
         $this->titulo = $titulo;
     }
 
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getIdReferencia(){
+        return $this->idReferencia;
+    }
+
+    public function getTitulo(){
+        return $this->titulo;
+    }
+
+    public function getMensaje() {
+        switch ($this->tipo) {
+            case self::CONTRATO_TIPO:
+                return "Tienes un nuevo Contrato pendiente de aprobación";
+            case self::ENCARGO_TIPO:
+                return "Tienes un nuevo Encargo";
+            case self::NOTICIA_TIPO:
+                return "Nueva Noticia disponible";
+            default:
+                return "Notificación desconocida";  // Handle unexpected types gracefully
+        }
+    }
+
     public function getEstado() {
         return $this->estado;
+    }
+
+    public function getTipo() {
+        return $this->tipo;
     }
 
     public static function insertarNotificacion(Notificacion $notificacion)
@@ -71,6 +101,29 @@ class Notificacion
         }
     }
 
+    public static function buscaNotificacionPorId($idNotificacion)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("SELECT * FROM notificaciones WHERE id=%d", $idNotificacion);
+        $rs = $conn->query($query);
+        if ($rs) {
+            if ($fila = $rs->fetch_assoc()) {
+                return new Notificacion(
+                    $fila['idReferencia'],
+                    $fila['tipo'],
+                    $fila['fecha'],
+                    $fila['estado'],
+                    $fila['idEmisor'],
+                    $fila['idReceptor'],
+                    $fila['titulo'],
+                    $fila['id']
+                );
+            }
+            $rs->free();
+        }
+        return null;
+    }
+
     public static function getNotificacionesPorUsuario($idUsuario)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -100,6 +153,18 @@ class Notificacion
     public static function registrar(Notificacion $notificacion)
     {
         return self::insertarNotificacion($notificacion->idReferencia, $notificacion->idEmisor, $notificacion->idReceptor, $notificacion->tipo, $notificacion->titulo);
+    }
+
+    public static function actualizarEstado($idNotificacion, $nuevoEstado) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $stmt = $conn->prepare("UPDATE notificaciones SET estado = ? WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("ii", $nuevoEstado, $idNotificacion);
+            $success = $stmt->execute();
+            $stmt->close();
+            return $success;
+        }
+        return false;
     }
 }
 ?>

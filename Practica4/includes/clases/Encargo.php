@@ -98,7 +98,8 @@ class Encargo {
             $idVecino, $idEmpresa, $terminos, $fecha, self::ESPERA_ESTADO);
         if ($conn->query($query)) {
             $encargoId = $conn->insert_id;
-            Notificacion::insertarNotificacion(new Notificacion($encargoId, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, "Nuevo Encargo Pendiente"));
+            $notificacion = new Notificacion($encargoId, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, "Nuevo Encargo Pendiente");
+            Notificacion::insertarNotificacion($notificacion);
             return $encargoId;
         }
         error_log("Error BD ({$conn->errno}): {$conn->error}");

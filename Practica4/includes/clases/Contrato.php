@@ -92,26 +92,6 @@ class Contrato
         return $contratos;
     }
 
-    /*
-    // Puede ser muy similar a inserta, hay que revisarlo porque puede estar duplicado
-    public static function guarda($idEmpresa, $idPueblo, $duracion, $terminos)
-    {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-        $idEmpresa = $conn->real_escape_string($idEmpresa);
-        $idPueblo = $conn->real_escape_string($idPueblo);
-        $duracion = $conn->real_escape_string($duracion);
-        $terminos = $conn->real_escape_string($terminos);
-
-        $query = "INSERT INTO contratos (idEmpresa, idPueblo, duracion, terminos) VALUES ('$idEmpresa', '$idPueblo', '$duracion', '$terminos')";
-        if ($conn->query($query)) {
-            return $conn->insert_id; // Devuelve el ID del contrato insertado
-        } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
-            sreturn false;
-        }
-    }
-    */
-
     public static function buscaContratoPorId($idContrato)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
@@ -125,7 +105,6 @@ class Contrato
         }
         return null;
     }
-    
 
     public static function buscaContratosPorEmpresa($idEmpresa)
     {
