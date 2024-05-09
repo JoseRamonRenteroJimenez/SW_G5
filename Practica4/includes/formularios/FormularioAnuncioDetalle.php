@@ -10,7 +10,7 @@ class FormularioAnuncioDetalle extends Formulario
     private $idAnuncio;
 
     public function __construct($idAnuncio) {
-        parent::__construct('formAnuncioDetalle', ['urlRedireccion' => RUTA_APP.'/anuncioListado.php']); // Assuming you want to redirect to the announcement list after processing
+        parent::__construct('formAnuncioDetalle', ['urlRedireccion' => RUTA_APP.'/anuncioListado.php']); 
         $this->idAnuncio = $idAnuncio;
     }
     
@@ -38,7 +38,7 @@ class FormularioAnuncioDetalle extends Formulario
     }
 
     protected function procesaFormulario(&$datos) {
-        // No processing needed as the form is non-interactive
+        // No se procesa nada, solo se muestra la información.
     }
 }
 ?>

@@ -99,7 +99,6 @@ class FormularioRegistroRol extends Formulario
     protected function procesaFormulario(&$datos) {
         $this->errores = [];
 
-        // Retrieve data from the form
         $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
         $nombre = trim($datos['nombre'] ?? '');
         $password = trim($datos['password'] ?? '');
@@ -111,12 +110,12 @@ class FormularioRegistroRol extends Formulario
         $cif = trim($datos['cif'] ?? '');
         $comunidadId = $datos['comunidad'] ?? '';
         $procedencia = $datos['puebloVecino'] ?? '';
-        $rutaImagen = "imagenes/default.png"; // Default image path
+        $rutaImagen = "imagenes/default.png"; 
 
-        // Convert role string to number
+       
         $rol = $this->convertRoleToNumber($rolString);
 
-        // Basic validations
+      
         if (empty($nombreUsuario)) {
             $this->errores['nombreUsuario'] = 'El nombre de usuario no puede estar vacío';
         }
@@ -130,7 +129,7 @@ class FormularioRegistroRol extends Formulario
             $this->errores['rol'] = 'El rol seleccionado no es válido';
         }
 
-        // Image upload handling
+     
         if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
             $imagenSubida = $_FILES['fotoPerfil'];
             $rutaImagen = $this->manejaCargaDeImagen($imagenSubida);
@@ -142,7 +141,7 @@ class FormularioRegistroRol extends Formulario
             return $this->errores;
         }
 
-        // Create user based on role
+        
         $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rutaImagen, $rol);
 
         if (!$usuario) {
@@ -150,7 +149,7 @@ class FormularioRegistroRol extends Formulario
             return;
         }
 
-        // Handle additional fields based on role
+        
         switch ($rol) {
             case Usuario::ADMIN_ROLE:
                 $_SESSION['esAdmin'] = true;
@@ -175,7 +174,7 @@ class FormularioRegistroRol extends Formulario
                 break;
         }
 
-        // Redirect or handle session setting
+        
         $_SESSION['login'] = true;
         $_SESSION['nombre'] = $usuario->getNombre();
         $_SESSION['id'] = $usuario->getId();
@@ -191,7 +190,7 @@ class FormularioRegistroRol extends Formulario
             'pueblo' => Usuario::PUEBLO_ROLE,
             'vecino' => Usuario::VECINO_ROLE
         ];
-        return $roleMap[strtolower($roleString)] ?? 0; // Default to 0 if role is invalid
+        return $roleMap[strtolower($roleString)] ?? 0; 
     }
 
     protected function generateSelectOptions($items, $includeOther = false)
@@ -312,7 +311,7 @@ class FormularioRegistroRol extends Formulario
         function updatePueblos(comunidadIdSelector, puebloSelectorId) {
             var comunidadId = document.getElementById(comunidadIdSelector).value;
             var puebloSelect = document.getElementById(puebloSelectorId);
-            puebloSelect.innerHTML = ''; // Clear previous options
+            puebloSelect.innerHTML = ''; 
             fetch('includes/scriptsApoyo/getPueblos.php?comunidadId=' + comunidadId)
             .then(response => {
                 if (!response.ok) {
@@ -352,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePueblos() {
         var comunidadId = document.getElementById('comunidadSelector').value;
         var puebloSelect = document.getElementById('puebloSelector');
-        puebloSelect.innerHTML = ''; // Clear previous options
+        puebloSelect.innerHTML = ''; 
         fetch('includes/scriptsApoyo/getPueblos.php?comunidadId=' + comunidadId)
             .then(response => response.json())
             .then(data => {

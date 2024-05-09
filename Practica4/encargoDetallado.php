@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/formularios/FormularioEncargoDetalle.php';
 
 $idEncargo = isset($_GET['id']) ? $_GET['id'] : null;
 
-// Fetch contract details
+
 $encargo = Encargo::buscaEncargoPorId($idEncargo);
 if (!$encargo) {
     die("Error: Contract not found.");

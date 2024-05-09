@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/formularios/FormularioAnuncioDetalle.php';
 
 $idAnuncio = isset($_GET['id']) ? $_GET['id'] : null;
 
-// Fetch contract details
+
 $anuncio = Anuncio::buscarPorId($idAnuncio);
 if (!$anuncio) {
     die("Error: Anuncio no encontrado.");

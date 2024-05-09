@@ -98,7 +98,7 @@ class FormularioModificarPerfil extends Formulario
             if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
                 $rutaImagen = $this->manejaCargaDeImagen($_FILES['fotoPerfil'], $usuario->getNombreImg());
                 if ($rutaImagen) {
-                    $usuario->setNombreImg($rutaImagen);  // Correct usage of setter
+                    $usuario->setNombreImg($rutaImagen);  // Actualizar la ruta de la imagen
                 }
             }
     
@@ -123,7 +123,7 @@ class FormularioModificarPerfil extends Formulario
 
     private function manejaCargaDeImagen($imagen, $rutaImagenActual = null) {
         if ($rutaImagenActual && file_exists($rutaImagenActual)) {
-            unlink($rutaImagenActual);  // Consider adding logic to ensure this only happens if a new image is successfully uploaded
+            unlink($rutaImagenActual);  // Eliminar la imagen anterior
         }
     
         $directorioDestino = "uploads/";

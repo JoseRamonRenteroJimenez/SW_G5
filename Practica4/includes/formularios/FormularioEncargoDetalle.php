@@ -33,7 +33,7 @@ class FormularioEncargoDetalle extends Formulario {
         $html .= "<p>Términos: {$encargo->getTerminos()}</p>";
         $html .= "<p>Estado: {$estadoEncargo}</p>";
 
-        // Adding buttons based on the encargo state and user role
+        // Botones para aceptar, denegar, cancelar o finalizar el encargo
         $html .= '<div>';
         if ($encargo->getEstado() == Encargo::ESPERA_ESTADO && $_SESSION['rol'] == Usuario::EMPRESA_ROLE) {
             $html .= '<button type="submit" name="accion" value="aceptar">Aceptar Encargo</button>';
@@ -82,7 +82,7 @@ class FormularioEncargoDetalle extends Formulario {
             header('Location: ' . $this->urlRedireccion);
             exit();
         } else {
-            return "<p>Error processing request.</p>";
+            return "<p>Error al procesar la solicitud.</p>";
         }
     }
 }

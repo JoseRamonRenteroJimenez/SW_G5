@@ -188,7 +188,7 @@ class Contrato
         }
         $stmt->close();
 
-        // After updating, fetch contract details for notification
+        
         return self::enviarNotificacionEstadoContrato($idContrato, $nuevoEstado);
     }
 
@@ -216,7 +216,7 @@ class Contrato
         }
         $stmt->close();
 
-        // Decide the notification message based on the contract's new state
+        // Inserta notificación de cambio de estado
         $notificacionEmpresa = null;
         $notificacionPueblo = null;
         switch ($estado) {
@@ -263,7 +263,7 @@ class Contrato
             $fechaInicial, $fechaFinal, $terminos, $nuevoEstado, $id);
 
         if ($conn->query($query)) {
-            // Create a notification about the contract update
+          // Inserta notificación de cambio de estado
             $notificationType = null;
             $notificationTitle = "";
 
@@ -281,7 +281,7 @@ class Contrato
                     $notificationTitle = "Contrato Pendiente de Aprobación";
                     break;
             }
-
+            
             if ($notificationType !== null) {
                 $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = $id";
                 $result = $conn->query($query);

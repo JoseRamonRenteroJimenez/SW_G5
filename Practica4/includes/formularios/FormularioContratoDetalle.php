@@ -10,7 +10,7 @@ class FormularioContratoDetalle extends Formulario
     private $idContrato;
 
     public function __construct($idContrato) {
-        parent::__construct('formContratoDetalle', ['urlRedireccion' => RUTA_APP.'/contratoListado.php']); // Assuming you want to redirect to the contract list after processing
+        parent::__construct('formContratoDetalle', ['urlRedireccion' => RUTA_APP.'/contratoListado.php']); 
         $this->idContrato = $idContrato;
     }
     
@@ -19,7 +19,7 @@ class FormularioContratoDetalle extends Formulario
         if (!$contrato) {
             return "<p>Error: El contrato no existe.</p>";
         }
-        
+        // Obtener información relevante del contrato
         $nombreEmpresa = Empresa::buscaNombreEmpresa($contrato->getIdEmpresa());
         $nombrePueblo = Pueblo::buscaNombrePueblo($contrato->getIdPueblo());
         $estadoContrato = $this->translateEstado($contrato->getEstado());
@@ -32,7 +32,7 @@ class FormularioContratoDetalle extends Formulario
         $html .= "<p>Términos Actual: {$contrato->getTerminos()}</p>";
         $html .= "<p>Estado: {$estadoContrato}</p>";
 
-        // Modifiable fields, initially hidden
+       
         $html .= '<div id="modifiableFields" style="display:none;">';
         $html .= '<label for="fechaInicial">Nueva Fecha Inicial:</label>';
         $html .= '<input type="date" id="fechaInicial" name="fechaInicial" value="' . $contrato->getFechaInicial() . '">';
@@ -42,7 +42,7 @@ class FormularioContratoDetalle extends Formulario
         $html .= '<textarea id="terminos" name="terminos">' . htmlspecialchars($contrato->getTerminos()) . '</textarea>';
         $html .= '</div>';
     
-        // Adding buttons based on the contract state
+        
         $html .= '<div>';
         if ($contrato->getEstado() == Contrato::ALTERADO_ESTADO && $_SESSION['id'] == $contrato->getIdPueblo()) {
             $html .= '<button type="submit" name="accion" value="aceptar">Aceptar Cambios</button>';
@@ -61,7 +61,7 @@ class FormularioContratoDetalle extends Formulario
     
         return $html;
     }
-    
+    // Traduce el estado del contrato a un string legible
     private function translateEstado($estado) {
         switch ($estado) {
             case Contrato::ACTIVO_ESTADO:
@@ -75,7 +75,7 @@ class FormularioContratoDetalle extends Formulario
             case Contrato::ALTERADO_ESTADO:
                 return 'Modificado en espera';
             default:
-                return 'Desconocido';  // Handle unexpected values gracefully
+                return 'Desconocido';  
         }
     }
     
@@ -85,7 +85,7 @@ class FormularioContratoDetalle extends Formulario
             return "<p>Error: Acción no especificada.</p>";
         }
 
-        // Retrieve the contract again within this method
+       
         $contrato = Contrato::buscaContratoPorId($this->idContrato);
         if (!$contrato) {
             return "<p>Error: El contrato no existe.</p>";
@@ -123,8 +123,8 @@ class FormularioContratoDetalle extends Formulario
 ?>
 
 <script>
-    window.addEventListener('DOMContentLoaded', (event) => {
-        const modifyButton = document.getElementById("modifyButton");
+    window.addEventListener('DOMContentLoaded', (event) => { 
+        const modifyButton = document.getElementById("modifyButton"); // Botón para modificar los campos
         if (modifyButton) {
             modifyButton.addEventListener('click', toggleModifiableFields);
         } else {
@@ -133,11 +133,11 @@ class FormularioContratoDetalle extends Formulario
     });
 
 
-    function toggleModifiableFields() {
+    function toggleModifiableFields() { // Función para mostrar/ocultar los campos modificables
     var fields = document.getElementById("modifiableFields");
-    console.log(fields); // Check if fields are retrieved correctly
+    console.log(fields); 
     var submitBtn = document.getElementById("enviarCambios");
-    console.log(submitBtn); // Check if the submit button is retrieved correctly
+    console.log(submitBtn); 
 
     var fieldsDisplay = fields.style.display;
     fields.style.display = fieldsDisplay === "none" ? "block" : "none";
