@@ -1,1 +1,4 @@
 Require all denied
+<Files "getPueblos.php">
+    Require all granted
+</Files>

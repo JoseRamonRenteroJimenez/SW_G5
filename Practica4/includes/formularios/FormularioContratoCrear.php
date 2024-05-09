@@ -27,37 +27,32 @@ class FormularioContratoCrear extends Formulario
         }
         
         $comunidades = Comunidad::getComunidades();
-        $pueblos = Pueblo::getPueblos();
     
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['idPueblo', 'idComunidad', 'fechaInicio', 'fechaFinal', 'terminos'], $this->errores, 'span', array('class' => 'error'));
-
-        $htmlComunidades = "<select id='comunidad' name='comunidad'>";
+        $erroresCampos = self::generaErroresCampos(['comunidad', 'pueblo', 'fechaInicio', 'fechaFinal', 'terminos'], $this->errores, 'span', array('class' => 'error'));
+        
+        $htmlComunidades = "<select id='comunidad' name='comunidad' onchange='updatePueblos()'>";
+        $htmlComunidades .= "<option value=''>Seleccione una comunidad...</option>";
         foreach ($comunidades as $comunidad) {
             $htmlComunidades .= "<option value='{$comunidad->getId()}'>{$comunidad->getNombre()}</option>";
         }
         $htmlComunidades .= "</select>";
     
-        $htmlPueblos = "<select id='pueblo' name='pueblo'><option value=''>Seleccione un pueblo...</option>";
-        foreach ($pueblos as $pueblo) {
-            $htmlPueblos .= "<option value='{$pueblo->getId()}'>{$pueblo->getNombre()}</option>";
-        }
-        $htmlPueblos .= "</select>";
+        $htmlPueblos = "<select id='pueblo' name='pueblo'><option value=''>Seleccione un pueblo...</option></select>";
 
         $html = <<<EOF
-        
         $htmlErroresGlobales
         <fieldset>
             <legend>Detalles del contrato</legend>
             <div>
                 <label for="comunidad">Comunidad Autónoma:</label>
                 $htmlComunidades
-                {$erroresCampos['idComunidad']}
+                {$erroresCampos['comunidad']}
             </div>
             <div>
                 <label for="pueblo">Pueblo:</label>
                 $htmlPueblos
-                {$erroresCampos['idPueblo']}
+                {$erroresCampos['pueblo']}
             </div>
             <div>
                 <label for="fechaInicio">Fecha de inicio:</label>
@@ -84,84 +79,86 @@ class FormularioContratoCrear extends Formulario
     }
     
     protected function procesaFormulario(&$datos)
-{
-    $this->errores = [];
+    {
+        $this->errores = [];
 
-    $idEmpresa = $_SESSION['id'] ?? '';
-    $idPueblo = $datos['pueblo'] ?? '';
-    $fechaInicio = $datos['fechaInicio'] ?? '';
-    $fechaFinal = $datos['fechaFinal'] ?? '';
-    $terminos = $datos['terminos'] ?? '';
+        $idEmpresa = $_SESSION['id'] ?? '';
+        $idPueblo = $datos['pueblo'] ?? '';
+        $fechaInicio = $datos['fechaInicio'] ?? '';
+        $fechaFinal = $datos['fechaFinal'] ?? '';
+        $terminos = $datos['terminos'] ?? '';
 
-    if (empty($idEmpresa)) {
-        $this->errores['idEmpresa'] = 'El campo empresa es obligatorio';
-    }
+        if (empty($idEmpresa)) {
+            $this->errores['idEmpresa'] = 'El campo empresa es obligatorio';
+        }
 
-    if (empty($idPueblo)) {
-        $this->errores['idPueblo'] = 'El campo pueblo es obligatorio';
-    }
+        if (empty($idPueblo)) {
+            $this->errores['idPueblo'] = 'El campo pueblo es obligatorio';
+        }
 
-    if (empty($fechaInicio)) {
-        $this->errores['fechaInicio'] = 'El campo fecha de inicio es obligatorio';
-    }
+        if (empty($fechaInicio)) {
+            $this->errores['fechaInicio'] = 'El campo fecha de inicio es obligatorio';
+        }
 
-    if (empty($fechaFinal)) {
-        $this->errores['fechaFinal'] = 'El campo fecha final es obligatorio';
-    } elseif ($fechaInicio >= $fechaFinal) {
-        $this->errores['fechaFinal'] = 'La fecha final debe ser posterior a la fecha de inicio';
-    }
+        if (empty($fechaFinal)) {
+            $this->errores['fechaFinal'] = 'El campo fecha final es obligatorio';
+        } elseif ($fechaInicio >= $fechaFinal) {
+            $this->errores['fechaFinal'] = 'La fecha final debe ser posterior a la fecha de inicio';
+        }
 
-    if (empty($terminos)) {
-        $this->errores['terminos'] = 'El campo términos es obligatorio';
-    }
+        if (empty($terminos)) {
+            $this->errores['terminos'] = 'El campo términos es obligatorio';
+        }
 
-    if (count($this->errores) === 0) {
-        $resultado = Contrato::inserta($idEmpresa, $idPueblo, $fechaInicio, $fechaFinal, $terminos);
+        if (count($this->errores) === 0) {
+            $resultado = Contrato::inserta($idEmpresa, $idPueblo, $fechaInicio, $fechaFinal, $terminos);
 
-        if ($resultado) {
-            $this->exito = true;
-            // Redirigir al usuario a la página de resumen del contrato o donde puedan ver el estado del contrato
-            header('Location: contratoResumen.php?idContrato=' . $resultado);
-            exit();
-        } else {
-            $this->errores[] = 'Error al registrar el contrato';
+            if ($resultado) {
+                $this->exito = true;
+                // Redirigir al usuario a la página de resumen del contrato o donde puedan ver el estado del contrato
+                header('Location: contratoResumen.php?idContrato=' . $resultado);
+                exit();
+            } else {
+                $this->errores[] = 'Error al registrar el contrato';
+            }
         }
     }
+
+    public static function getPueblosPorComunidad($comunidadId) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT id, nombre FROM pueblos WHERE comunidad_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $comunidadId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $pueblos = [];
+        while ($row = $result->fetch_assoc()) {
+            $pueblos[] = ['id' => $row['id'], 'nombre' => $row['nombre']];
+        }
+        $stmt->close();
+        return $pueblos;
+    }
+    
 }
-
-
-}
-
 ?>
 
-
-<!--
-
-Este script debe también presentar en una lista los servicios que tiene cubiertos el pueblo y cuantas empresas lo ofrecen
-
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var selectComunidad = document.getElementById('idComunidad'); // Change idComunidad to comunidad
-            var selectPueblo = document.getElementById('idPueblo');
-        
-            selectComunidad.addEventListener('change', function() {
-                var comunidadId = this.value;
-                fetch('es/ucm/fdi/aw/FormularioContrato?comunidadId=' + comunidadId)
-                    .then(function(response) {
-                        return response.json();
-                    })
-                    .then(function(pueblos) {
-                        selectPueblo.innerHTML = '<option value="">Seleccione un pueblo...</option>';
-                        pueblos.forEach(function(pueblo) {
-                            var option = new Option(pueblo.nombre, pueblo.id);
-                            selectPueblo.add(option);
-                        });
-                    })
-                    .catch(function(error) {
-                        console.error('Error: ', error);
-                        selectPueblo.innerHTML = '<option value="">Error al cargar pueblos</option>';
-                    });
+function updatePueblos() {
+    const comunidadId = document.getElementById('comunidad').value;
+    const puebloSelect = document.getElementById('pueblo');
+    puebloSelect.innerHTML = '<option>Loading...</option>';
+
+    fetch('includes/scriptsApoyo/getPueblos.php?comunidadId=' + comunidadId)
+        .then(response => response.json())
+        .then(data => {
+            puebloSelect.innerHTML = '<option value="">Seleccione un pueblo...</option>';
+            data.forEach(pueblo => {
+                puebloSelect.innerHTML += `<option value="${pueblo.id}">${pueblo.nombre}</option>`;
             });
-        });        
-        </script>
- -->
+        })
+        .catch(error => {
+            console.error('Error loading the pueblos:', error);
+            puebloSelect.innerHTML = '<option value="">Error loading pueblos</option>';
+        });
+}
+</script>

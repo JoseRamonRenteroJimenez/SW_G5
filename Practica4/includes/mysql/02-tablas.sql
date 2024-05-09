@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-04-2024 a las 12:16:02
+-- Tiempo de generación: 09-05-2024 a las 03:10:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -56,7 +56,7 @@ CREATE TABLE `anuncios` (
   `contacto` varchar(255) DEFAULT NULL,
   `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `idAutor` int(11) NOT NULL,
-  `anuncioImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
+  `anuncioImg` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -109,24 +109,8 @@ CREATE TABLE `encargos` (
   `idVecino` int(11) NOT NULL,
   `idEmpresa` int(11) NOT NULL,
   `fecha` date NOT NULL,
-  `terminos` varchar(50) NOT NULL,
+  `terminos` varchar(255) NOT NULL,
   `estado` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `imagenes`
---
-
-CREATE TABLE `imagenes` (
-  `id` int(11) NOT NULL,
-  `idPropietario` int(11) NOT NULL,
-  `ruta` varchar(50) NOT NULL COMMENT 'Nombre dentro de ficheros',
-  `nombre` varchar(50) NOT NULL COMMENT 'Nombre dado por propietario',
-  `mimeType` varchar(50) NOT NULL,
-  `tipoAcceso` tinyint(4) NOT NULL,
-  `tipoPropietario` int(11) NOT NULL COMMENT 'Foto de Usuario o Anuncio'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -194,7 +178,7 @@ CREATE TABLE `usuarios` (
   `password` varchar(70) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `rol` int(11) NOT NULL,
-  `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
+  `nombreImg` varchar(70) NOT NULL COMMENT 'Nombre la foto de perfil. Calcula la ruta en carpetas'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -206,7 +190,7 @@ CREATE TABLE `usuarios` (
 CREATE TABLE `vecinos` (
   `id` int(11) NOT NULL,
   `idPueblo` int(11) NOT NULL,
-  `idEmpresa` int(11)
+  `idEmpresa` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -247,12 +231,6 @@ ALTER TABLE `contratos`
 -- Indices de la tabla `encargos`
 --
 ALTER TABLE `encargos`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `imagenes`
---
-ALTER TABLE `imagenes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -317,12 +295,6 @@ ALTER TABLE `contratos`
 -- AUTO_INCREMENT de la tabla `encargos`
 --
 ALTER TABLE `encargos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `imagenes`
---
-ALTER TABLE `imagenes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

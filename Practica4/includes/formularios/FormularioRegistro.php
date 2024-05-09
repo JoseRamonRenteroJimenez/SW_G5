@@ -8,6 +8,7 @@ require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Vecino.php';
+require_once __DIR__.'/../../includes/clases/Imagen.php';
 
 class FormularioRegistro extends Formulario
 {
@@ -22,7 +23,7 @@ class FormularioRegistro extends Formulario
 
         // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
-        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'password', 'password2', 'rol', 'nTrabajadores', 'ambito', 'cif', 'comunidad'], $this->errores, 'span', array('class' => 'error'));
+        $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'password', 'password2', 'rol', 'nTrabajadores', 'ambito', 'cif', 'comunidad', 'img'], $this->errores, 'span', array('class' => 'error'));
 
         // Obtener lista de comunidades autónomas desde la base de datos
         $comunidadesAutonomas = Comunidad::getComunidades();
@@ -266,8 +267,5 @@ class FormularioRegistro extends Formulario
             return null; // Devuelve null en caso de error
         }
     }
-    
-
-
 }
 ?>

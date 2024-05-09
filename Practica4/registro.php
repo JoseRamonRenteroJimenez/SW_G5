@@ -1,12 +1,12 @@
 <?php
 
 require_once __DIR__.'/includes/config.php';
-require_once __Dir__.'/includes/clases/Usuario.php';
-require_once __DIR__.'/includes/formularios/FormularioRegistro.php'; // Ruta correcta hacia FormularioRegistro.php
+require_once __DIR__.'/includes/clases/Usuario.php';
+require_once __DIR__.'/includes/formularios/FormularioRegistroRol.php'; // Asegúrate de que la ruta sea correcta
 
-use es\ucm\fdi\aw\FormularioRegistro;
+use es\ucm\fdi\aw\FormularioRegistroRol;
 
-$form = new FormularioRegistro();
+$form = new FormularioRegistroRol();
 $htmlFormRegistro = $form->gestiona();
 
 $tituloPagina = 'Registro';
@@ -17,3 +17,4 @@ $htmlFormRegistro
 EOS;
 
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';
+?>
