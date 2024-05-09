@@ -48,31 +48,45 @@ class FormularioAnuncioModificar extends Formulario
                 $titulo = $value;
                 $descripcion = $datos['descripcion_' . $idAnuncio];
                 $contacto = $datos['contacto_' . $idAnuncio];
-                $imagen = $this->manejaCargaDeImagen($_FILES['imagen_' . $idAnuncio], $idAnuncio);
-
-                if (!Anuncio::actualizar($idAnuncio, $titulo, $descripcion, $contacto, $_SESSION['id'], $imagen)) {
+                
+                // Necesitas obtener la ruta actual de la imagen antes de llamar a manejaCargaDeImagen
+                $anuncioActual = Anuncio::buscarPorId($idAnuncio);  // Asumiendo que tienes un método que devuelve el anuncio basado en ID
+                $rutaImagenActual = $anuncioActual ? $anuncioActual->getAnuncioImg() : null;
+                
+                // Ahora sí, pasamos la ruta actual de la imagen
+                $anuncioImg = $this->manejaCargaDeImagen($_FILES['imagen_' . $idAnuncio], $rutaImagenActual);
+    
+                if (!Anuncio::actualizar($idAnuncio, $titulo, $descripcion, $contacto, $_SESSION['id'], $anuncioImg)) {
                     return "Error al actualizar el anuncio.";
                 }
             }
         }
         return true; // Actualización exitosa
     }
+    
 
-    private function manejaCargaDeImagen($imagen, $rutaImagenActual = null) {
-        if ($rutaImagenActual && file_exists($rutaImagenActual)) {
-            unlink($rutaImagenActual);  // Consider adding logic to ensure this only happens if a new image is successfully uploaded
-        }
+    private function manejaCargaDeImagen($anuncioImg, $rutaImagenActual = null) {
+        if ($anuncioImg['error'] == UPLOAD_ERR_OK) {
+            // Solo si se sube una nueva imagen procedemos a eliminar la anterior
+            if ($rutaImagenActual && file_exists($rutaImagenActual)) {
+                unlink($rutaImagenActual);
+            }
     
-        $directorioDestino = "uploads/";
-        $nombreArchivo = basename($imagen['name']);
-        $rutaDestino = $directorioDestino . $nombreArchivo;
+            $directorioDestino = "uploads/";
+            $nombreArchivo = basename($anuncioImg['name']);
+            $rutaDestino = $directorioDestino . $nombreArchivo;
     
-        if (move_uploaded_file($imagen['tmp_name'], $rutaDestino)) {
-            return $rutaDestino;
+            if (move_uploaded_file($anuncioImg['tmp_name'], $rutaDestino)) {
+                return $rutaDestino;
+            } else {
+                $this->errores['fotoPerfil'] = 'Error al subir la imagen';
+                return null;
+            }
         } else {
-            $this->errores['fotoPerfil'] = 'Error al subir la imagen';
-            return null;
+            // No se subió una nueva imagen, así que retornamos la ruta existente
+            return $rutaImagenActual;
         }
     }
+    
 }
 ?>

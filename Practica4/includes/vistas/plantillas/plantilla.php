@@ -12,6 +12,9 @@
     <?php if (isset($cssAnuncio)): ?>
         <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/<?= $cssAnuncio ?>">
     <?php endif; ?>
+    <?php if (isset($cssIntro)): ?>
+        <link rel="stylesheet" type="text/css" href="<?= RUTA_CSS ?>/<?= $cssIntro ?>">
+    <?php endif; ?>
 </head>
 <body>
 <div id="contenedor">

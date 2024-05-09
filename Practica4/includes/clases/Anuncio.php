@@ -103,6 +103,27 @@ public static function getAllAnuncios()
     return $anuncios;
 }
 
+public static function buscarPorId($id) {
+    $conn = Aplicacion::getInstance()->getConexionBd();
+    $query = sprintf("SELECT * FROM anuncios WHERE id = %d", $id);
+    $result = $conn->query($query);
+
+    if ($result && $result->num_rows > 0) {
+        $fila = $result->fetch_assoc();
+        return new self(
+            $fila['titulo'],
+            $fila['descripcion'],
+            $fila['idAutor'],
+            $fila['contacto'],
+            $fila['anuncioImg'],
+            $fila['id']
+        );
+    } else {
+        error_log("No se encontró un anuncio con el ID: $id");
+        return null;
+    }
+}
+
 
     // Método estático para borrar un anuncio por su ID.
     public static function borrarPorId($idAnuncio)
