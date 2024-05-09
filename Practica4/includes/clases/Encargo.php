@@ -72,23 +72,69 @@ class Encargo {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = "UPDATE encargos SET estado = ? WHERE id = ?";
         $stmt = $conn->prepare($query);
-
         if (!$stmt) {
-            error_log("Error al preparar la consulta de actualización del encargo: " . $conn->error);
+            error_log("Error preparing statement: " . $conn->error);
             return false;
         }
-
         $stmt->bind_param("ii", $nuevoEstado, $idEncargo);
-
         if ($stmt->execute()) {
             $stmt->close();
-
-            return true;
+            // Send notification after updating the encargo status
+            return self::enviarNotificacionEstadoEncargo($idEncargo, $nuevoEstado);
         } else {
-            error_log("Error al actualizar el estado del encargo ({$stmt->errno}): {$stmt->error}");
+            error_log("Error updating encargo status ({$stmt->errno}): {$stmt->error}");
             $stmt->close();
             return false;
         }
+    }
+
+    private static function enviarNotificacionEstadoEncargo($idEncargo, $nuevoEstado)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "SELECT idVecino, idEmpresa FROM encargos WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            error_log("Error preparing select statement: " . $conn->error);
+            return false;
+        }
+        $stmt->bind_param("i", $idEncargo);
+        if (!$stmt->execute()) {
+            error_log("Error executing select statement ({$stmt->errno}): {$conn->error}");
+            $stmt->close();
+            return false;
+        }
+        $stmt->bind_result($idVecino, $idEmpresa);
+        if (!$stmt->fetch()) {
+            error_log("No encargo found with ID: $idEncargo");
+            $stmt->close();
+            return false;
+        }
+        $stmt->close();
+
+        // Prepare the notification message
+        $message = "Encargo Actualizado";
+        switch ($nuevoEstado) {
+            case self::ACTIVO_ESTADO:
+                $message = "Encargo Aceptado";
+                break;
+            case self::FINALIZADO_ESTADO:
+                $message = "Encargo Completado";
+                break;
+            case self::CANCELADO_ESTADO:
+                $message = "Encargo Cancelado";
+                break;
+            case self::ESPERA_ESTADO:
+                $message = "Encargo Pendiente de Confirmación";
+                break;
+        }
+
+        // Notify both Vecino and Empresa about the encargo state change
+        $notificacionVecino = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, $message);
+        $notificacionEmpresa = new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, $message);
+        Notificacion::insertarNotificacion($notificacionVecino);
+        Notificacion::insertarNotificacion($notificacionEmpresa);
+
+        return true;
     }
 
     public static function inserta($idVecino, $idEmpresa, $terminos, $fecha = null) {
@@ -98,7 +144,7 @@ class Encargo {
             $idVecino, $idEmpresa, $terminos, $fecha, self::ESPERA_ESTADO);
         if ($conn->query($query)) {
             $encargoId = $conn->insert_id;
-            $notificacion = new Notificacion($encargoId, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, "Nuevo Encargo Pendiente");
+            $notificacion = new Notificacion($encargoId, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idVecino, $idEmpresa, "Nuevo Encargo Pendiente");
             Notificacion::insertarNotificacion($notificacion);
             return $encargoId;
         }
