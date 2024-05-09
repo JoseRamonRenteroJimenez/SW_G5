@@ -10,7 +10,7 @@ use es\ucm\fdi\aw\Usuario;
 $usuarioId = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 
 $usuario = Usuario::buscaPorId($_SESSION['id']);
-$rutaImagenDefecto =  'uploads/sample.png';
+$rutaImagenDefecto =  'imagenes/sample.png';
 
 if($usuario){
     $rutaImagenBD = $usuario->getNombreImg();

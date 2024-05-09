@@ -111,7 +111,7 @@ class FormularioRegistroRol extends Formulario
         $cif = trim($datos['cif'] ?? '');
         $comunidadId = $datos['comunidad'] ?? '';
         $procedencia = $datos['puebloVecino'] ?? '';
-        $rutaImagen = "uploads/default.png"; // Default image path
+        $rutaImagen = "imagenes/default.png"; // Default image path
 
         // Convert role string to number
         $rol = $this->convertRoleToNumber($rolString);

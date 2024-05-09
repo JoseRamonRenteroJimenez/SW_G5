@@ -261,7 +261,7 @@ class Encargo {
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
         }
-        return $contratos;
+        return $encargos;
     }
 
 

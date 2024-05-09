@@ -9,7 +9,6 @@ require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Vecino.php';
-require_once __DIR__.'/../../includes/clases/Imagen.php';
 
 class FormularioRegistro extends Formulario
 {
@@ -139,15 +138,15 @@ class FormularioRegistro extends Formulario
     protected function procesaFormulario(&$datos)
     {
         $this->errores = [];
-    
+
         // Recuperar datos del formulario
         $nombreUsuario = trim($datos['nombreUsuario'] ?? '');
         $password = trim($datos['password'] ?? '');
         $nombre = trim($datos['nombre'] ?? '');
-        $rol = intval($datos['rol'] ?? ''); // Asegúrate de que el rol se convierte a entero
-        $rutaImagen = "uploads/sample.png"; // Ruta predeterminada si no se carga una imagen
-    
-        // Validaciones básicas
+        $rol = intval($datos['rol'] ?? ''); 
+        $rutaImagen = "imagenes/default.png"; 
+
+     
         if (empty($nombreUsuario)) {
             $this->errores['nombreUsuario'] = 'El nombre de usuario no puede estar vacío';
         }
@@ -160,63 +159,47 @@ class FormularioRegistro extends Formulario
         if ($rol <= 0 || $rol > 4) {
             $this->errores['rol'] = 'El rol seleccionado no es válido';
         }
-    
-        // Si hay errores, termina la validación
+
+
         if (count($this->errores) > 0) {
             return;
         }
-    
-        // Manejo de la carga de imágenes
+
         if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] == UPLOAD_ERR_OK) {
             $imagenSubida = $_FILES['fotoPerfil'];
-            $rutaImagen = $this->manejaCargaDeImagen($imagenSubida);
+            $rutaImagen = $this->manejaCargaDeImagen($imagenSubida); 
+            if ($rutaImagen === null) {
+                $rutaImagen = "imagenes/default.png";
+            }
         }
-    
-        // Crear el usuario según el rol
+
         $usuario = Usuario::crea($nombreUsuario, $password, $nombre, $rutaImagen, $rol);
-    
+
         if ($usuario === 0) {
             $this->errores['general'] = 'El usuario ya existe';
             return;
         }
-    
+
         if ($usuario != null) {
-            // Establecer datos comunes en la sesión
             $_SESSION['login'] = true;
             $_SESSION['nombre'] = $usuario->getNombre();
             $_SESSION['id'] = $usuario->getId();
             $_SESSION['rol'] = $usuario->getRol();
-    
+
             switch ($rol) {
                 case Usuario::ADMIN_ROLE:
                     $_SESSION['esAdmin'] = true;
                     break;
-                case Usuario::EMPRESA_ROLE:
-                    // Procesar datos adicionales para empresa
-                    $nTrabajadores = trim($datos['nTrabajadores'] ?? '');
-                    $ambito = trim($datos['ambito'] ?? '');
-                    $ambito_manual = trim($datos['ambito_manual'] ?? '');
-    
-                    // Crear y registrar la empresa
+                case Usuario::EMPRESA_ROLE:  
                     break;
-                case Usuario::PUEBLO_ROLE:
-                    // Procesar datos adicionales para pueblo
-                    $cif = trim($datos['cif'] ?? '');
-                    $comunidad = trim($datos['comunidad'] ?? '');
-    
-                    // Crear y registrar el pueblo
+                case Usuario::PUEBLO_ROLE:  
                     break;
                 case Usuario::VECINO_ROLE:
-                    // Procesar datos adicionales para vecino
-                    $procedencia = $datos['procedencia'] ?? '';
-    
-                    // Crear y registrar el vecino
                     break;
                 default:
-                    // Manejar caso no válido
                     break;
             }
-            header('Location: registroResumen.php'); // Redirigir a una página de resumen
+            header('Location: registroResumen.php'); 
             exit();
         } else {
             $this->errores['general'] = 'Error al crear el usuario';
@@ -227,46 +210,46 @@ class FormularioRegistro extends Formulario
     private function manejaCargaDeImagen($imagen)
     {
         $directorioDestino = "uploads/";
-        $extPermitidas = ['jpg', 'jpeg', 'png', 'gif']; // Extensiones permitidas
-        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif']; // Mime types permitidos
-        $maxTam = 5 * 1024 * 1024; // Tamaño máximo de 5 MB
-    
+        $extPermitidas = ['jpg', 'jpeg', 'png', 'gif'];
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxTam = 5 * 1024 * 1024;  // 5 MB
+
         $nombreArchivo = basename($imagen['name']);
         $tipoArchivo = $imagen['type'];
         $tamArchivo = $imagen['size'];
         $temporal = $imagen['tmp_name'];
-    
         $extArchivo = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
-    
-        // Validación de tipo de archivo
+        
         if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
             $this->errores['fotoPerfil'] = 'Formato de imagen no permitido';
-            return null; // Devuelve null en caso de error
+            return null;
         }
-    
-        // Validación de tamaño de archivo
+
         if ($tamArchivo > $maxTam) {
             $this->errores['fotoPerfil'] = 'El archivo es demasiado grande';
-            return null; // Devuelve null en caso de error
+            return null;
         }
-    
-        // Validación de contenido real de la imagen
-        if (!@getimagesize($temporal)) {
+
+        if (!getimagesize($temporal)) {
             $this->errores['fotoPerfil'] = 'El archivo no es una imagen válida.';
-            return null; // Devuelve null en caso de error
+            return null;
         }
-    
-        // Sanitización del nombre del archivo
+
+        if (!file_exists($temporal)) {
+            $this->errores['fotoPerfil'] = 'Archivo no encontrado.';
+            return null;
+        }
+
         $nombreUnico = uniqid() . '.' . $extArchivo;
         $rutaDestino = $directorioDestino . $nombreUnico;
     
-        // Mover el archivo subido al directorio de destino
         if (move_uploaded_file($temporal, $rutaDestino)) {
-            return $rutaDestino; // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
+            return $rutaDestino;
         } else {
             $this->errores['fotoPerfil'] = 'Error al subir la imagen';
-            return null; // Devuelve null en caso de error
+            return null;
         }
     }
 }
 ?>
+
