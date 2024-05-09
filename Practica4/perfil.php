@@ -7,25 +7,29 @@ require_once __DIR__.'/includes/formularios/FormularioPerfilModificar.php';
 use es\ucm\fdi\aw\FormularioPerfil;
 use es\ucm\fdi\aw\Usuario;
 
-
+// Asegurarse de que existe un ID de usuario en la sesión
 $usuarioId = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 
-if ($usuarioId) {
-    $usuario = Usuario::buscaPorId($usuarioId);
-    $rutaImagenDefecto = 'imagenes/default.png';
-    $rutaImagenBD = $usuario ? $usuario->getNombreImg() : null;
-    $rutaImagen = $rutaImagenBD ? $rutaImagenBD : $rutaImagenDefecto;
-} else {
- 
-    $rutaImagen = 'imagenes/default.png'; 
-}
+// Buscar usuario por ID utilizando $_SESSION['id'] solo si está definido
+$usuario = isset($_SESSION['id']) ? Usuario::buscaPorId($_SESSION['id']) : null;
 
+// Definir la ruta de la imagen por defecto
+$rutaImagenDefecto = 'imagenes/default.png';
+
+// Determinar la imagen del usuario, si está disponible
+$rutaImagenBD = $rutaImagenDefecto; // Define un valor predeterminado para la ruta de la imagen
+if ($usuario) {
+    $rutaImagenBD = $usuario->getNombreImg() ?: $rutaImagenDefecto;
+}
+$rutaImagen = $rutaImagenBD;
+
+// Crear el formulario de perfil
 $form = new FormularioPerfil();
 $htmlFormNewAd = $form->gestiona();
 
 $tituloPagina = 'Perfil';
 
-// Incluir jQuery 
+// Incluir jQuery
 $scriptsAdicionales = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
 
 // Código para cargar y actualizar notificaciones
@@ -53,6 +57,7 @@ $contenidoPrincipal = <<<EOS
 </div>
 $htmlFormNewAd
 EOS;
+
 $cssEspecifico = 'perfil.css'; // Nombre del archivo CSS específico para perfil
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';
 ?>
