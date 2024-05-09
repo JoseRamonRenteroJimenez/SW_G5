@@ -17,11 +17,7 @@ class Contrato
     public const FINALIZADO_ESTADO = 2;
     public const CANCELADO_ESTADO = 3;
     public const ESPERA_ESTADO = 4 ;
-
-    // Tipos de notificación
-    public const NOTIFICA_CREACION = 1;  // Asumamos que 1 es para la creación de un contrato pendiente de aprobación
-    public const NOTIFICA_APROBACION = 2;  // Asumamos que 2 es cuando un contrato es aprobado
-    public const NOTIFICA_RECHAZO = 3;  // Asumamos que 3 es cuando un contrato es rechazado
+    public const ALTERADO_ESTADO = 5;
 
     private $id;
     private $idEmpresa;
@@ -186,7 +182,8 @@ class Contrato
         if ($conn->query($query)) {
             $contratoId = $conn->insert_id;
             // Inserta notificación de creación de contrato pendiente
-            Notificacion::insertarNotificacion(new Notificacion($contratoId, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, "Nuevo Contrato Pendiente de Aprobación"));
+            $notificacion = new Notificacion($contratoId, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, "Nuevo Contrato Pendiente de Aprobación");
+            Notificacion::insertarNotificacion($notificacion);
             return $contratoId;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
@@ -221,7 +218,10 @@ class Contrato
                             $empresa = new Empresa($idEmpresa, null, null); // Crea una instancia de Empresa
                             $ambitoEmpresa = $empresa->getAmbitoEmpresa($idEmpresa); // Obtener el ámbito de la empresa
                             Servicio::registrar(new Servicio($idPueblo, $ambitoEmpresa, 1)); // Registrar el servicio en el pueblo
-
+                            $notificationTitle = $confirmacion ? "Contrato Aprobado" : "Contrato Rechazado";
+                            $notificationType = $confirmacion ? Notificacion::NOTIFICA_APROBACION : Notificacion::NOTIFICA_RECHAZO;
+                            $notificacion = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $notificationTitle);
+                            Notificacion::insertarNotificacion($notificacion);
                             return true;
                         } else {
                             $stmt->close();
@@ -248,20 +248,77 @@ class Contrato
         }
     }
 
-    // Esto debería actualizar solo un contrato
-    public static function actualiza($id, $fechaInicial, $fechaFinal, $terminos)
+    public static function actualizaEstado($idContrato, $nuevoEstado)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("UPDATE contratos SET fechaInicial='%s', fechaFinal='%s', terminos='%s' WHERE id=%d",
-            $fechaInicial, $fechaFinal, $conn->real_escape_string($terminos), $id);
+        $query = "UPDATE contratos SET estado = ? WHERE id = ?";
+        $stmt = $conn->prepare($query);
+
+        if (!$stmt) {
+            error_log("Error al preparar la consulta de actualización del contrato: " . $conn->error);
+            return false;
+        }
+
+        $stmt->bind_param("ii", $nuevoEstado, $idContrato);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+
+            return true;
+        } else {
+            error_log("Error al actualizar el estado del contrato ({$stmt->errno}): {$stmt->error}");
+            $stmt->close();
+            return false;
+        }
+    }
+
+    // Esto debería actualizar solo un contrato
+    public static function actualiza($id, $fechaInicial, $fechaFinal, $terminos, $nuevoEstado)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $fechaInicial = $conn->real_escape_string($fechaInicial ?? '');  // Default to empty string if null
+        $fechaFinal = $conn->real_escape_string($fechaFinal ?? '');
+        $terminos = $conn->real_escape_string($terminos ?? '');
+
+        $query = sprintf("UPDATE contratos SET fechaInicial='%s', fechaFinal='%s', terminos='%s', estado=%d WHERE id=%d",
+            $fechaInicial, $fechaFinal, $terminos, $nuevoEstado, $id);
 
         if ($conn->query($query)) {
+            // Create a notification about the contract update
+            $notificationType = null;
+            $notificationTitle = "";
+
+            switch ($nuevoEstado) {
+                case self::ACTIVO_ESTADO:
+                    $notificationType = Notificacion::NOTIFICA_APROBACION;
+                    $notificationTitle = "Contrato Aprobado";
+                    break;
+                case self::CANCELADO_ESTADO:
+                    $notificationType = Notificacion::NOTIFICA_RECHAZO;
+                    $notificationTitle = "Contrato Cancelado";
+                    break;
+                case self::ESPERA_ESTADO:
+                    $notificationType = Notificacion::NOTIFICA_CREACION;
+                    $notificationTitle = "Contrato Pendiente de Aprobación";
+                    break;
+            }
+
+            if ($notificationType !== null) {
+                $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = $id";
+                $result = $conn->query($query);
+                if ($row = $result->fetch_assoc()) {
+                    $notificacion = new Notificacion($id, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $row['idEmpresa'], $row['idPueblo'], $notificationTitle);
+                    Notificacion::insertarNotificacion($notificacion);
+                }
+            }
+
             return true;
         } else {
             error_log("Error BD ({$conn->errno}): {$conn->error}");
             return false;
         }
     }
+
 
     public static function eliminaContratoPorId($idContrato)
     {
@@ -313,6 +370,23 @@ class Contrato
         } else {
             error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
             return false; // Error al preparar la consulta
+        }
+    }
+
+    public function translateEstado() {
+        switch ($this->estado) {
+            case self::ACTIVO_ESTADO:
+                return 'Activo';
+            case self::FINALIZADO_ESTADO:
+                return 'Finalizado';
+            case self::CANCELADO_ESTADO:
+                return 'Cancelado';
+            case self::ESPERA_ESTADO:
+                return 'En espera';
+            case self::ALTERADO_ESTADO:
+                return 'Modificado en espera';
+            default:
+                return 'Desconocido';
         }
     }
 

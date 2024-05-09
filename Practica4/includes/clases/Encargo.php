@@ -2,6 +2,7 @@
 namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../Aplicacion.php';
+require_once __DIR__.'/../../includes/clases/Notificacion.php';
 
 class Encargo {
     // Estados de un Encargo
@@ -57,50 +58,69 @@ class Encargo {
         return $this->estado;
     }
 
-    public static function inserta($idVecino, $idEmpresa, $terminos) {
-        $conn = Aplicacion::getInstance()->getConexionBd();
-    
-        $idVecino = $conn->real_escape_string($idVecino);
-        $idEmpresa = $conn->real_escape_string($idEmpresa);
-        $terminos = $conn->real_escape_string($terminos);
-        
-        $fecha = date('Y-m-d'); // Obtener la fecha actual en el formato 'YYYY-MM-DD'
-
-    
-        $query = sprintf("INSERT INTO encargos (idVecino, idEmpresa, terminos, fecha, estado) VALUES (%d, %d, '%s', '%s', %d)",
-            $idVecino, $idEmpresa, $terminos, $fecha, self::ESPERA_ESTADO);
-        
-        if ($conn->query($query)) {
-            $encargoId = $conn->insert_id;
-            // Insertar notificación de creación de encargo pendiente
-            self::insertarNotificacion($encargoId, $idVecino, $idEmpresa, self::NOTIFICA_CREACION);
-            return $encargoId;
+    public static function registrar(Contrato $contrato)
+    {
+        if ($encargo->inserta()) {
+            return true; // Devolver true para indicar éxito
         } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false; // Error al registrar el pueblo
+        }
+    }
+
+    public static function actualizaEstado($idEncargo, $nuevoEstado)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "UPDATE encargos SET estado = ? WHERE id = ?";
+        $stmt = $conn->prepare($query);
+
+        if (!$stmt) {
+            error_log("Error al preparar la consulta de actualización del encargo: " . $conn->error);
             return false;
         }
+
+        $stmt->bind_param("ii", $nuevoEstado, $idEncargo);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+
+            return true;
+        } else {
+            error_log("Error al actualizar el estado del encargo ({$stmt->errno}): {$stmt->error}");
+            $stmt->close();
+            return false;
+        }
+    }
+
+    public static function inserta($idVecino, $idEmpresa, $terminos, $fecha = null) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $fecha = $fecha ?? date('Y-m-d');
+        $query = sprintf("INSERT INTO encargos (idVecino, idEmpresa, terminos, fecha, estado) VALUES (%d, %d, '%s', '%s', %d)",
+            $idVecino, $idEmpresa, $terminos, $fecha, self::ESPERA_ESTADO);
+        if ($conn->query($query)) {
+            $encargoId = $conn->insert_id;
+            Notificacion::insertarNotificacion(new Notificacion($encargoId, Notificacion::ENCARGO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idVecino, "Nuevo Encargo Pendiente"));
+            return $encargoId;
+        }
+        error_log("Error BD ({$conn->errno}): {$conn->error}");
+        return false;
     }
     
 
     // Método para obtener un encargo por su ID
-    public static function buscaCEncargoPorId($idEncargo) {
+    public static function buscaEncargoPorId($idEncargo) {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("SELECT * FROM encargos WHERE id=%d", $idEncargo);
         $rs = $conn->query($query);
-        if ($rs) {
-            if ($fila = $rs->fetch_assoc()) {
-                return new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['fecha'], $fila['terminos'], $fila['estado'], $fila['id']);
-            }
-            $rs->free();
+        if ($rs && $fila = $rs->fetch_assoc()) {
+            return new Encargo($fila['idVecino'], $fila['idEmpresa'], $fila['terminos'], $fila['fecha'], $fila['estado'], $fila['id']);
         }
         return null;
     }
 
     // Método para confirmar o rechazar un encargo
+
     public static function confirmarEncargo($idEncargo, $confirmacion) {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        
-        // Actualizar el estado del encargo según la confirmación
         $estado = $confirmacion ? self::ACTIVO_ESTADO : self::CANCELADO_ESTADO;
         $query = "UPDATE encargos SET estado = ? WHERE id = ?";
         $stmt = $conn->prepare($query);
@@ -108,15 +128,39 @@ class Encargo {
             $stmt->bind_param("ii", $estado, $idEncargo);
             if ($stmt->execute()) {
                 $stmt->close();
-                return true; // Éxito al actualizar el estado del encargo
-            } else {
-                $stmt->close();
-                error_log("Error al actualizar el estado del encargo: {$conn->errno} - {$conn->error}");
-                return false; // Error al ejecutar la consulta de actualización
+                Notificacion::insertarNotificacion(new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::VISTO_ESTADO, $idEmpresa, $idVecino, $confirmacion ? "Encargo Aprobado" : "Encargo Rechazado"));
+                return true;
             }
-        } else {
-            error_log("Error al preparar la consulta de actualización del estado del encargo: {$conn->errno} - {$conn->error}");
-            return false; // Error al preparar la consulta
+            $stmt->close();
+        }
+        error_log("Error al actualizar encargo: {$conn->errno} - {$conn->error}");
+        return false;
+    }
+
+    public static function actualiza($idEncargo, $idVecino, $idEmpresa, $terminos, $fecha, $estado) {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("UPDATE encargos SET idVecino=%d, idEmpresa=%d, terminos='%s', fecha='%s', estado=%d WHERE id=%d",
+            $idVecino, $idEmpresa, $terminos, $fecha, $estado, $idEncargo);
+        if ($conn->query($query)) {
+            Notificacion::insertarNotificacion(new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::VISTO_ESTADO, $idEmpresa, $idVecino, "Encargo Actualizado"));
+            return true;
+        }
+        error_log("Error al actualizar encargo: {$conn->errno} - {$conn->error}");
+        return false;
+    }
+
+    public function translateEstado() {
+        switch ($this->estado) {
+            case self::ACTIVO_ESTADO:
+                return 'Activo';
+            case self::FINALIZADO_ESTADO:
+                return 'Finalizado';
+            case self::CANCELADO_ESTADO:
+                return 'Cancelado';
+            case self::ESPERA_ESTADO:
+                return 'En espera';
+            default:
+                return 'Desconocido';
         }
     }
 
@@ -160,17 +204,15 @@ class Encargo {
         }
     }
 
-    public static function eliminarEncargoPorId($idEncargo)
-    {
+    public static function eliminaEncargoPorId($idEncargo) {
         $conn = Aplicacion::getInstance()->getConexionBd();
         $query = sprintf("DELETE FROM encargos WHERE id = %d", $idEncargo);
-        
         if ($conn->query($query)) {
+            Notificacion::insertarNotificacion(new Notificacion($idEncargo, Notificacion::ENCARGO_TIPO, Notificacion::VISTO_ESTADO, $idEmpresa, $idVecino, "Encargo Eliminado"));
             return true;
-        } else {
-            error_log("Error BD ({$conn->errno}): {$conn->error}");
-            return false;
         }
+        error_log("Error al eliminar encargo: {$conn->errno} - {$conn->error}");
+        return false;
     }
 
     public static function buscaEncargosPorEmpresa($idEmpresa)

@@ -10,5 +10,6 @@
 		<li><a href="<?= RUTA_APP ?>/perfil.php">Perfil</a></li>
 		<li><a href="<?= RUTA_APP ?>/encargoCrear.php">Encargo</a></li>
 		<li><a href="<?= RUTA_APP ?>/encargoListado.php">Lista de encargos</a></li>
+		<li><a href="<?= RUTA_APP ?>/notificacionListado.php">Lista notificaciones</a></li>
 	</ul>
 </nav>

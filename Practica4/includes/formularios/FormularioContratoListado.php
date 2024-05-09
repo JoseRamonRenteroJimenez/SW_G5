@@ -2,7 +2,7 @@
 namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
-require_once 'Formulario.php'; 
+require_once __DIR__ . '/Formulario.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
@@ -16,14 +16,15 @@ class FormularioContratoListado extends Formulario
     public function __construct() {
         parent::__construct('formContratoListado', ['urlRedireccion' => '']);
     }
-    
+
     protected function generaCamposFormulario(&$datos) {
         if (!isset($_SESSION['rol'])) {
-            return '<p>Debes iniciar sesión para acceder a esta funcionalidad.</p>';
+            return '<p>You must log in to access this functionality.</p>';
         }
-
-        $html = '<h2>Listado de Contratos</h2>';
-
+    
+        $html = '<h2>List of Contracts</h2>';
+    
+        // Fetch contracts based on user role
         if ($_SESSION['rol'] == Usuario::PUEBLO_ROLE) {
             $contratos = Contrato::buscaContratosPorPueblo($_SESSION['id']);
         } elseif ($_SESSION['rol'] == Usuario::EMPRESA_ROLE) {
@@ -33,18 +34,40 @@ class FormularioContratoListado extends Formulario
         } else {
             return $html .= '<p>Acceso no autorizado.</p>';
         }
-
+    
+        // Check if there are contracts to display
         if (empty($contratos)) {
-            return $html .= '<p>No se encontraron contratos.</p>';
+            return $html . '<p>No contracts found.</p>';
         }
+    
+        // Return HTML for contracts sorted by state
+        $html .= $this->generateContractsTableHtmlSorted($contratos);
+        return $html;
+    }
+    
+    private function fetchContracts($role, $userId) {
+        switch ($role) {
+            case Usuario::PUEBLO_ROLE:
+                return Contrato::buscaContratosPorPueblo($userId);
+            case Usuario::EMPRESA_ROLE:
+                return Contrato::buscaContratosPorEmpresa($userId);
+            case Usuario::ADMIN_ROLE:
+                return Contrato::getContratos();
+            default:
+                return [];
+        }
+    }
 
+    private function generateContractsTableHtmlSorted($contratos) {
         $estados = [
-            Contrato::ACTIVO_ESTADO => 'Activos',
-            Contrato::FINALIZADO_ESTADO => 'Finalizados',
-            Contrato::CANCELADO_ESTADO => 'Cancelados',
-            Contrato::ESPERA_ESTADO => 'En Espera'
+            Contrato::ACTIVO_ESTADO => 'Active',
+            Contrato::FINALIZADO_ESTADO => 'Finished',
+            Contrato::CANCELADO_ESTADO => 'Canceled',
+            Contrato::ESPERA_ESTADO => 'Pending',
+            Contrato::ALTERADO_ESTADO => 'Modified Pending'
         ];
-
+        $html = '';
+    
         foreach ($estados as $estado => $nombreEstado) {
             $html .= "<h3>$nombreEstado</h3>";
             $filteredContracts = array_filter($contratos, function ($contrato) use ($estado) {
@@ -52,17 +75,14 @@ class FormularioContratoListado extends Formulario
             });
     
             if (empty($filteredContracts)) {
-                $html .= "<p>No hay contratos $nombreEstado.</p>";
+                $html .= "<p>No contracts $nombreEstado.</p>";
                 continue;
             }
     
             $html .= '<table border="1">';
-            $html .= '<tr><th>ID</th><th>Empresa</th><th>Pueblo</th><th>Fecha Inicio</th><th>Fecha Fin</th><th>Términos</th><th>Estado</th><th>Detalle</th></tr>';
+            $html .= '<tr><th>ID</th><th>Company</th><th>Village</th><th>Start Date</th><th>End Date</th><th>Terms</th><th>Status</th><th>Details</th></tr>';
             foreach ($filteredContracts as $contrato) {
-                $link = $_SESSION['rol'] == Usuario::PUEBLO_ROLE && $contrato->getEstado() == Contrato::ESPERA_ESTADO ?
-                        "<a href='../scriptsApoyo/contratoDetalle.php?id={$contrato->getId()}'>Ver/Accionar</a>" :
-                        "<a href='../scriptsApoyo/contratoDetalle.php?id={$contrato->getId()}'>Ver</a>";
-    
+                $link = $this->generateActionLink($contrato);
                 $html .= sprintf(
                     '<tr><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
                     $contrato->getId(),
@@ -71,23 +91,24 @@ class FormularioContratoListado extends Formulario
                     $contrato->getFechaInicial(),
                     $contrato->getFechaFinal(),
                     htmlspecialchars($contrato->getTerminos()),
-                    $nombreEstado,
+                    $contrato->translateEstado(),
                     $link
                 );
             }
             $html .= '</table>';
         }
-    
         return $html;
+    }
+
+    private function generateActionLink($contrato) {
+        if ($_SESSION['rol'] == Usuario::PUEBLO_ROLE && $contrato->getEstado() == Contrato::ESPERA_ESTADO) {
+            return "<a href='" . RUTA_APP . "/contratoDetallado.php?id={$contrato->getId()}'>View/Action</a>";
+        } else {
+            return "<a href='" . RUTA_APP . "/contratoDetallado.php?id={$contrato->getId()}'>View</a>";
+        }
     }
     
     protected function procesaFormulario(&$datos) {
-        if (isset($datos['aceptar'])) {
-            Contrato::confirmarContrato($datos['aceptar'], true);
-        } elseif (isset($datos['denegar'])) {
-            Contrato::confirmarContrato($datos['denegar'], false);
-        }
-        return true; // Redirect to the list again to see the updates
     }
 }
 ?>

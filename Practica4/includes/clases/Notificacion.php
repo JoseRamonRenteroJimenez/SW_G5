@@ -11,6 +11,11 @@ class Notificacion
 
     public const NO_VISTO_ESTADO = 1;
     public const VISTO_ESTADO = 2;
+
+    // Tipos de notificación
+    public const NOTIFICA_CREACION = 1;  // Asumamos que 1 es para la creación de un contrato pendiente de aprobación
+    public const NOTIFICA_APROBACION = 2;  // Asumamos que 2 es cuando un contrato es aprobado
+    public const NOTIFICA_RECHAZO = 3;  // Asumamos que 3 es cuando un contrato es rechazado
     
     private $id;
     private $idReferencia;
@@ -30,6 +35,10 @@ class Notificacion
         $this->idEmisor = $idEmisor;
         $this->idReceptor = $idReceptor;
         $this->titulo = $titulo;
+    }
+
+    public function getEstado() {
+        return $this->estado;
     }
 
     public static function insertarNotificacion(Notificacion $notificacion)

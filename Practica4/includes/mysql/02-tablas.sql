@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-05-2024 a las 16:10:34
+-- Tiempo de generación: 09-05-2024 a las 03:10:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -56,7 +56,7 @@ CREATE TABLE `anuncios` (
   `contacto` varchar(255) DEFAULT NULL,
   `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `idAutor` int(11) NOT NULL,
-  `anuncioImg` varchar(70) NOT NULL COMMENT 'Nombre de la foto de perfil'
+  `anuncioImg` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -109,7 +109,7 @@ CREATE TABLE `encargos` (
   `idVecino` int(11) NOT NULL,
   `idEmpresa` int(11) NOT NULL,
   `fecha` date NOT NULL,
-  `terminos` varchar(50) NOT NULL,
+  `terminos` varchar(255) NOT NULL,
   `estado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
