@@ -13,7 +13,7 @@ function mostrarSaludo() {
 ?>
 <header>
     <div class="logo">
-    <img src="<?= RUTA_APP?>/imagenes/logo.png" alt="Logotipo de PuebloInnova" style="width:100px;height:100px;" />
+    <img src="<?= RUTA_APP?>/imagenes/logo.png" alt="Logotipo de PuebloInnova" style="width:140px;height:140px;" />
     </div>
     <div class="saludo">
         <?= mostrarSaludo() ?>
