@@ -73,10 +73,10 @@ EOF;
     if (isset($_FILES['fotoAnuncio']) && $_FILES['fotoAnuncio']['error'] == UPLOAD_ERR_OK) {
         $rutaImagen = $this->manejaCargaDeImagen($_FILES['fotoAnuncio']);
     } else {
-        $rutaImagen = null; // Manejar caso en que no se sube imagen
+        $rutaImagen = "imagenes/anunciodefault.png"; 
     }
 
-    $idAnuncio = Anuncio::insertar($titulo, $descripcion, $_SESSION['rol'], $usuarioId, $contacto, $rutaImagen); // Intenta insertar el anuncio en la base de datos con la imagen.
+    $idAnuncio = Anuncio::insertar($titulo, $descripcion, $usuarioId, $contacto, $rutaImagen); // Intenta insertar el anuncio en la base de datos con la imagen.
         if ($idAnuncio === false) {
             $this->errores[] = "Error al insertar el anuncio. Verifique los datos e intente nuevamente.";
         } else {

@@ -44,7 +44,7 @@ class FormularioNotificacionDetalle extends Formulario
             case Notificacion::ENCARGO_TIPO:
                 return RUTA_APP . "/encargoDetallado.php?id=$idReferencia";
             case Notificacion::NOTICIA_TIPO:
-                return RUTA_APP . "/noticiaDetallada.php?id=$idReferencia";
+                return RUTA_APP . "/anuncioDetallado.php?id=$idReferencia";
             default:
                 return RUTA_APP . "/error.php";  // A generic error page or a notification summary page
         }
