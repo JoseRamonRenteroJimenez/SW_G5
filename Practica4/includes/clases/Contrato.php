@@ -148,7 +148,7 @@ class Contrato
 
     public static function inserta($idEmpresa, $idPueblo, $fechaInicial, $fechaFinal, $terminos)
     {
-            $conn = Aplicacion::getInstance()->getConexionBd();
+        $conn = Aplicacion::getInstance()->getConexionBd();
         $idEmpresa = $conn->real_escape_string($idEmpresa);
         $idPueblo = $conn->real_escape_string($idPueblo);
         $fechaInicial = $conn->real_escape_string($fechaInicial);
@@ -368,6 +368,5 @@ class Contrato
                 return 'Desconocido';
         }
     }
-
 }
 ?>

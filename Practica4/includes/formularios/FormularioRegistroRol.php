@@ -294,6 +294,7 @@ class FormularioRegistroRol extends Formulario
                         <div>
                             <label for="comunidadVecino">Comunidad (Vecino):</label>
                             <select id="comunidadVecino" name="comunidadVecino" onchange="updatePueblos('comunidadVecino', 'puebloVecinoSelector');">
+                            <option value="">Seleccione una comunidad...</option>    
                                 {$comunidadOptions}
                             </select>
                         </div>

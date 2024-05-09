@@ -21,7 +21,7 @@ class FormularioNotificacionDetalle extends Formulario
         }
         
         // Check if the notification is unseen and update its state
-        if ($notificacion->getEstado() === Notificacion::NO_VISTO_ESTADO) {
+        if ($notificacion->getEstado() == Notificacion::NO_VISTO_ESTADO) {
             Notificacion::actualizarEstado($this->idNotificacion, Notificacion::VISTO_ESTADO);
             $notificacion->setEstado(Notificacion::VISTO_ESTADO);  // Update the local object if needed
         }
