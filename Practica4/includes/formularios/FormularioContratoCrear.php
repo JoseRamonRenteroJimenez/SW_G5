@@ -10,7 +10,6 @@ require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php'; 
 require_once __DIR__.'/../../includes/clases/Ambito.php'; 
 require_once __DIR__.'/../../includes/clases/Contrato.php';
-require_once __DIR__.'/../../includes/clases/Servicio.php';
 
 class FormularioContratoCrear extends Formulario
 {

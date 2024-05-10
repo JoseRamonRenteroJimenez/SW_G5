@@ -6,8 +6,7 @@ use es\ucm\fdi\aw;
 require_once __DIR__.'/../../includes/clases/Usuario.php';  //Usuario debe estar antes que Pueblo y Empresa
 require_once __DIR__.'/../../includes/clases/Pueblo.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php';
-require_once __DIR__.'/../../includes/clases/Ambito.php'; 
-require_once __DIR__.'/../../includes/clases/Servicio.php';
+require_once __DIR__.'/../../includes/clases/Ambito.php';
 require_once __DIR__.'/../../includes/clases/Notificacion.php';
 
 class Contrato
@@ -263,7 +262,7 @@ class Contrato
             $fechaInicial, $fechaFinal, $terminos, $nuevoEstado, $id);
 
         if ($conn->query($query)) {
-          // Inserta notificación de cambio de estado
+            // Inserta notificación de cambio de estado
             $notificationType = null;
             $notificationTitle = "";
 

@@ -8,7 +8,6 @@ require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Vecino.php';
 require_once __DIR__.'/../../includes/clases/Administrador.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
-require_once __DIR__.'/../../includes/clases/Servicio.php';
 require_once __DIR__.'/../../includes/clases/Anuncio.php';
 
 require_once 'Formulario.php';
@@ -56,10 +55,6 @@ class FormularioBorrarPerfil extends Formulario
                         Administrador::eliminarPorId($_SESSION['id']);
                         break;
                     case Usuario::EMPRESA_ROLE:
-                        $contratos = Contrato::buscaContratosPorEmpresa($_SESSION['id']);
-                        foreach ($contratos as $contrato) {
-                            Servicio::disminuirServiciosPorEmpresaYPueblo(Empresa::getAmbitoEmpresa($_SESSION['id']),$contrato->getIdPueblo());
-                        }
                         Contrato::eliminarContratosEmpresa($_SESSION['id']);
                         Encargo::eliminarEncargosEmpresa($_SESSION['id']);
                         Empresa::eliminarPorId($_SESSION['id']);

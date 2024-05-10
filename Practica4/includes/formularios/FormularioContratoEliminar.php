@@ -6,7 +6,6 @@ require_once 'Formulario.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';
 require_once __DIR__.'/../../includes/clases/Empresa.php';
-require_once __DIR__.'/../../includes/clases/Servicio.php';
 
 class FormularioContratoEliminar extends Formulario
 {
@@ -53,8 +52,6 @@ class FormularioContratoEliminar extends Formulario
         foreach ($datos as $key => $value) {
             if (strpos($key, 'eliminar_') === 0) {
                 $idContrato = substr($key, strlen('eliminar_'));
-                $contrato = Contrato::buscaContratoPorId($idContrato);
-                Servicio::disminuirServiciosPorEmpresaYPueblo(Empresa::getAmbitoEmpresa($contrato->getIdEmpresa()),$contrato->getIdPueblo());
                 // Eliminar el contrato utilizando el método estático de la clase Contrato
                 if (!Contrato::eliminaContratoPorId($idContrato)) {
                     return "Error al eliminar el contrato.";
