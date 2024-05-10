@@ -13,7 +13,6 @@ if (!$anuncio) {
     die("Error: Anuncio no encontrado.");
 }
 
-// Instantiate FormularioContratoDetalle and get the HTML
 $formulario = new FormularioAnuncioDetalle($idAnuncio);
 $formularioHtml = $formulario->gestiona();
 

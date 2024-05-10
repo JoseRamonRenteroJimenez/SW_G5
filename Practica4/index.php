@@ -7,7 +7,7 @@ $introSection = <<<EOS
 <section class="intro-section">
   <div class="container margin-auto flex paddx-5 paddy-24 items-center">
     <div class="text-content flex flex-col items-center text-center">
-      <h1 class="title-font mb-0">Explora las Oportunidades en tu Pueblo</h1>
+      <h1 class="title-font mb-0">Explora las Oportunidades en tu Pueblo.</h1>
       <p class="mb-8">Descubre cómo PuebloInnova puede transformar tu experiencia como Empresa, Vecino o Pueblo.</p>
     </div>
   </div>

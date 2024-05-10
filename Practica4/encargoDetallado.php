@@ -10,7 +10,7 @@ $idEncargo = isset($_GET['id']) ? $_GET['id'] : null;
 
 $encargo = Encargo::buscaEncargoPorId($idEncargo);
 if (!$encargo) {
-    die("Error: Contract not found.");
+    die("Error: Encargo No encontrado.");
 }
 
 $formulario = new FormularioEncargoDetalle($idEncargo);

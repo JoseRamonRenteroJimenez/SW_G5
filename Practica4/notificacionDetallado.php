@@ -7,10 +7,10 @@ require_once __DIR__ . '/includes/formularios/FormularioNotificacionDetalle.php'
 
 $idNotificacion = isset($_GET['id']) ? $_GET['id'] : null;
 
-// Fetch notification details
+// Cargamos los detalles de la notificación
 $notificacion = Notificacion::buscaNotificacionPorId($idNotificacion);
 if (!$notificacion) {
-    die("Error: Notification not found.");
+    die("Error: Notificación no encontrada.");
 }
 
 $formulario = new FormularioNotificacionDetalle($idNotificacion);

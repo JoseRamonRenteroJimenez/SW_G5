@@ -23,12 +23,12 @@ class FormularioRegistroRol extends Formulario
 
     protected function generaCamposFormulario(&$datos)
     {
-        // Load communities and ambits from the database
+        // Aqui cargamos las comunidades y los ambitos que haya en la base de datos 
         $comunidades = Comunidad::getComunidades();
         $ambitos = Ambito::getAmbitos();
 
         $comunidadOptions = $this->generateSelectOptions($comunidades);
-        $ambitoOptions = $this->generateSelectOptions($ambitos, true);  // Include "Otro" option
+        $ambitoOptions = $this->generateSelectOptions($ambitos, true);  // Incluir "otro" en caso de que sea uno nuevo
 
         // Se generan los mensajes de error si existen.
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
@@ -221,19 +221,19 @@ class FormularioRegistroRol extends Formulario
         // Validación de tipo de archivo
         if (!in_array($tipoArchivo, $tiposPermitidos) || !in_array($extArchivo, $extPermitidas)) {
             $this->errores['fotoPerfil'] = 'Formato de imagen no permitido';
-            return null; // Devuelve null en caso de error
+            return null; 
         }
     
         // Validación de tamaño de archivo
         if ($tamArchivo > $maxTam) {
             $this->errores['fotoPerfil'] = 'El archivo es demasiado grande';
-            return null; // Devuelve null en caso de error
+            return null; 
         }
     
         // Validación de contenido real de la imagen
         if (!@getimagesize($temporal)) {
             $this->errores['fotoPerfil'] = 'El archivo no es una imagen válida.';
-            return null; // Devuelve null en caso de error
+            return null; 
         }
     
         // Sanitización del nombre del archivo
@@ -242,10 +242,10 @@ class FormularioRegistroRol extends Formulario
     
         // Mover el archivo subido al directorio de destino
         if (move_uploaded_file($temporal, $rutaDestino)) {
-            return $rutaDestino; // Retornar la ruta relativa del directorio 'uploads' con el nombre del archivo subido
+            return $rutaDestino; // Destino en nuestro proyecto "uploads"
         } else {
             $this->errores['fotoPerfil'] = 'Error al subir la imagen';
-            return null; // Devuelve null en caso de error
+            return null; 
         }
     }
 

@@ -7,17 +7,14 @@ require_once __DIR__.'/includes/formularios/FormularioPerfilBorrar.php';
 use es\ucm\fdi\aw\FormularioModificarPerfil;
 use es\ucm\fdi\aw\FormularioBorrarPerfil;
 
-// Instancia la clase FormularioModificarPerfil
 $formModificar = new FormularioModificarPerfil();
-$htmlFormModificarPerfil = $formModificar->gestiona(); // Obtiene el HTML generado por el formulario de modificación
+$htmlFormModificarPerfil = $formModificar->gestiona(); 
 
-// Instancia la clase FormularioBorrarPerfil
 $formBorrar = new FormularioBorrarPerfil();
-$htmlFormBorrarUsuario = $formBorrar->gestiona(); // Obtiene el HTML generado por el formulario de borrado
+$htmlFormBorrarUsuario = $formBorrar->gestiona(); 
 
-$tituloPagina = 'Modificar/Borrar Perfil'; // Título de la página
+$tituloPagina = 'Modificar/Borrar Perfil';
 
-// Actualiza el contenido principal para incluir ambos formularios
 $contenidoPrincipal = <<<EOS
 <h1>Modificar tu perfil</h1>
 $htmlFormModificarPerfil

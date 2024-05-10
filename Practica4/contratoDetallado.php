@@ -9,7 +9,7 @@ $idContrato = isset($_GET['id']) ? $_GET['id'] : null;
 
 $contrato = Contrato::buscaContratoPorId($idContrato);
 if (!$contrato) {
-    die("Error: Contract not found.");
+    die("Error: Contrato No encontrado.");
 }
 
 // Formulario para gestionar el contrato

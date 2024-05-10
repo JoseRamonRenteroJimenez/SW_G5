@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__.'/includes/config.php';
 
-//En el futuro debe mostrar un resumen del contrato
-
 $tituloPagina = 'Contrato Generado';
 
 $contenidoPrincipal = <<<EOS

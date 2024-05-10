@@ -6,15 +6,13 @@ require_once __DIR__.'/includes/formularios/FormularioContratoEliminar.php';
 use es\ucm\fdi\aw\FormularioContratoModificar;
 use es\ucm\fdi\aw\FormularioContratoEliminar;
 
-// Instancia la clase FormularioContratoModificar
 $formModificarContratos = new FormularioContratoModificar();
-$htmlFormModificarContratos = $formModificarContratos->gestiona(); // Obtiene el HTML generado por el formulario de modificación de contratos
+$htmlFormModificarContratos = $formModificarContratos->gestiona(); 
 
-// Instancia la clase FormularioContratoEliminar
 $formEliminarContratos = new FormularioContratoEliminar();
-$htmlFormEliminarContratos = $formEliminarContratos->gestiona(); // Obtiene el HTML generado por el formulario de eliminación de contratos
+$htmlFormEliminarContratos = $formEliminarContratos->gestiona(); 
 
-$tituloPagina = 'Modificar Contrato'; // Título de la página
+$tituloPagina = 'Modificar Contrato'; 
 
 // Actualiza el contenido principal para incluir ambos formularios
 $contenidoPrincipal = <<<EOS

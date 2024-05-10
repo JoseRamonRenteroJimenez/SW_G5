@@ -6,7 +6,7 @@ require_once 'Formulario.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php'; 
 require_once __DIR__.'/../../includes/clases/Empresa.php'; 
 require_once __DIR__.'/../../includes/clases/Vecino.php';
-require_once __DIR__.'/../../includes/clases/Encargo.php'; // Ensure this path is correct
+require_once __DIR__.'/../../includes/clases/Encargo.php'; 
 
 class FormularioEncargoListado extends Formulario
 {
@@ -32,12 +32,12 @@ class FormularioEncargoListado extends Formulario
             return $html .= '<p>Acceso no autorizado.</p>';
         }
     
-        // Check if there are encargos to display
+        // Chequea se hay encargos disponibles
         if (empty($encargos)) {
-            return $html . '<p>No encargos found.</p>';
+            return $html . '<p>No se han encontrado encargos.</p>';
         }
     
-        // Generate table of encargos
+        // Genara la tabla encargos
         $html .= $this->generateEncargosTableHtmlSorted($encargos);
         return $html;
     }
@@ -58,7 +58,7 @@ class FormularioEncargoListado extends Formulario
             });
     
             if (empty($filteredEncargos)) {
-                $html .= "<p>No encargos $nombreEstado.</p>";
+                $html .= "<p>No hay encargos $nombreEstado.</p>";
                 continue;
             }
     
