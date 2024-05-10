@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-05-2024 a las 03:05:12
+-- Tiempo de generación: 10-05-2024 a las 14:08:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -144,30 +144,6 @@ CREATE TABLE `pueblos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `roles`
---
-
-CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `servicios`
---
-
-CREATE TABLE `servicios` (
-  `id` int(11) NOT NULL,
-  `idPueblo` int(11) NOT NULL,
-  `idAmbito` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL COMMENT 'n empresas que dan este servicio'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -188,8 +164,7 @@ CREATE TABLE `usuarios` (
 
 CREATE TABLE `vecinos` (
   `id` int(11) NOT NULL,
-  `idPueblo` int(11) NOT NULL,
-  `idEmpresa` int(11) DEFAULT NULL
+  `idPueblo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -236,18 +211,6 @@ ALTER TABLE `encargos`
 -- Indices de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `servicios`
---
-ALTER TABLE `servicios`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -300,18 +263,6 @@ ALTER TABLE `encargos`
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `servicios`
---
-ALTER TABLE `servicios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
