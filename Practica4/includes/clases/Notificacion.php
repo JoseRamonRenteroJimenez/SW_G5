@@ -75,6 +75,10 @@ class Notificacion
         return $this->tipo;
     }
 
+    public function getFecha() {
+        return $this->fecha;
+    }    
+
     public static function insertarNotificacion(Notificacion $notificacion)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();

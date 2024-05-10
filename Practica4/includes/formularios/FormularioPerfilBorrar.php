@@ -9,6 +9,7 @@ require_once __DIR__.'/../../includes/clases/Vecino.php';
 require_once __DIR__.'/../../includes/clases/Administrador.php';
 require_once __DIR__.'/../../includes/clases/Contrato.php';
 require_once __DIR__.'/../../includes/clases/Anuncio.php';
+require_once __DIR__.'/../../includes/clases/Encargo.php';
 
 require_once 'Formulario.php';
 
@@ -64,8 +65,8 @@ class FormularioBorrarPerfil extends Formulario
                         Contrato::eliminarContratosPueblo($_SESSION['id']);
                         break;
                     case USUARIO::VECINO_ROLE:
-                        Vecino::eliminarPorId($_SESSION['id']);
                         Encargo::eliminarEncargosVecino($_SESSION['id']);
+                        Vecino::eliminarPorId($_SESSION['id']);
                     default:
                         // Manejar cualquier otro caso
                         break;

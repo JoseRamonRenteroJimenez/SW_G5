@@ -34,14 +34,14 @@ class FormularioNotificacionListado extends Formulario
     }
 
     private function generateNotificationsTableHtml($notificaciones, $estado) {
-        $estadoNombre = ($estado === Notificacion::VISTO_ESTADO) ? 'Visto' : 'No visto';
-        $html = "<h3>$estadoNombre Notificaciones</h3>";
+        $estadoNombre = ($estado === Notificacion::VISTO_ESTADO) ? 'vistas' : 'no vistas';
+        $html = "<h3>Notificaciones $estadoNombre </h3>";
         $filteredNotifications = array_filter($notificaciones, function ($notificacion) use ($estado) {
             return $notificacion->getEstado() == $estado;
         });
     
         if (empty($filteredNotifications)) {
-            $html .= "<p>No $estadoNombre notificacion.</p>";
+            $html .= "<p>Notificaciones $estadoNombre.</p>";
             return $html;
         }
     

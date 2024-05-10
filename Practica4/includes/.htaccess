@@ -2,3 +2,6 @@ Require all denied
 <Files "getPueblos.php">
     Require all granted
 </Files>
+<Files "getNotificaciones.php">
+    Require all granted
+</Files>

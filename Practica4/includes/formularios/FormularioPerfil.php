@@ -118,7 +118,6 @@ class FormularioPerfil extends Formulario
                 <a href="perfilModificar.php"><button type="button">Modificar Perfil</button></a>
                 <a href="anuncioModificar.php"><button type="button">Modificar Anuncios</button></a>
                 <a href="contratoModificar.php"><button type="button">Modificar Contratos</button></a>
-                <a href="encargoModificar.php"><button type="button">Modificar Encargos</button></a>
             </div>
         </fieldset>
         EOF;

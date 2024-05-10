@@ -7,13 +7,11 @@ class Vecino extends Usuario
 {
     private $id;
     private $idPueblo;
-    private $idEmpresa;
 
-    public function __construct($id, $idPueblo, $idEmpresa = null)
+    public function __construct($id, $idPueblo)
     {
         $this->id = $id;
         $this->idPueblo = $idPueblo;
-        $this->idEmpresa = $idEmpresa;
     }
 
     public static function getVecinos()
@@ -26,7 +24,7 @@ class Vecino extends Usuario
 
         if ($resultado) {
             while ($fila = $resultado->fetch_assoc()) {
-                $vecinos[] = new Vecino($fila['id'], $fila['idPueblo'], $fila['idEmpresa']);
+                $vecinos[] = new Vecino($fila['id'], $fila['idPueblo']);
             }
             $resultado->free();
         } else {
@@ -47,7 +45,7 @@ class Vecino extends Usuario
             $stmt->execute();
             $result = $stmt->get_result();
             while ($fila = $result->fetch_assoc()) {
-                $vecinos[] = new Vecino($fila['id'], $fila['idPueblo'], $fila['idEmpresa']);
+                $vecinos[] = new Vecino($fila['id'], $fila['idPueblo']);
             }
             $stmt->close();
         } else {
@@ -60,10 +58,9 @@ class Vecino extends Usuario
     public function inserta()
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
-        $query = sprintf("INSERT INTO vecinos (id, idPueblo, idEmpresa) VALUES (%d, %d, %d)",
+        $query = sprintf("INSERT INTO vecinos (id, idPueblo) VALUES (%d, %d)",
             $this->id,
-            $this->idPueblo,
-            $this->idEmpresa
+            $this->idPueblo
         );
         if ($conn->query($query)) {
             return true;
@@ -99,21 +96,11 @@ class Vecino extends Usuario
         $this->idPueblo = $idPueblo;
     }
 
-    public function getIdEmpresa()
-    {
-        return $this->idEmpresa;
-    }
-
-    public function setIdEmpresa($idEmpresa)
-    {
-        $this->idEmpresa = $idEmpresa;
-    }
-
     public static function buscaNombreVecino($idVecino)
     {
         $conn = Aplicacion::getInstance()->getConexionBd();
         
-        // Query para obtener el nombre de usuario asociado a la ID de empresa
+        // Query para obtener el nombre de usuario asociado a la ID de vecino
         $query = "SELECT nombreUsuario FROM usuarios WHERE id = ?";
         
         $stmt = $conn->prepare($query);
@@ -121,11 +108,30 @@ class Vecino extends Usuario
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             if ($fila = $result->fetch_assoc()) {
-                // Una vez obtenido el nombre de usuario, buscamos la empresa por su nombre de usuario
                 $nombreUsuario = $fila['nombreUsuario'];
                 return $nombreUsuario;
             }
         }
         return null;
+    }
+
+    public static function eliminarPorId($idEmpresa)
+    {
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = "DELETE FROM vecinos WHERE id = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("i", $idEmpresa);
+            if ($stmt->execute()) {
+                return true; // Eliminación exitosa
+            } else {
+                error_log("Error al eliminar el vecino ({$stmt->errno}): {$stmt->error}");
+                return false; // Error al ejecutar la eliminación
+            }
+            $stmt->close();
+        } else {
+            error_log("Error al preparar la consulta de eliminación ({$conn->errno}): {$conn->error}");
+            return false; // Error al preparar la consulta
+        }
     }
 }
