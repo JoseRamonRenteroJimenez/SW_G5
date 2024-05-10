@@ -60,10 +60,11 @@ $(document).ready(function(){
                 html += '<li>' + notif.titulo + ' - ' + notif.mensaje + '</li>';
             });
             $('#notification-list').html(html); // Update the list within the designated UL
-        }).fail(function() {
-            console.error("Error fetching notifications.");
-            $('#notification-list').html('<li>Error loading notifications.</li>');
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("Error fetching notifications: " + textStatus + ", " + errorThrown);
+            $('#notification-list').html('<li>Error loading notifications. Please check console for more details.</li>');
         });
+
     }
     setInterval(fetchNotificaciones, 5000); // Refresh every 5 seconds
     fetchNotificaciones(); // Initial fetch
