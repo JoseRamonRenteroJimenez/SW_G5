@@ -222,7 +222,7 @@ class Contrato
         switch ($estado) {
             case self::ACTIVO_ESTADO:
                 $message = "Contrato Aprobado";
-                $notificacionEmpresa = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);
+                $notificacionEmpresa = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);
                 break;
             case self::FINALIZADO_ESTADO:
                 $message = "Contrato Finalizado";
@@ -236,10 +236,10 @@ class Contrato
                 break;
             case self::ESPERA_ESTADO:
                 $message = "Contrato en Espera";
-                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);  
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);  
             case self::ALTERADO_ESTADO:
                 $message = "Contrato Modificado";
-                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idPueblo, $idEmpresa, $message);                
+                $notificacionPueblo = new Notificacion($idContrato, Notificacion::CONTRATO_TIPO, Notificacion::NO_VISTO_ESTADO, $idEmpresa, $idPueblo, $message);                
                 break;
             default:
                 $message = "Actualización de Contrato";

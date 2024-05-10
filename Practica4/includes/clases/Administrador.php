@@ -16,7 +16,7 @@ class Administrador extends Usuario
     public static function registrar(Administrador $admin)
     {
         // Guardar el administrador en la base de datos
-        if ($admin->guarda()) {
+        if ($admin->inserta()) {
             return true; // Registro exitoso
         } else {
             return false; // Error al registrar el administrador
@@ -26,16 +26,13 @@ class Administrador extends Usuario
     // Método para insertar un nuevo administrador en la base de datos
     protected function inserta()
     {
-        // Llamada al método guarda de la clase padre para manejar la inserción en la tabla usuarios.
-        if (parent::guarda()) {
-            $conn = Aplicacion::getInstance()->getConexionBd();
-            $query = sprintf("INSERT INTO administradores (id) VALUES (%d)", $this->getId());
-            if ($conn->query($query)) {
-                return true;
-            } else {
-                error_log("Error BD ({$conn->errno}): {$conn->error}");
-                return false;
-            }
+        $conn = Aplicacion::getInstance()->getConexionBd();
+        $query = sprintf("INSERT INTO administradores (id) VALUES (%d)", $this->id);
+        if ($conn->query($query)) {
+            return true;
+        } else {
+            error_log("Error BD ({$conn->errno}): {$conn->error}");
+            return false;
         }
         return false;
     }

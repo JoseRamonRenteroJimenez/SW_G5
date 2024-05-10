@@ -5,12 +5,12 @@ namespace es\ucm\fdi\aw;
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php';
 require_once __DIR__.'/../../includes/clases/Usuario.php';
+require_once __DIR__.'/../../includes/clases/Administrador.php';
 require_once __DIR__.'/../../includes/clases/Pueblo.php';
 require_once __DIR__.'/../../includes/clases/Empresa.php';
 require_once __DIR__.'/../../includes/clases/Comunidad.php';
 require_once __DIR__.'/../../includes/clases/Ambito.php';
 require_once __DIR__.'/../../includes/clases/Vecino.php';
-require_once __DIR__.'/../../includes/clases/Imagen.php';
 
 class FormularioRegistroRol extends Formulario
 {
@@ -153,9 +153,9 @@ class FormularioRegistroRol extends Formulario
         switch ($rol) {
             case Usuario::ADMIN_ROLE:
                 $_SESSION['esAdmin'] = true;
+                Administrador::registrar(new Administrador($usuario->getId()));
                 break;
             case Usuario::EMPRESA_ROLE:
-
                 if (!empty($ambito_manual)) {
                     $ambitoId = Ambito::guardarAmbitoManualmente($ambito_manual);
                     if (!$ambitoId) {
@@ -163,7 +163,6 @@ class FormularioRegistroRol extends Formulario
                         return $this->errores;
                     }
                 }
-
                 Empresa::registrar(new Empresa($usuario->getId(), $nTrabajadores, $ambitoId));
                 break;
             case Usuario::PUEBLO_ROLE:

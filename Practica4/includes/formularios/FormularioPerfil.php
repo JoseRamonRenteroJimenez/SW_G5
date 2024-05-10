@@ -103,7 +103,7 @@ class FormularioPerfil extends Formulario
             $html .= '<fieldset><legend>Encargos del Usuario</legend>';
             foreach ($encargos as $encargo) {
                 $html .= '<div>';
-                $html .= '<p><strong>Descripción:</strong> ' . $encargo->getDescripcion() . '</p>';
+                $html .= '<p><strong>Descripción:</strong> ' . $encargo->getTerminos() . '</p>';
                 $html .= '<p><strong>Fecha:</strong> ' . $encargo->getFecha() . '</p>';
                 $html .= '</div>';
             }

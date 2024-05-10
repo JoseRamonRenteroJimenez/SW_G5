@@ -53,9 +53,9 @@ class Notificacion
     public function getMensaje() {
         switch ($this->tipo) {
             case self::CONTRATO_TIPO:
-                return "Tienes un nuevo Contrato pendiente de aprobación";
+                return "Tienes una notificación relacionada con tus contratos";
             case self::ENCARGO_TIPO:
-                return "Tienes un nuevo Encargo";
+                return "Tienes una notificación relacionada con tus encargos";
             case self::NOTICIA_TIPO:
                 return "Nueva Noticia disponible";
             default:

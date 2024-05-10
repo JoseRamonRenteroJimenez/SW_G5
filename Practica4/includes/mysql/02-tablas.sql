@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-05-2024 a las 03:10:22
+-- Tiempo de generación: 10-05-2024 a las 03:05:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -52,7 +52,6 @@ CREATE TABLE `anuncios` (
   `id` int(11) NOT NULL,
   `titulo` varchar(255) NOT NULL,
   `descripcion` text NOT NULL,
-  `categoria` varchar(50) NOT NULL,
   `contacto` varchar(255) DEFAULT NULL,
   `fecha_publicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `idAutor` int(11) NOT NULL,
