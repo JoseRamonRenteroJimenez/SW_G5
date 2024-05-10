@@ -27,7 +27,7 @@ class FormularioModificarPerfil extends Formulario
     
         $nombreUsuario = $usuario->getNombreUsuario(); 
         $nombre = $usuario->getNombre(); 
-        $rutaImagenActual = $usuario->getNombreImg();  // Usar el método getter
+        $rutaImagenActual = $usuario->getNombreImg(); 
     
         $htmlErroresGlobales = self::generaListaErroresGlobales($this->errores);
         $erroresCampos = self::generaErroresCampos(['nombreUsuario', 'nombre', 'previousPassword', 'password', 'fotoPerfil'], $this->errores, 'span', array('class' => 'error'));

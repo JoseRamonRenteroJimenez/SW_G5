@@ -176,13 +176,13 @@ class Contrato
         $query = "UPDATE contratos SET estado = ? WHERE id = ?";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
-            error_log("Error preparing statement: " . $conn->error);
+            error_log("Error al preparar el estado: " . $conn->error);
             return false;
         }
 
         $stmt->bind_param("ii", $nuevoEstado, $idContrato);
         if (!$stmt->execute()) {
-            error_log("Error updating contract status ({$conn->errno}): {$conn->error}");
+            error_log("Error al cargar el estado del contrato ({$conn->errno}): {$conn->error}");
             $stmt->close();
             return false;
         }
@@ -198,19 +198,19 @@ class Contrato
         $query = "SELECT idEmpresa, idPueblo FROM contratos WHERE id = ?";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
-            error_log("Error preparing select statement: " . $conn->error);
+            error_log("Error al seleccionar el estado de notificación: " . $conn->error);
             return false;
         }
 
         $stmt->bind_param("i", $idContrato);
         if (!$stmt->execute()) {
-            error_log("Error executing select statement ({$conn->errno}): {$conn->error}");
+            error_log("Error al ejecutar el estado de selección ({$conn->errno}): {$conn->error}");
             $stmt->close();
             return false;
         }
         $stmt->bind_result($idEmpresa, $idPueblo);
         if (!$stmt->fetch()) {
-            error_log("No contract found with ID: $idContrato");
+            error_log("No se han encontrado contratos con esa ID: $idContrato");
             $stmt->close();
             return false;
         }

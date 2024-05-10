@@ -6,15 +6,15 @@ require_once __DIR__.'/includes/formularios/FormularioAnuncioEliminar.php';
 use es\ucm\fdi\aw\FormularioAnuncioModificar;
 use es\ucm\fdi\aw\FormularioAnuncioEliminar;
 
-// Instancia la clase FormularioAnuncioModificar
+
 $formModificarAnuncios = new FormularioAnuncioModificar();
-$htmlFormModificarAnuncios = $formModificarAnuncios->gestiona(); // Obtiene el HTML generado por el formulario de modificación de anuncios
+$htmlFormModificarAnuncios = $formModificarAnuncios->gestiona(); 
 
 // Instancia la clase FormularioAnuncioEliminar
 $formEliminarAnuncios = new FormularioAnuncioEliminar();
-$htmlFormEliminarAnuncios = $formEliminarAnuncios->gestiona(); // Obtiene el HTML generado por el formulario de eliminación de anuncios
+$htmlFormEliminarAnuncios = $formEliminarAnuncios->gestiona(); 
 
-$tituloPagina = 'Modificar Anuncio'; // Título de la página
+$tituloPagina = 'Modificar Anuncio'; 
 
 // Actualiza el contenido principal para incluir ambos formularios
 $contenidoPrincipal = <<<EOS

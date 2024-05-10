@@ -1,16 +1,15 @@
 <?php
 
-require_once __DIR__.'/includes/config.php'; // Carga el archivo de configuración de la aplicación
+require_once __DIR__.'/includes/config.php'; 
 require_once __DIR__.'/includes/formularios/FormularioAnuncio.php'; 
-//require_once __DIR__.'/vistas/misAnunciosVista.php';
 require_once __DIR__.'/includes/clases/Anuncio.php';
 
 use es\ucm\fdi\aw\FormularioAnuncios; 
 
-$form = new FormularioAnuncios(); // Instancia la clase FormularioAnuncio
-$htmlFormNewAd = $form->gestiona(); // Obtiene el HTML generado por el formulario
+$form = new FormularioAnuncios(); 
+$htmlFormNewAd = $form->gestiona(); 
 
-$tituloPagina = 'Tablón de Anuncios'; // Título de la página
+$tituloPagina = 'Tablón de Anuncios'; 
 
 // Actualiza el contenido principal para incluir el formulario
 $contenidoPrincipal = <<<EOS
@@ -19,5 +18,4 @@ $contenidoPrincipal = <<<EOS
 $htmlFormNewAd 
 EOS;
 
-// Incluye la plantilla que utiliza $contenidoPrincipal.
 require __DIR__.'/includes/vistas/plantillas/plantilla.php';

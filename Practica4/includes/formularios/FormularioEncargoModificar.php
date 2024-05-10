@@ -3,7 +3,7 @@ namespace es\ucm\fdi\aw;
 
 require_once __DIR__.'/../../includes/config.php';
 require_once 'Formulario.php';
-require_once __DIR__.'/../../includes/clases/Encargo.php'; // Importa la clase Encargo
+require_once __DIR__.'/../../includes/clases/Encargo.php'; 
 
 class FormularioEncargoModificar extends Formulario
 {
@@ -22,7 +22,6 @@ class FormularioEncargoModificar extends Formulario
         if (isset($_SESSION['rol'])) {
             switch ($_SESSION['rol']) {
                 case Usuario::EMPRESA_ROLE:
-                    // Si el usuario es empresa, obtener los encargos de esa empresa
                     $encargos = Encargo::buscaEncargosPorEmpresa($_SESSION['id']);
                     break;
                 case Usuario::VECINO_ROLE:
@@ -55,7 +54,6 @@ class FormularioEncargoModificar extends Formulario
                 $descripcion = $value;
                 $fecha = $datos['fecha_' . $idEncargo];
                 
-                // Actualizar el encargo utilizando el método estático de la clase Encargo
                 if (!Encargo::actualiza($idEncargo, $descripcion, $fecha)) {
                     return "Error al actualizar el encargo.";
                 }

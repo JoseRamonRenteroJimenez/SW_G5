@@ -82,7 +82,7 @@ class Encargo {
             
             return self::enviarNotificacionEstadoEncargo($idEncargo, $nuevoEstado);
         } else {
-            error_log("Error updating encargo status ({$stmt->errno}): {$stmt->error}");
+            error_log("Error al cargar el estado del contrato. ({$stmt->errno}): {$stmt->error}");
             $stmt->close();
             return false;
         }
@@ -94,18 +94,18 @@ class Encargo {
         $query = "SELECT idVecino, idEmpresa FROM encargos WHERE id = ?";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
-            error_log("Error preparing select statement: " . $conn->error);
+            error_log("Error al preparar el selector del contrato: " . $conn->error);
             return false;
         }
         $stmt->bind_param("i", $idEncargo);
         if (!$stmt->execute()) {
-            error_log("Error executing select statement ({$stmt->errno}): {$conn->error}");
+            error_log("Error al ejecutar el selector del estado ({$stmt->errno}): {$conn->error}");
             $stmt->close();
             return false;
         }
         $stmt->bind_result($idVecino, $idEmpresa);
         if (!$stmt->fetch()) {
-            error_log("No encargo found with ID: $idEncargo");
+            error_log("No se han encontrado encargos con esa ID: $idEncargo");
             $stmt->close();
             return false;
         }
